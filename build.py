@@ -52,7 +52,6 @@ def process_json( addon, version ):
         json_obj = json.load(f)
         json_obj["id"] = json_id
         json_obj["time"] = time
-        json_obj["releaseTime"] = time
         json_obj["libraries"].insert(0,{"name":lib_id}) #Insert at beginning
         json_obj["libraries"].append({"name":"net.minecraft:Minecraft:"+mc_version}) #Insert at end
         return json.dumps( json_obj, indent=1 )
