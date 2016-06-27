@@ -484,35 +484,41 @@ public class MCOpenVR
 	private static int quickTorchPreviousSlot;
 
 	public static boolean setKeyboardOverlayShowing(boolean showingState, GuiTextField gui) {
-		keyboardGui = gui;
-		int ret = 1;
-		if (showingState) {
-			pollsSinceLastChange = 0; // User deliberately tried to show keyboard, shouldn't have chance of immediately resetting   
-			Pointer pointer = new Memory(3);
-			pointer.setString(0, "mc");
-			Pointer empty = new Memory(1);
-			empty.setString(0, "");
+		try {
+			keyboardGui = gui;
+			int ret = 1;
+			if (showingState) {
+				pollsSinceLastChange = 0; // User deliberately tried to show keyboard, shouldn't have chance of immediately resetting   
+				Pointer pointer = new Memory(3);
+				pointer.setString(0, "mc");
+				Pointer empty = new Memory(1);
+				empty.setString(0, "");
 
-			ret = vrOverlay.ShowKeyboard.apply(0, 0, pointer, 256, empty, (byte)1, 0)	;	
-			
-			keyboardShowing = 0 == ret; //0 = no error, > 0 see EVROverlayError	
-	
-		
-			if (ret != 0) {
-				System.out.println("VR Overlay Error: " + vrOverlay.GetOverlayErrorNameFromEnum.apply(ret).getString(0));
-			}
-			
-			if (!Display.isActive()) mc.printChatMessage("Warning: Game window is not in focus, VR keyboard will not function.");
+				ret = vrOverlay.ShowKeyboard.apply(0, 0, pointer, 256, empty, (byte)1, 0)	;	
 
-		} else {
-			try {
-				if (keyboardShowing) {
-					vrOverlay.HideKeyboard.apply();				
+				keyboardShowing = 0 == ret; //0 = no error, > 0 see EVROverlayError	
+
+
+				if (ret != 0) {
+					System.out.println("VR Overlay Error: " + vrOverlay.GetOverlayErrorNameFromEnum.apply(ret).getString(0));
 				}
-			} catch (Error e) {
-				// TODO: handle exception
+
+				if (!Display.isActive()) mc.printChatMessage("Warning: Game window is not in focus, VR keyboard will not function.");
+
+			} else {
+				try {
+					if (keyboardShowing) {
+						vrOverlay.HideKeyboard.apply();				
+					}
+				} catch (Error e) {
+					// TODO: handle exception
+				}
+				keyboardShowing = false;
 			}
-			keyboardShowing = false;
+
+
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 
 		return keyboardShowing;
@@ -866,6 +872,7 @@ public class MCOpenVR
 		}
 	}
 
+	public static float rtbX, rtbY;
 
 	//OK the fundamental problem with this is Minecraft uses a LWJGL event buffer for keyboard and mouse inputs. It polls those devices faster
 	//and presents the game with a nice queue of things that happened. With OpenVR we're polling the controllers directly on the -game- (edit render?) loop.
@@ -883,14 +890,14 @@ public class MCOpenVR
 		//last
 		boolean lastpressedRGrip = (lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonGrip) > 0;		
 		boolean lastpressedRtouchpadBottomLeft = (lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
-				(lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y <= 0 ) &&
-				(lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x <= 0 ) ;	
+				(lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y < 0 ) &&
+				(lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x < 0 ) ;	
 		boolean lastpressedRtouchpadBottomRight = (lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
-				(lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y <= 0 ) &&
+				(lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y < 0 ) &&
 				(lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x > 0 ) ;		
 		boolean lastpressedRtouchpadTopLeft = (lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
 				(lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y > 0 ) &&
-				(lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x <= 0 ) ;	
+				(lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x < 0 ) ;	
 		boolean lastpressedRtouchpadTopRight = (lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
 				(lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y > 0 ) &&
 				(lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x > 0 ) ;		
@@ -900,14 +907,14 @@ public class MCOpenVR
 		//current
 		boolean pressedRGrip = (controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonGrip) > 0;
 		boolean pressedRtouchpadBottomLeft = (controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
-				(controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y <= 0 ) &&
-				(controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x <= 0 ) ;	
+				(controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y < 0 ) &&
+				(controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x < 0 ) ;	
 		boolean pressedRtouchpadBottomRight = (controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
-				(controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y <= 0 ) &&
+				(controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y < 0 ) &&
 				(controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x > 0 ) ;		
 		boolean pressedRtouchpadTopLeft = (controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
 				(controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y > 0 ) &&
-				(controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x <= 0 ) ;	
+				(controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x < 0 ) ;	
 		boolean pressedRtouchpadTopRight = (controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
 				(controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y > 0 ) &&
 				(controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x > 0 ) ;	
@@ -915,6 +922,8 @@ public class MCOpenVR
 		boolean pressedRTrigger = controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_Trigger].x > triggerThreshold;
 		boolean pressedRTriggerClick =( controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTrigger )>0;
 
+		rtbX = controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x;
+		rtbY = controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].y;
 
 		//R GRIP
 		if (pressedRGrip && !lastpressedRGrip) {
@@ -929,15 +938,19 @@ public class MCOpenVR
 		//if(!gui){ //this are the mouse buttons. ummm do I need this? it causes the key to stick down.
 		
 		if (pressedRtouchpadBottomLeft && !lastpressedRtouchpadBottomLeft){
+			System.out.println("press rbl");
 			mc.vrSettings.buttonMappings[ViveButtons.BUTTON_RIGHT_TOUCHPAD_BL.ordinal()].press();
 		}			
 		if (!pressedRtouchpadBottomLeft && lastpressedRtouchpadBottomLeft){
+			System.out.println("unpress rbl");
 			mc.vrSettings.buttonMappings[ViveButtons.BUTTON_RIGHT_TOUCHPAD_BL.ordinal()].unpress();
 		}		
 		if (pressedRtouchpadBottomRight && !lastpressedRtouchpadBottomRight){
+			System.out.println("press rbr");
 			mc.vrSettings.buttonMappings[ViveButtons.BUTTON_RIGHT_TOUCHPAD_BR.ordinal()].press();
 		}			
 		if (!pressedRtouchpadBottomRight && lastpressedRtouchpadBottomRight){
+			System.out.println("unpress rbr");
 			mc.vrSettings.buttonMappings[ViveButtons.BUTTON_RIGHT_TOUCHPAD_BR.ordinal()].unpress();
 		}	
 		if (pressedRtouchpadTopLeft && !lastpressedRtouchpadTopLeft){
@@ -982,14 +995,14 @@ public class MCOpenVR
 		//last
 		boolean lastpressedLGrip = (lastControllerState[LEFT_CONTROLLER].ulButtonPressed & k_buttonGrip) > 0;		
 		boolean lastpressedLtouchpadBottomLeft = (lastControllerState[LEFT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
-				(lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y <= 0 ) &&
-				(lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x <= 0 ) ;	
+				(lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y < 0 ) &&
+				(lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x < 0 ) ;	
 		boolean lastpressedLtouchpadBottomRight = (lastControllerState[LEFT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
-				(lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y <= 0 ) &&
+				(lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y < 0 ) &&
 				(lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x > 0 ) ;		
 		boolean lastpressedLtouchpadTopLeft = (lastControllerState[LEFT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
 				(lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y > 0 ) &&
-				(lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x <= 0 ) ;	
+				(lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x < 0 ) ;	
 		boolean lastpressedLtouchpadTopRight = (lastControllerState[LEFT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
 				(lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y > 0 ) &&
 				(lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x > 0 ) ;		
@@ -999,14 +1012,14 @@ public class MCOpenVR
 		//current
 		boolean pressedLGrip = (controllerStateReference[LEFT_CONTROLLER].ulButtonPressed & k_buttonGrip) > 0;
 		boolean pressedLtouchpadBottomLeft = (controllerStateReference[LEFT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
-				(controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y <= 0 ) &&
-				(controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x <= 0 ) ;	
+				(controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y < 0 ) &&
+				(controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x < 0 ) ;	
 		boolean pressedLtouchpadBottomRight = (controllerStateReference[LEFT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
-				(controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y <= 0 ) &&
+				(controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y < 0 ) &&
 				(controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x > 0 ) ;		
 		boolean pressedLtouchpadTopLeft = (controllerStateReference[LEFT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
 				(controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y > 0 ) &&
-				(controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x <= 0 ) ;	
+				(controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x < 0 ) ;	
 		boolean pressedLtouchpadTopRight = (controllerStateReference[LEFT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 &&
 				(controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y > 0 ) &&
 				(controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x > 0 ) ;	
@@ -1085,12 +1098,12 @@ public class MCOpenVR
 		}
 
 		if(rotateLeft.isPressed()){
-			mc.vrSettings.vrWorldRotation+=45;
+			mc.vrSettings.vrWorldRotation+=mc.vrSettings.vrWorldRotationIncrement;
 			mc.vrSettings.vrWorldRotation = mc.vrSettings.vrWorldRotation % 360;
 		}
 		
 		if(rotateRight.isPressed()){
-			mc.vrSettings.vrWorldRotation-=45;		
+			mc.vrSettings.vrWorldRotation-=mc.vrSettings.vrWorldRotationIncrement;		
 			mc.vrSettings.vrWorldRotation = mc.vrSettings.vrWorldRotation % 360;
 			}
 		
@@ -1150,7 +1163,7 @@ public class MCOpenVR
 
 		if(pressedLAppMenu  && !lastpressedLAppMenu) { //handle menu directly
 				
-			if(mc.gameSettings.keyBindSneak.getIsKeyPressed()){				
+			if(pressedLGrip){				
 				setKeyboardOverlayShowing(!keyboardShowing, null);			
 			} else{
 				if(gui || keyboardShowing){
@@ -1730,6 +1743,9 @@ public class MCOpenVR
 	
 			Vec3 guiLocal = Vec3.createVectorHelper(0, 0, 0);
 	   		
+			if(mc.theWorld == null)
+				mc.vrSettings.vrWorldRotation = 0;
+			
 			// main menu view
 			if (mc.theWorld==null || mc.currentScreen instanceof GuiWinGame) {
 				//TODO reset scale things

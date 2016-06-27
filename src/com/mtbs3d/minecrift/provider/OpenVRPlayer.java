@@ -989,6 +989,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         				//	System.out.println("hardness=" + hardness);
         					if (hardness * 4.0f > 1.0f)
         					{
+    							mc.playerController.onPlayerDamageBlock(col.blockX, col.blockY, col.blockZ, col.sideHit);
         						mc.playerController.onPlayerDestroyBlock(col.blockX, col.blockY, col.blockZ, col.sideHit);
         					} else
         					{
