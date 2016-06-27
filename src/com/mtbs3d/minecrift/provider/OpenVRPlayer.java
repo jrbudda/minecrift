@@ -157,6 +157,10 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         
         this.checkandUpdateRotateScale();
 
+		/** MINECRIFT */
+		mc.thePlayer.stepHeight = mc.vrSettings.walkUpBlocks ? 1f : 0.5f;
+		if (!this.getFreeMoveMode()) mc.thePlayer.stepHeight = 0.0f;
+		/** END MINECRIFT */
         
        if(false){         //experimental - EXPERIMENT FAILED
            topofhead = (double) (mc.roomScale.getHMDPos_Room().yCoord + .05);

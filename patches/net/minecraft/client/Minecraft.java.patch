@@ -99,7 +99,7 @@
  import net.minecraft.world.EnumDifficulty;
  import net.minecraft.world.WorldProviderEnd;
  import net.minecraft.world.WorldProviderHell;
-@@ -150,2988 +167,4698 @@
+@@ -150,2988 +167,4681 @@
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
@@ -1710,6 +1710,8 @@
 +	// VIVE START - teleport movement
 +	public OpenVRPlayer vrPlayer; 
 +	public IRoomscaleAdapter roomScale;
++	public BowTracker bowTracker = new BowTracker(); 
++	
 +	// VIVE END - teleport movement
 +
 +	// VIVE START - vive ui debugging
@@ -1741,8 +1743,7 @@
 +	private final Proxy proxy;
 +	private ISaveFormat saveLoader;
 +
-+	public BowTracker bowTracker = new BowTracker(); 
-+	
++
 +	/**
 +	 * This is set to fpsCounter every debug screen update, and is shown on the debug screen. It's also sent as part of
 +	 * the usage snooping.
@@ -2821,8 +2822,8 @@
 +			/** MINECRIFT */ // setup the display, render buffers, shaders etc.
 +			this.frameIndex++;
 +			setupRenderConfiguration();
-+			
 +			/** END MINECRIFT */
++			
 +			if (this.isGamePaused && this.theWorld != null)
 +			{
 +				float var1 = this.timer.renderPartialTicks;
@@ -2903,7 +2904,7 @@
 +					bowTracker.doProcess(roomScale, thePlayer);
 +			}
 +
-+
++	        //VIVECRAFT RENDERING MAIN
 +			if (minecriftDebug) print("FrameIndex: " + frameIndex);
 +			renderTexProvider.setFrameIndex(frameIndex);
 +		
@@ -2915,107 +2916,7 @@
 +			for (int i = 0; this.visible && i < viewPortCount; i++)
 +			{
 +				this.mcProfiler.startSection("Eye:" + currentEye.ordinal());
-+					int x = GL11.glGetInteger(GL11.GL_MODELVIEW_STACK_DEPTH);				
-+					while (x >1){
-+						GL11.glPopMatrix(); ///WHO.. WHY??? Find this.
-+						x = GL11.glGetInteger(GL11.GL_MODELVIEW_STACK_DEPTH);	
-+					}
-+					clearGLError();
-+					
-+					this.framebufferMc.bindFramebuffer(true);	//draw to eye texture.
-+					
-+					this.currentEye = this.stereoProvider.eyeRenderOrder(i);
-+	
-+					this.stereoProvider.setCurrentRenderTextureInfo(
-+							this.currentEye.value(),
-+							renderTexProvider.getCurrentSwapIdx(),
-+							this.framebufferMc.depthBuffer,
-+							this.framebufferMc.framebufferTextureWidth,
-+							this.framebufferMc.framebufferTextureHeight); //just returns true
-+					
-+	
-+					if (this.entityRenderer != null)
-+					{
-+						this.entityRenderer.renderpass = i;
-+						this.entityRenderer.theShaderGroup = shaderGroup;
-+					}
-+	
-+					GL11.glPushMatrix();
-+					GL11.glClearColor(0f, 0, 0, 1f);	
-+					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-+										
-+						GL11.glEnable(GL11.GL_TEXTURE_2D);
-+						if (this.thePlayer != null && this.thePlayer.isEntityInsideOpaqueBlock())
-+						{
-+							this.gameSettings.thirdPersonView = 0;
-+						}
-+				
-+						// Update our orientation and position variables from the sensor polled data
-+						this.entityRenderer.updatePositionAndOrientation(this.timer.renderPartialTicks, Display.isActive());
-+						
-+						Object fmlCommonHandler = null;
-+						if (Reflector.FMLCommonHandler_instance.exists()) {
-+							fmlCommonHandler = Reflector.call(Reflector.FMLCommonHandler_instance, new Object[0]);
-+						}
-+						
-+						if (!this.skipRenderWorld)
-+						{
-+							/** MINECRIFT FORGE **/
-+							if (!this.stereoProvider.isStereo()) {
-+								if (fmlCommonHandler != null) {
-+									Reflector.callVoid(fmlCommonHandler, Reflector.FMLCommonHandler_onRenderTickStart, new Object[]{this.timer.renderPartialTicks});
-+								}
-+							}
-+							this.mcProfiler.startSection("updateCameraAndRender:" + currentEye.ordinal());
-+			
-+								///THIS IS WHERE EVERYTHING IS RENDERED
-+								this.entityRenderer.updateCameraAndRender(this.timer.renderPartialTicks);
-+							
-+							this.mcProfiler.endSection();
-+							
-+							if (!this.stereoProvider.isStereo()) {
-+								if (fmlCommonHandler != null) {
-+									Reflector.callVoid(fmlCommonHandler, Reflector.FMLCommonHandler_onRenderTickEnd, new Object[]{this.timer.renderPartialTicks});
-+								}
-+							}
-+							/** END MINECRIFT FORGE **/
-+						}
-+		
-+			
-+					this.mcProfiler.startSection("postProcessing:" + currentEye.ordinal());
-+						GL11.glPushMatrix();
-+						 	doPostProcessing(frameIndex, this.currentEye);
-+						GL11.glPopMatrix();
-+					this.mcProfiler.endSection();
-+					
-+					GL11.glPushMatrix();
-+						//this.entityRenderer.func_152430_c(this.timer.renderPartialTicks);   // <-- TODO: What does this do? Some sort of stream status overlay? REENABLE, move to GUI FBO?
-+					GL11.glPopMatrix();
-+									
-+					framebufferEye.bindFramebuffer(true); //draw to eye tex
-+					framebuffer.framebufferRender(framebufferEye.framebufferWidth, framebufferEye.framebufferHeight);
-+					
-+					this.mcProfiler.startSection("OpenGL Finish:" + currentEye.ordinal());
-+					//	GL11.glFinish();
-+					this.mcProfiler.endSection();
-+					
-+					this.mcProfiler.startSection("compositorSubmit:" + currentEye.ordinal());
-+						if(this.stereoProvider.isStereo())
-+							this.stereoProvider.endFrame(this.currentEye);
-+						else
-+							this.stereoProvider.endFrame();
-+					this.mcProfiler.endSection();
-+						
-+					this.mcProfiler.startSection("Mirror:" + currentEye.ordinal());
-+						shouldupdate =	copyToMirror(this.currentEye);
-+					this.mcProfiler.endSection();
-+					
-+					x = GL11.glGetInteger(GL11.GL_MODELVIEW_STACK_DEPTH);
-+					if(x>1)GL11.glPopMatrix(); ///WHO.. WHY??? Find this.
-+					x = GL11.glGetInteger(GL11.GL_MODELVIEW_STACK_DEPTH);
-+					if(x>1)GL11.glPopMatrix(); ///WHO.. WHY??? Find this.
-+					clearGLError();
-+					
++					shouldupdate = renderSingleView(i);
 +				this.mcProfiler.endSection(); //eye
 +			} //end per eye rendering.
 +
@@ -3038,6 +2939,8 @@
 +				this.stereoProvider.endFrame();
 +			mcProfiler.endSection();
 +
++			////END MAIN VIVECRAFT RENDERING
++			
 +			this.stream.func_152935_j();
 +			this.stream.func_152922_k();
 +			++this.fpsCounter;
@@ -3078,6 +2981,112 @@
 +		}
 +		/** END MINECRIFT */
 +		mcProfiler.startSection("Idle");
++	}
++
++	private boolean renderSingleView(int eye) {
++		boolean shouldupdate;
++			int x = GL11.glGetInteger(GL11.GL_MODELVIEW_STACK_DEPTH);				
++			while (x >1){
++				GL11.glPopMatrix(); ///WHO.. WHY??? Find this.
++				x = GL11.glGetInteger(GL11.GL_MODELVIEW_STACK_DEPTH);	
++			}
++			clearGLError();
++			
++			this.framebufferMc.bindFramebuffer(true);	//draw to eye texture.
++			
++			this.currentEye = this.stereoProvider.eyeRenderOrder(eye);
++
++			this.stereoProvider.setCurrentRenderTextureInfo(
++					this.currentEye.value(),
++					renderTexProvider.getCurrentSwapIdx(),
++					this.framebufferMc.depthBuffer,
++					this.framebufferMc.framebufferTextureWidth,
++					this.framebufferMc.framebufferTextureHeight); //just returns true
++			
++
++			if (this.entityRenderer != null)
++			{
++				this.entityRenderer.renderpass = eye;
++				this.entityRenderer.theShaderGroup = shaderGroup;
++			}
++
++			GL11.glPushMatrix();
++			GL11.glClearColor(0f, 0, 0, 1f);	
++			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
++								
++				GL11.glEnable(GL11.GL_TEXTURE_2D);
++				if (this.thePlayer != null && this.thePlayer.isEntityInsideOpaqueBlock())
++				{
++					this.gameSettings.thirdPersonView = 0;
++				}
++		
++				// Update our orientation and position variables from the sensor polled data
++				this.entityRenderer.updatePositionAndOrientation(this.timer.renderPartialTicks, Display.isActive());
++				
++				Object fmlCommonHandler = null;
++				if (Reflector.FMLCommonHandler_instance.exists()) {
++					fmlCommonHandler = Reflector.call(Reflector.FMLCommonHandler_instance, new Object[0]);
++				}
++				
++				if (!this.skipRenderWorld)
++				{
++					/** MINECRIFT FORGE **/
++					if (!this.stereoProvider.isStereo()) {
++						if (fmlCommonHandler != null) {
++							Reflector.callVoid(fmlCommonHandler, Reflector.FMLCommonHandler_onRenderTickStart, new Object[]{this.timer.renderPartialTicks});
++						}
++					}
++					this.mcProfiler.startSection("updateCameraAndRender:" + currentEye.ordinal());
++
++						///THIS IS WHERE EVERYTHING IS RENDERED
++						this.entityRenderer.updateCameraAndRender(this.timer.renderPartialTicks);
++					
++					this.mcProfiler.endSection();
++					
++					if (!this.stereoProvider.isStereo()) {
++						if (fmlCommonHandler != null) {
++							Reflector.callVoid(fmlCommonHandler, Reflector.FMLCommonHandler_onRenderTickEnd, new Object[]{this.timer.renderPartialTicks});
++						}
++					}
++					/** END MINECRIFT FORGE **/
++				}
++
++
++			this.mcProfiler.startSection("postProcessing:" + currentEye.ordinal());
++				GL11.glPushMatrix();
++				 	doPostProcessing(frameIndex, this.currentEye);
++				GL11.glPopMatrix();
++			this.mcProfiler.endSection();
++			
++			GL11.glPushMatrix();
++				//this.entityRenderer.func_152430_c(this.timer.renderPartialTicks);   // <-- TODO: What does this do? Some sort of stream status overlay? REENABLE, move to GUI FBO?
++			GL11.glPopMatrix();
++							
++			framebufferEye.bindFramebuffer(true); //draw to eye tex
++			framebuffer.framebufferRender(framebufferEye.framebufferWidth, framebufferEye.framebufferHeight);
++			
++			this.mcProfiler.startSection("OpenGL Finish:" + currentEye.ordinal());
++			//	GL11.glFinish();
++			this.mcProfiler.endSection();
++			
++			this.mcProfiler.startSection("compositorSubmit:" + currentEye.ordinal());
++				if(this.stereoProvider.isStereo())
++					this.stereoProvider.endFrame(this.currentEye);
++				else
++					this.stereoProvider.endFrame();
++			this.mcProfiler.endSection();
++				
++			this.mcProfiler.startSection("Mirror:" + currentEye.ordinal());
++				shouldupdate =	copyToMirror(this.currentEye);
++			this.mcProfiler.endSection();
++			
++			x = GL11.glGetInteger(GL11.GL_MODELVIEW_STACK_DEPTH);
++			if(x>1)GL11.glPopMatrix(); ///WHO.. WHY??? Find this.
++			x = GL11.glGetInteger(GL11.GL_MODELVIEW_STACK_DEPTH);
++			if(x>1)GL11.glPopMatrix(); ///WHO.. WHY??? Find this.
++			clearGLError();
++			
++		return shouldupdate;
 +	}
 +
 +	/**
@@ -5121,10 +5130,6 @@
 +
 +		if (!this.isGamePaused)
 +		{
-+			/** MINECRIFT */
-+			//            if( JoystickAim.selectedJoystickMode != null )
-+			//                JoystickAim.selectedJoystickMode.updateTick();
-+			/** END MINECRIFT */
 +			this.ingameGUI.updateTick();
 +		}
 +
@@ -5146,11 +5151,6 @@
 +
 +		if (this.currentScreen == null && this.thePlayer != null)
 +		{
-+			/** MINECRIFT */
-+			this.thePlayer.stepHeight = this.vrSettings.walkUpBlocks ? 1f : 0.5f;
-+			if (!vrPlayer.getFreeMoveMode()) this.thePlayer.stepHeight = 0.0f;
-+			/** END MINECRIFT */
-+
 +			if (this.thePlayer.getHealth() <= 0.0F)
 +			{
 +				this.displayGuiScreen((GuiScreen)null);
@@ -5381,10 +5381,6 @@
 +				}
 +				else
 +				{
-+					/** MINECRIFT */
-+					VRHotkeys.handleKeyboardInputs(this);
-+					/** END MINECRIFT */
-+
 +					if (Keyboard.getEventKey() == 1)
 +					{
 +						this.displayInGameMenu();
@@ -5575,22 +5571,10 @@
 +				this.rightClickMouse();
 +			} else {this.rightClickDelayTimer = 0;}
 +
-+			
-+			//JRBUDDA MODE SWITCH CODE
 +			if (this.gameSettings.keyBindPickBlock.getIsKeyPressed())
 +			{
 +				this.middleClickMouse();
-+				
-+				moveModeSwitchcount++;
-+				if (moveModeSwitchcount >= 40 * 4) {
-+					moveModeSwitchcount = 0;
-+					vrPlayer.setFreeMoveMode(!vrPlayer.getFreeMoveMode());
-+					printChatMessage("Free movement mode set to: " + vrPlayer.getFreeMoveMode());
-+				
-+			} else  moveModeSwitchcount = 0;
-+				
 +			}
-+			/////		
 +		}
 +	}
 +
@@ -5914,7 +5898,6 @@
 +			}
 +
 +			this.thePlayer.preparePlayerToSpawn();
-+			//VIVECRAFT
 +			worldClientIn.spawnEntityInWorld(this.thePlayer);
 +			this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
 +			this.playerController.setPlayerCapabilities(this.thePlayer);

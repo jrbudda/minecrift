@@ -1135,7 +1135,7 @@ public class MCOpenVR
 		}
 
 		//handle movementtoggle
-		if (mc.gameSettings.keyBindPickBlock.getIsKeyPressed()) {
+		if (pressedRGrip) {
 			if(mc.vrSettings.vrAllowLocoModeSwotch){
 				moveModeSwitchcount++;
 				if (moveModeSwitchcount >= 20 * 4) {
