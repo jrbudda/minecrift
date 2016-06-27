@@ -656,7 +656,8 @@ public class MCOpenVR
 					//click left mouse button
 					if (Display.isActive()) KeyboardSimulator.robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 					else mc.currentScreen.mouseUp(mouseX, mouseY, 0);
-				}	
+				}
+				//end LMB
 
 				//RMB
 				if (mc.currentScreen != null &&
@@ -664,13 +665,13 @@ public class MCOpenVR
 						(lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) == 0 
 						)				
 				{
-					//click left mouse button
+					//click right mouse button
 					if (Display.isActive()) KeyboardSimulator.robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
 					else mc.currentScreen.mouseDown(mouseX, mouseY, 1);
 				}	
 
 				if (mc.currentScreen != null &&
-						controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_Trigger].x > triggerThreshold)
+						(controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0)
 				{
 					mc.currentScreen.mouseDrag(mouseX, mouseY);//Signals mouse move
 				}
@@ -682,13 +683,41 @@ public class MCOpenVR
 						(lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTouchpad) > 0 
 						)
 				{
-					//click left mouse button
+					//click right mouse button
 					if (Display.isActive()) KeyboardSimulator.robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
 					else mc.currentScreen.mouseUp(mouseX, mouseY, 1);
 				}	
-				//end RMB
+				//end RMB	
+
+				//MMB
+				if (mc.currentScreen != null &&
+						(controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonGrip) > 0 &&
+						(lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonGrip) == 0 
+						)				
+				{
+					//click middle mouse button
+					if (Display.isActive()) KeyboardSimulator.robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
+					else mc.currentScreen.mouseDown(mouseX, mouseY, 2);
+				}	
+
+				if (mc.currentScreen != null &&
+						(controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonGrip) > 0)
+				{
+					mc.currentScreen.mouseDrag(mouseX, mouseY);//Signals mouse move
+				}
 
 
+				if(mc.currentScreen != null &&
+						(
+						controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonGrip) == 0 &&
+						(lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonGrip) > 0 
+						)
+				{
+					//click middle mouse button
+					if (Display.isActive()) KeyboardSimulator.robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
+					else mc.currentScreen.mouseUp(mouseX, mouseY, 2);
+				}	
+				//end MMB
 
 			} else // right controller not found
 			{
@@ -1115,7 +1144,7 @@ public class MCOpenVR
 		    for (int slot=0;slot<9;slot++)
             {  
 		    	ItemStack itemStack = mc.thePlayer.inventory.getStackInSlot(slot);
-                if (itemStack!=null && itemStack.getUnlocalizedName().equals("tile.torch") )
+                if (itemStack!=null && itemStack.getUnlocalizedName().equals("tile.torch") && mc.currentScreen == null)
                 {
                     quickTorchPreviousSlot = mc.thePlayer.inventory.currentItem;
                     mc.thePlayer.inventory.currentItem = slot;
