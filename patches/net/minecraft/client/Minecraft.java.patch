@@ -5552,7 +5552,7 @@
 +		}
 +		else
 +		{
-+			if (this.gameSettings.keyBindAttack.getIsKeyPressed())
++			if (this.gameSettings.keyBindAttack.getIsKeyPressed() && currentScreen == null)
 +			{
 +				this.clickMouse();
 +				lastClick = true;
@@ -5566,12 +5566,12 @@
 +				lastClick = false;
 +			}
 +
-+			if (this.gameSettings.keyBindUseItem.getIsKeyPressed() && !this.thePlayer.isUsingItem())
++			if (this.gameSettings.keyBindUseItem.getIsKeyPressed() && !this.thePlayer.isUsingItem() && currentScreen == null)
 +			{
 +				this.rightClickMouse();
 +			} else {this.rightClickDelayTimer = 0;}
 +
-+			if (this.gameSettings.keyBindPickBlock.getIsKeyPressed())
++			if (this.gameSettings.keyBindPickBlock.getIsKeyPressed() && currentScreen == null)
 +			{
 +				this.middleClickMouse();
 +			}
