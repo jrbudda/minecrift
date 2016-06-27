@@ -115,6 +115,8 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
     {
         String s = var8.getEnumString();
 
+        if(s==VRSettings.VrOptions.ALLOW_CRAWLING.getEnumString()) return false;
+        
         if (this.guivrSettings.useVrComfort == this.guivrSettings.VR_COMFORT_OFF &&
                (s == VRSettings.VrOptions.VR_COMFORT_TRANSITION_ANGLE_DEGS.getEnumString() ||
                 s == VRSettings.VrOptions.VR_COMFORT_TRANSITION_TIME_SECS.getEnumString() ||
@@ -177,8 +179,9 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                 vr.useKeyBindingForComfortYaw = false;
                 vr.movementSpeedMultiplier = 0.75f;
                 vr.strafeSpeedMultiplier = 0.33f;
+                vr.simulateFalling = false;
                 //jrbudda//
-                vr.vrAllowCrawling = true;
+                vr.vrAllowCrawling = false;
                 vr.vrAllowLocoModeSwotch = true;
                 vr.vrFreeMove = true;
                 vr.vrLimitedSurvivalTeleport = true;

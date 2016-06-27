@@ -51,17 +51,24 @@
  
                      if (Math.abs(packetIn.getPositionX()) > 3.2E7D || Math.abs(packetIn.getPositionZ()) > 3.2E7D)
                      {
-@@ -313,6 +313,9 @@
+@@ -313,6 +313,7 @@
  
                  this.playerEntity.onUpdateEntity();
                  this.playerEntity.yOffset2 = 0.0F;
-+                //JRBUDDA VIVE FOR CRAWLING
-+                this.playerEntity.height = (float) ((float) packetIn.getStance() - packetIn.getPositionY() + 0.18f);
-+                //END JRBUDDA
++
                  this.playerEntity.setPositionAndRotation(this.lastPosX, this.lastPosY, this.lastPosZ, var11, var12);
  
                  if (!this.hasMoved)
-@@ -345,6 +348,7 @@
+@@ -336,7 +337,7 @@
+                 }
+ 
+                 float var27 = 0.0625F;
+-                boolean var28 = var2.getCollidingBoundingBoxes(this.playerEntity, this.playerEntity.boundingBox.copy().contract((double)var27, (double)var27, (double)var27)).isEmpty();
++                boolean emptyBeforeMove = var2.getCollidingBoundingBoxes(this.playerEntity, this.playerEntity.boundingBox.copy().contract((double)var27, (double)var27, (double)var27)).isEmpty();
+ 
+                 if (this.playerEntity.onGround && !packetIn.func_149465_i() && var15 > 0.0D)
+                 {
+@@ -345,6 +346,7 @@
  
                  this.playerEntity.moveEntity(var13, var15, var17);
                  this.playerEntity.onGround = packetIn.func_149465_i();
@@ -69,29 +76,33 @@
                  this.playerEntity.addMovementStat(var13, var15, var17);
                  double var29 = var15;
                  var13 = var5 - this.playerEntity.posX;
-@@ -362,7 +366,9 @@
+@@ -357,18 +359,20 @@
+ 
+                 var17 = var9 - this.playerEntity.posZ;
+                 var25 = var13 * var13 + var15 * var15 + var17 * var17;
+-                boolean var31 = false;
++                boolean wrongmove = false;
+ 
                  if (var25 > 0.0625D && !this.playerEntity.isPlayerSleeping() && !this.playerEntity.theItemInWorldManager.isCreative())
                  {
-                     var31 = true;
+-                    var31 = true;
 -                    logger.warn(this.playerEntity.getCommandSenderName() + " moved wrongly!");
-+                    // VIVE START - remove movement warning
++                    //VIVE START - remove movement warning from integrated server.
++                    //wrongmove = true;
 +                    //logger.warn(this.playerEntity.getCommandSenderName() + " moved wrongly!");
-+                    // VIVE END - remove movement warning
++                    //VIVE END - remove movement warning
                  }
  
                  this.playerEntity.setPositionAndRotation(var5, var7, var9, var11, var12);
-@@ -370,7 +376,9 @@
+-                boolean var32 = var2.getCollidingBoundingBoxes(this.playerEntity, this.playerEntity.boundingBox.copy().contract((double)var27, (double)var27, (double)var27)).isEmpty();
++                boolean emptyAfterMove = var2.getCollidingBoundingBoxes(this.playerEntity, this.playerEntity.boundingBox.copy().contract((double)var27, (double)var27, (double)var27)).isEmpty();
  
-                 if (var28 && (var31 || !var32) && !this.playerEntity.isPlayerSleeping())
+-                if (var28 && (var31 || !var32) && !this.playerEntity.isPlayerSleeping())
++                if (emptyBeforeMove && (wrongmove || !emptyAfterMove) && !this.playerEntity.isPlayerSleeping())
                  {
--                    this.setPlayerLocation(this.lastPosX, this.lastPosY, this.lastPosZ, var11, var12);
-+                    // VIVE START - prevent moving
-+                    //this.setPlayerLocation(this.lastPosX, this.lastPosY, this.lastPosZ, var11, var12);
-+                    // VIVE END - prevent moving
+                     this.setPlayerLocation(this.lastPosX, this.lastPosY, this.lastPosZ, var11, var12);
                      return;
-                 }
- 
-@@ -1129,20 +1137,20 @@
+@@ -1129,20 +1133,20 @@
              {
                  var3 = var2.readItemStackFromBuffer();
  
@@ -122,7 +133,7 @@
                      if (var3.getItem() == Items.writable_book && var3.getItem() == var4.getItem())
                      {
                          var4.setTagInfo("pages", var3.getTagCompound().getTagList("pages", 8));
-@@ -1333,6 +1341,27 @@
+@@ -1333,6 +1337,27 @@
                      var41.updateItemName("");
                  }
              }

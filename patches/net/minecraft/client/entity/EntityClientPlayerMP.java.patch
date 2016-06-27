@@ -51,7 +51,7 @@
          if (this.worldObj.blockExists(MathHelper.floor_double(this.posX), 0, MathHelper.floor_double(this.posZ)))
          {
              super.onUpdate();
-@@ -156,23 +181,28 @@
+@@ -156,23 +181,23 @@
          double var7 = this.posZ - this.oldPosZ;
          double var9 = (double)(this.rotationYaw - this.oldRotationYaw);
          double var11 = (double)(this.rotationPitch - this.oldRotationPitch);
@@ -60,11 +60,6 @@
 +        boolean didMove = var3 * var3 + var5 * var5 + var7 * var7 > 9.0E-4D || this.ticksSinceMovePacket >= 20;
 +        boolean didLook = var9 != 0.0D || var11 != 0.0D;
  
-+        //VIVECRAFT
-+        float height =  this.height > 1.62f ? 1.62f : this.height; //clamp to preventillegal stance thing
-+        if(height <0.1f)height = 0.1f;
-+               
-+        	//JRBUDDA UPDATE TO SEND HEIGHT TO SERVER AS 'STANCE'
          if (this.ridingEntity != null)
          {
              this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.motionX, -999.0D, -999.0D, this.motionZ, this.rotationYaw, this.rotationPitch, this.onGround));
@@ -74,26 +69,23 @@
 -        else if (var13 && var14)
 +        else if (didMove && didLook)
          {
--            this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, this.boundingBox.minY, this.posY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround));
-+            this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, this.posY - this.yOffset + this.yOffset2, this.posY - this.yOffset + height, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround));
+             this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, this.boundingBox.minY, this.posY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround));
          }
 -        else if (var13)
 +        else if (didMove)
          {
--            this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.posX, this.boundingBox.minY, this.posY, this.posZ, this.onGround));
-+            this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.posX, this.posY - this.yOffset + this.yOffset2, this.posY - this.yOffset + height, this.posZ, this.onGround));
+             this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.posX, this.boundingBox.minY, this.posY, this.posZ, this.onGround));
          }
 -        else if (var14)
 +        else if (didLook)
          {
              this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, this.onGround));
          }
-@@ -180,11 +210,12 @@
+@@ -180,11 +205,11 @@
          {
              this.sendQueue.addToSendQueue(new C03PacketPlayer(this.onGround));
          }
 -
-+        //END VIVECRAFT
 +        
          ++this.ticksSinceMovePacket;
          this.wasOnGround = this.onGround;
@@ -103,7 +95,7 @@
          {
              this.oldPosX = this.posX;
              this.oldMinY = this.boundingBox.minY;
-@@ -193,7 +224,7 @@
+@@ -193,7 +218,7 @@
              this.ticksSinceMovePacket = 0;
          }
  
@@ -112,7 +104,7 @@
          {
              this.oldRotationYaw = this.rotationYaw;
              this.oldRotationPitch = this.rotationPitch;
-@@ -213,7 +244,9 @@
+@@ -213,7 +238,9 @@
      /**
       * Joins the passed in entity item with the world. Args: entityItem
       */
@@ -123,7 +115,7 @@
  
      /**
       * Sends a chat message from the player. Args: chatMessage
-@@ -278,7 +311,7 @@
+@@ -278,7 +305,7 @@
          }
          else
          {

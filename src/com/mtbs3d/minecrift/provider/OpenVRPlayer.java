@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.Entity;
@@ -34,6 +35,7 @@ import net.minecraft.network.play.client.C17PacketCustomPayload;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
+import java.lang.reflect.Field;
 import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Random;
@@ -93,6 +95,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
     		interPolatedRoomOrigin = Vec3.createVectorHelper(x, y, z);
     		lastroomOrigin = Vec3.createVectorHelper(x, y, z);
     	}
+    	    	
     	this.roomOrigin.xCoord = x;
     	this.roomOrigin.yCoord = y;
     	this.roomOrigin.zCoord = z;
@@ -100,7 +103,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
     }
     
     //set room 
-    public void snapRoomOriginToPlayerEntity(EntityPlayerSP player, boolean reset)
+    public void snapRoomOriginToPlayerEntity(Entity player, boolean reset)
     {
         if (Thread.currentThread().getName().equals("Server thread"))
             return;
@@ -112,7 +115,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         Vec3 campos = mc.roomScale.getHMDPos_Room();
         
         campos.rotateAroundY(worldRotationRadians);
-        
+                
         double x = player.posX - campos.xCoord;
         double y = player.boundingBox.minY;
         double z = player.posZ - campos.zCoord;
@@ -155,18 +158,16 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         this.checkandUpdateRotateScale();
 
         
-       if(mc.vrSettings.vrAllowCrawling){         //experimental
+       if(false){         //experimental - EXPERIMENT FAILED
            topofhead = (double) (mc.roomScale.getHMDPos_Room().yCoord + .05);
            
            if(topofhead < .5) {topofhead = 0.5f;}
            if(topofhead > 1.8) {topofhead = 1.8f;}
            
            player.height = (float) topofhead - 0.05f;
-           player.spEyeHeight = player.height - 1.62f;
            player.boundingBox.maxY = player.boundingBox.minY +  topofhead;  	   
        } else {
-    	   player.height = 1.8f;
-    	   player.spEyeHeight = 0.12f;
+    	  // player.height = 1.8f;
        }
       
         // don't do teleport movement if on a server that doesn't have this mod installed
@@ -351,7 +352,9 @@ public class OpenVRPlayer implements IRoomscaleAdapter
             
             //execute teleport      
             player.setPositionAndUpdate(dest.xCoord, dest.yCoord, dest.zCoord);         
-           
+            snapRoomOriginToPlayerEntity(player, false);
+            roomScaleMovementDelay = 3;
+            
             if(mc.vrSettings.vrLimitedSurvivalTeleport){
               player.addExhaustion((float) (movementTeleportDistance / 16 * 1.2f));    
               
@@ -388,9 +391,15 @@ public class OpenVRPlayer implements IRoomscaleAdapter
     }
 
     private boolean wasYMoving;
+    private int roomScaleMovementDelay = 0;
     
     private void doPlayerMoveInRoom(EntityPlayerSP player){
     	// this needs... work...
+    //	if(true) return;
+    	if(roomScaleMovementDelay > 0){
+    		roomScaleMovementDelay--;
+    		return;
+    	}
     	if(player.isSneaking()) {return;} //jrbudda : prevent falling off things or walking up blocks while moving in room scale.
     	if(player.isRiding()) return; //dont fall off the tracks man
     	if(player.isDead) return; //
@@ -952,7 +961,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         		for (int e = 0; e < entities.size(); ++e)
         		{
         			Entity hitEntity = (Entity) entities.get(e);
-        			if (hitEntity.canBeCollidedWith())
+        			if (hitEntity.canBeCollidedWith() && !(hitEntity == mc.renderViewEntity.ridingEntity))
         			{
         				if(canact){
         					mc.playerController.attackEntity(player, hitEntity);
@@ -984,7 +993,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         					} else
         					{
         						//is this viable?
-        						mc.playerController.clearBlockHitDelay();
+        						clearBlockHitDelay();
         						for (int i = 0; i < 4; i++)
         						{
         							mc.playerController.onPlayerDamageBlock(col.blockX, col.blockY, col.blockZ, col.sideHit);
@@ -1225,7 +1234,59 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 		return c == 0 ? this.getControllerMainPos_World() : this.getControllerOffhandPos_World();
 	}
 	
+	private void hackPCMP(){
 
+		Class c = Minecraft.getMinecraft().playerController.getClass();
+		try {
+			//vanilla
+			hitBlockDelay = c.getDeclaredField("i");
+		} catch (NoSuchFieldException e) {
+			try{
+				//forge?
+				hitBlockDelay = c.getDeclaredField("field_78781_i");
+			} catch (NoSuchFieldException e1) {
+				try {
+					//deobf
+					hitBlockDelay = c.getDeclaredField("blockHitDelay");
+				} catch (NoSuchFieldException e3) {
+					System.out.println("REPORT TO JRBUDDA " + e3.toString() + " " +c.getName());
+					e.printStackTrace();
+				}			
+			}
+		}
+		catch (SecurityException e2) {
+
+		}
+
+		if(hitBlockDelay!=null){
+			hitBlockDelay.setAccessible(true);
+		}
+	}
+
+	
+	
+	Field hitBlockDelay;
+    //JRBUDDA: This is the only thing this file does, necessary? Use reflection to modify field directly from elsewhere?
+    // VIVE START - function to allow damaging blocks immediately
+	public void clearBlockHitDelay() { 
+	
+		if(hitBlockDelay == null) {
+			hackPCMP();
+		}
+		
+		if(hitBlockDelay !=null){
+			try {
+				hitBlockDelay.setInt(Minecraft.getMinecraft().playerController, 0);
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+    // VIVE END - function to allow damaging blocks immediately
 	
 }
 

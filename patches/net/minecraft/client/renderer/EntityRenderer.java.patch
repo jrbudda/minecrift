@@ -86,7 +86,7 @@
  import net.minecraft.util.AxisAlignedBB;
  import net.minecraft.util.ChatComponentText;
  import net.minecraft.util.MathHelper;
-@@ -63,736 +88,966 @@
+@@ -63,736 +88,981 @@
  import net.minecraft.world.biome.BiomeGenBase;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
@@ -851,7 +851,6 @@
 +	private int rendererUpdateCount;
 +
 +	/** Pointed entity */
-+	private Entity pointedEntity;
 +	private MouseFilter mouseFilterXAxis = new MouseFilter();
 +	private MouseFilter mouseFilterYAxis = new MouseFilter();
 +
@@ -1360,31 +1359,38 @@
 +
 +			this.mc.pointedEntity = null;
 +			double blockReachDistance = mc.vrSettings.vrWorldScale * (double)this.mc.playerController.getBlockReachDistance();
-+			double entityReachDistance = blockReachDistance;
++			double entityReachDistance = (double)this.mc.playerController.getBlockReachDistance();
 +			// Darktemp's crosshair fix
 +			// VIVE START - interact source	
 +			
-+			Vec3 pos1 = mc.roomScale.getControllerMainPos_World();
-+			Vec3 pos2 = Vec3.createVectorHelper(pos1.xCoord, pos1.yCoord, pos1.zCoord);
-+			Vec3 pos3 = Vec3.createVectorHelper(pos1.xCoord, pos1.yCoord, pos1.zCoord);
++			Vec3 aimsource = mc.roomScale.getControllerMainPos_World();
++			Vec3 aimsoucecopy = Vec3.createVectorHelper(aimsource.xCoord, aimsource.yCoord, aimsource.zCoord);
++			Vec3 aimsourcecopy2 = Vec3.createVectorHelper(aimsource.xCoord, aimsource.yCoord, aimsource.zCoord);
 +			// VIVE END - interact source
 +
 +			Vec3 aim = mc.roomScale.getControllerMainDir_World();
-+			Vec3 endPos = pos1.addVector(aim.xCoord*blockReachDistance,aim.yCoord*blockReachDistance ,aim.zCoord*blockReachDistance );
-+			crossVec=pos1.addVector(aim.xCoord*blockReachDistance,aim.yCoord*blockReachDistance ,aim.zCoord*blockReachDistance );
++			Vec3 endPos = aimsource.addVector(aim.xCoord*blockReachDistance,aim.yCoord*blockReachDistance ,aim.zCoord*blockReachDistance );
++			crossVec=aimsource.addVector(aim.xCoord*blockReachDistance,aim.yCoord*blockReachDistance ,aim.zCoord*blockReachDistance );
 +
-+			this.mc.objectMouseOver = this.mc.theWorld.rayTraceBlocks(pos1, endPos, false, false, true);
++			this.mc.objectMouseOver = this.mc.theWorld.rayTraceBlocks(aimsource, endPos, false, false, true);
++			
++			//JRBUDDA - i dunno what any of this does that option isnt used.
++			
++			double maxreach = MAX_CROSSHAIR_DISTANCE;
++			
 +			//   System.out.println(this.mc.objectMouseOver.toString());
 +			if (this.mc.objectMouseOver == null || this.mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.MISS)
 +			{
 +				// Get MISS distance
 +				if (!this.mc.vrSettings.maxCrosshairDistanceAtBlockReach) {
-+					endPos = pos2.addVector(aim.xCoord * MAX_CROSSHAIR_DISTANCE, aim.yCoord * MAX_CROSSHAIR_DISTANCE, aim.zCoord * MAX_CROSSHAIR_DISTANCE);
-+					MovingObjectPosition crossPos = this.mc.theWorld.rayTraceBlocks(pos2, endPos, false, false, true);
++					endPos = aimsoucecopy.addVector(aim.xCoord * MAX_CROSSHAIR_DISTANCE, aim.yCoord * MAX_CROSSHAIR_DISTANCE, aim.zCoord * MAX_CROSSHAIR_DISTANCE);
++					MovingObjectPosition crossPos = this.mc.theWorld.rayTraceBlocks(aimsoucecopy, endPos, false, false, true);
 +					if (crossPos != null) {
 +						crossVec = crossPos.hitVec;
++						maxreach = crossVec.distanceTo(aimsourcecopy2);
 +					} else {
 +						crossVec = Vec3.createVectorHelper(endPos.xCoord, endPos.yCoord, endPos.zCoord);
++						maxreach = crossVec.distanceTo(aimsourcecopy2);
 +					}
 +				}
 +				this.mc.objectMouseOver = null;
@@ -1392,79 +1398,86 @@
 +			else
 +			{
 +				// Get HIT distance
-+				entityReachDistance = this.mc.objectMouseOver.hitVec.distanceTo(pos2); // Set entityreach here - we can't hit an entity behind whatever this is...
++				maxreach = this.mc.objectMouseOver.hitVec.distanceTo(aimsourcecopy2); // Set entityreach here - we can't hit an entity behind whatever this is...
 +				crossVec = this.mc.objectMouseOver.hitVec;
 +			}
 +
-+			Vec3 otherpos = mc.renderViewEntity.getPosition(par1);
-+			Vec3 var8 = otherpos.addVector(aim.xCoord * blockReachDistance, aim.yCoord * blockReachDistance, aim.zCoord * blockReachDistance);
-+			this.pointedEntity = null;
-+			Vec3 var9 = null;
-+			float var10 = 1.0F;  // TODO: This should probably be the max coord of centerEyePosOffset
-+			List var11 = this.mc.theWorld.getEntitiesWithinAABBExcludingEntity(this.mc.renderViewEntity, this.mc.renderViewEntity.boundingBox.addCoord(aim.xCoord * blockReachDistance, aim.yCoord * blockReachDistance, aim.zCoord * blockReachDistance).expand((double)var10, (double)var10, (double)var10));
-+			double var12 = entityReachDistance;
-+
-+			for (int var14 = 0; var14 < var11.size(); ++var14)
++			Entity pointedEntity = null;
++			Vec3 hitLocation = null;
++		
++			AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(
++					-maxreach, -maxreach, -maxreach, 
++					maxreach, maxreach, maxreach)
++					.offset(aimsourcecopy2.xCoord, aimsourcecopy2.yCoord,  aimsourcecopy2.zCoord).expand(1, 1, 1);
++			
++			List entitiesWithinCrosshairDist = this.mc.theWorld.getEntitiesWithinAABBExcludingEntity(this.mc.renderViewEntity, bb);
++			
++			double reach = maxreach;
++			double dist = 0;
++			
++			for (int i = 0; i < entitiesWithinCrosshairDist.size(); ++i)
 +			{
++				Entity entity = (Entity)entitiesWithinCrosshairDist.get(i);
 +
-+				Entity var15 = (Entity)var11.get(var14);
-+
-+				if (var15.canBeCollidedWith())
++				if (entity.canBeCollidedWith())
 +				{
-+					float var16 = var15.getCollisionBorderSize();
-+					AxisAlignedBB var17 = var15.boundingBox.expand((double)var16, (double)var16, (double)var16);
-+					MovingObjectPosition var18 = var17.calculateIntercept(pos3, var8);
++					float borderSize = entity.getCollisionBorderSize();
++					AxisAlignedBB boundingBox = entity.boundingBox.expand((double)borderSize, (double)borderSize, (double)borderSize);
++					MovingObjectPosition collision = boundingBox.calculateIntercept(aimsourcecopy2, crossVec);
 +
-+					if (var17.isVecInside(pos3))
++					if (boundingBox.isVecInside(aimsourcecopy2))
 +					{
-+						if (0.0D < var12 || var12 == 0.0D)
++						if (0.0D < reach || reach == 0.0D)
 +						{
-+							this.pointedEntity = var15;                     
-+							var9 = var18 == null ? pos3 : var18.hitVec;
-+							var12 = 0.0D;
++							pointedEntity = entity;                     
++							hitLocation = collision == null ? aimsourcecopy2 : collision.hitVec;
++							reach = 0.0D;
 +						}
 +					}
-+					else if (var18 != null)
++					else if (collision != null)
 +					{
-+						double var19 = pos3.distanceTo(var18.hitVec);
++						dist = aimsourcecopy2.distanceTo(collision.hitVec);
 +
-+						if (var19 < var12 || var12 == 0.0D)
++						if (dist < maxreach || reach == 0.0D)
 +						{
 +							boolean canRiderInteract = false;
 +
 +							if (Reflector.ForgeEntity_canRiderInteract.exists())
 +							{
-+								canRiderInteract = Reflector.callBoolean(var15, Reflector.ForgeEntity_canRiderInteract, new Object[0]);
++								canRiderInteract = Reflector.callBoolean(entity, Reflector.ForgeEntity_canRiderInteract, new Object[0]);
 +							}
 +
-+							if (var15 == this.mc.renderViewEntity.ridingEntity && !canRiderInteract)
++							if (entity == this.mc.renderViewEntity.ridingEntity && !canRiderInteract)
 +							{
-+								if (var12 == 0.0D)
++								if (reach == 0.0D)
 +								{
-+									this.pointedEntity = var15;
-+									var9 = var18.hitVec;
++									pointedEntity = entity;
++									hitLocation = collision.hitVec;
 +								}
 +							}
 +							else
 +							{
-+								this.pointedEntity = var15;
-+								var9 = var18.hitVec;
-+								var12 = var19;
++								pointedEntity = entity;
++								hitLocation = collision.hitVec;
 +							}
 +						}
 +					}
 +				}
 +			}
 +
-+			if (this.pointedEntity != null && (var12 < entityReachDistance || this.mc.objectMouseOver == null)) {
-+				this.mc.objectMouseOver = new MovingObjectPosition(this.pointedEntity, var9);
++			
++			if (pointedEntity != null && hitLocation !=null )
++				crossVec = hitLocation;
++			
++			if (pointedEntity != null && (dist < entityReachDistance) ) {
++				this.mc.objectMouseOver = new MovingObjectPosition(pointedEntity, hitLocation);
 +				crossVec = this.mc.objectMouseOver.hitVec;
 +
-+				if (this.pointedEntity instanceof EntityLivingBase || this.pointedEntity instanceof EntityItemFrame) {
-+					this.mc.pointedEntity = this.pointedEntity;
++				if (pointedEntity instanceof EntityLivingBase || pointedEntity instanceof EntityItemFrame) {
++					this.mc.pointedEntity = pointedEntity;
 +				}
 +			}
-+
++			
 +			// Set up crosshair position
 +			float SLIGHTLY_CLOSER = 0.001f;
 +			Vec3 cameraPos = mc.roomScale.getEyePos_World(mc.currentEye);
@@ -1481,6 +1494,8 @@
 +		}
 +	}
 +
++	private boolean crosshairValid = false;
++	
 +	/**
 +	 * Update FOV modifier hand
 +	 */
@@ -1774,7 +1789,7 @@
          this.farPlaneDistance = (float)(this.mc.gameSettings.renderDistanceChunks * 16);
  
          if (Config.isFogFancy())
-@@ -804,16 +1059,14 @@
+@@ -804,16 +1074,14 @@
          {
              this.farPlaneDistance *= 0.83F;
          }
@@ -1797,7 +1812,7 @@
          float clipDistance = this.farPlaneDistance * 2.0F;
  
          if (clipDistance < 128.0F)
-@@ -825,1829 +1078,3905 @@
+@@ -825,1829 +1093,3910 @@
          {
              clipDistance = 256.0F;
          }
@@ -5308,8 +5323,7 @@
 +					GL11.glScalef(-scale, -scale, scale);
 +				GL11.glDisable(GL11.GL_LIGHTING);
 +				
-+				if (!this.mc.vrSettings.useCrosshairOcclusion)
-+					GL11.glDisable(GL11.GL_DEPTH_TEST);
++				if (!this.mc.vrSettings.useCrosshairOcclusion)	GL11.glDisable(GL11.GL_DEPTH_TEST);
 +				GL11.glEnable(GL11.GL_BLEND);
 +				
 +				if (Reflector.forgeExists()) {
@@ -5318,9 +5332,14 @@
 +				else {
 +					GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR);
 +				}
++								
++				if (mc.objectMouseOver == null) {
++
++					
++					GL11.glRotatef(45, 0, 0, 1);
++				}
 +				
 +				this.mc.getTextureManager().bindTexture(Gui.icons);
-+	
 +				
 +				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 +				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
@@ -5338,6 +5357,7 @@
 +				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 +				GL11.glDisable(GL11.GL_BLEND);
 +				GL11.glEnable(GL11.GL_DEPTH_TEST);
++				GL11.glColor4f(1, 1, 1, 1);
 +			GL11.glPopMatrix();
 +		}
 +

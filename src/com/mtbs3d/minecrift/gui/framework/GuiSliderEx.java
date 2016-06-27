@@ -22,13 +22,13 @@ public class GuiSliderEx extends GuiButtonEx
     private VRSettings.VrOptions idFloat = null;
 
     /** The maximum actual value of this slider control. */
-    private float maxValue = 1.0f;
+    public float maxValue = 1.0f;
 
     /** The minimum actual value of this slider control. */
-    private float minValue = 0.0f;
+    public float minValue = 0.0f;
 
     /** The allowable increment of the actual value of this slider control. */
-    private float increment;
+    public float increment;
 
     /** The last actual value of this slider control */
     private float lastValue;
@@ -36,6 +36,9 @@ public class GuiSliderEx extends GuiButtonEx
     /** The last known value x position of the mouse pointer */
     private int lastMouseX = -1;
 
+    /** The last known value y position of the mouse pointer */
+    private int lastMouseY = -1;
+    
     /** The value at the start of a mouse down event */
     private float mouseDownStartValue = -1f;
 
@@ -169,6 +172,7 @@ public class GuiSliderEx extends GuiButtonEx
             // ...but then set back to original value for now, until mouse released
             par1Minecraft.vrSettings.setOptionFloatValue(this.idFloat, original);
             this.lastMouseX = par2;
+            
             this.dragging = true;
 
             return true;
@@ -177,6 +181,20 @@ public class GuiSliderEx extends GuiButtonEx
         return false;
     }
 
+    public void setValue(float val){
+    	this.sliderValue = val;
+        // Now set the value
+        Minecraft.getMinecraft().vrSettings.setOptionFloatValue(this.idFloat, val);
+        this.displayString = Minecraft.getMinecraft().vrSettings.getKeyBinding(this.idFloat);
+
+        // Notify any listeners
+        if (_eventHandler != null)
+        {
+            _eventHandler.event(GuiEventEx.ID_VALUE_CHANGED, this.idFloat);
+        }
+
+    }
+    
     /**
      * Fired when the mouse button is released. Equivalent of MouseListener.mouseReleased(MouseEvent e).
      */

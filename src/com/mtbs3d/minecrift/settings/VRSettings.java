@@ -112,7 +112,7 @@ public class VRSettings
     public boolean maxCrosshairDistanceAtBlockReach = false;
     public boolean useMaxFov = false;
     public boolean chatFadeAway = true;
-    public boolean simulateFalling = true;  // VIVE if HMD is over empty space, teleport down
+    public boolean simulateFalling = false;  // VIVE if HMD is over empty space, fall
     public boolean weaponCollision = true;  // VIVE weapon hand collides with blocks/enemies
 
     // TODO: Clean-up all the redundant crap!
@@ -180,6 +180,7 @@ public class VRSettings
     public boolean vrShowBlueCircleBuddy = true;
     public float vrWorldScale = 1.0f;
     public float vrWorldRotation = 0f;
+    public float vrWorldRotationIncrement = 45f;
     
     private Minecraft mc;
 
@@ -718,7 +719,10 @@ public class VRSettings
                     {
                         this.vrWorldRotation = this.parseFloat(optionTokens[1]);
                     }
-    
+                    if (optionTokens[0].equals("vrWorldRotationIncrement"))
+                    {
+                        this.vrWorldRotationIncrement =  this.parseFloat(optionTokens[1]);
+                    }
                     if (optionTokens[0].startsWith("BUTTON_"))
                     {
                        VRControllerButtonMapping vb = new VRControllerButtonMapping(
@@ -1045,7 +1049,8 @@ public class VRSettings
 	            return var4 + String.format("%.2f", new Object[] { Float.valueOf(this.vrWorldScale)})+ "x" ;
             case WORLD_ROTATION:
 	            return var4 + String.format("%.0f", new Object[] { Float.valueOf(this.vrWorldRotation) });
-
+            case WORLD_ROTATION_INCREMENT:
+	            return var4 + String.format("%.0f", new Object[] { Float.valueOf(this.vrWorldRotationIncrement) });
                 //END JRBUDDA
  	        default:
 	        	return "";
@@ -1116,6 +1121,12 @@ public class VRSettings
             	}
             case WORLD_ROTATION:
                 return vrWorldRotation;
+            case WORLD_ROTATION_INCREMENT:
+            	if(vrWorldRotationIncrement == 10f) return 0;
+            	if(vrWorldRotationIncrement == 36f) return 1;            	
+            	if(vrWorldRotationIncrement == 45f) return 2;
+            	if(vrWorldRotationIncrement == 90f) return 3;
+            	if(vrWorldRotationIncrement == 180f) return 4;
             // VIVE END - new options
 
             default:
@@ -1413,6 +1424,13 @@ public class VRSettings
             case WORLD_ROTATION:
                 this.vrWorldRotation = par2;
                 break;
+            case WORLD_ROTATION_INCREMENT:
+            	if(par2 == 0f) this.vrWorldRotationIncrement =  10f;
+            	if(par2 == 1f) this.vrWorldRotationIncrement =  36f;            	
+            	if(par2 == 2f) this.vrWorldRotationIncrement =  45f;
+            	if(par2 == 3f) this.vrWorldRotationIncrement =  90f;
+            	if(par2 == 4f) this.vrWorldRotationIncrement =  180f;
+                break;
             // VIVE END - new options
             default:
 	        	break;
@@ -1541,6 +1559,7 @@ public class VRSettings
             var5.println("bcbOn:" + this.vrShowBlueCircleBuddy);
             var5.println("worldScale:" + this.vrWorldScale);
             var5.println("worldRotation:" + this.vrWorldRotation);
+            var5.println("worldRotationIncrement:" + this.vrWorldRotationIncrement);
            
             if (buttonMappings == null) resetBindings(); //defaults
             
@@ -1857,6 +1876,7 @@ public class VRSettings
         BCB_ON("Show Body Position", false, true),    
         WORLD_SCALE("World Scale", true, false),
         WORLD_ROTATION("World Rotation", true, false),
+        WORLD_ROTATION_INCREMENT("Rotation Increment", true, false),
         //END JRBUDDA
         
         // OTher buttons

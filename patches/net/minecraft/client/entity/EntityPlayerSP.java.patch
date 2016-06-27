@@ -468,7 +468,7 @@
          this.worldObj.playSound(this.posX, this.posY - (double)this.yOffset, this.posZ, name, volume, pitch, false);
      }
  
-@@ -662,4 +892,237 @@
+@@ -662,4 +892,258 @@
      }
  
      protected void sendHorseJump() {}
@@ -611,12 +611,7 @@
 +/** END MINECRIFT **/
 +   
 +    }
-+    
-+    public float spEyeHeight;
-+    
-+    @Override
-+    public float getEyeHeight() {return spEyeHeight;}
-+    
++       
 +    /**
 +     * Checks if the current block the entity is within of the specified material type
 +     */
@@ -656,14 +651,41 @@
 +        super.readFromNBT(tagCompund);
 +    }
 +
-+    // VIVE START - update room origin when player entity is moved
-+    public void setPosition(double x, double y, double z)
++    /**
++     * Sets the location and Yaw/Pitch of an entity in the world
++     */
++    @Override
++    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch)
 +    {
-+        super.setPosition(x, y, z);
++    	Vec3 roomOrigin = OpenVRPlayer.get().getRoomOriginPos_World();
++    	double ox = roomOrigin.xCoord - posX;
++    	double oz = roomOrigin.zCoord - posZ;
++    	super.setLocationAndAngles(x, y, z, yaw, pitch);
 +    	if(!initFromServer) return;
 +    	else { //still init.
-+    		OpenVRPlayer.get().snapRoomOriginToPlayerEntity(this, false);
-+        }
++    		OpenVRPlayer.get().setRoomOrigin(
++    				posX + ox, 
++    				this.boundingBox.minY, 
++    				posZ  + oz, false);
++    	}
++    }
++    
++    // VIVE START - update room origin when player entity is moved
++    public void setPosition(double x, double y, double z)
++    { //this is also called when riding to move this around.
++    	if(this.isRiding()){
++    		Vec3 roomOrigin = OpenVRPlayer.get().getRoomOriginPos_World();
++    		double ox = roomOrigin.xCoord - posX;
++    		double oz = roomOrigin.zCoord - posZ;
++    		super.setPosition(x, y, z);
++    		OpenVRPlayer.get().setRoomOrigin(
++    				posX + ox, 
++    				this.boundingBox.minY, 
++    				posZ  + oz, false);
++
++    	} else
++    		super.setPosition(x, y, z);
++
 +    }
 +    
 +    @Override
@@ -675,7 +697,7 @@
 +    	Vec3 roomOrigin = OpenVRPlayer.get().getRoomOriginPos_World();
 + //   	Vec3 camloc = Minecraft.getMinecraft().roomScale.getHMDPos_World();
 +
-+    	if (freemove && (this.moveForward != 0 || Math.abs(this.motionX) > 0.01 || Math.abs(this.motionZ) > 0.01))
++    	if (this.isRiding() ||  freemove && (this.moveForward != 0 || Math.abs(this.motionX) > 0.01 || Math.abs(this.motionZ) > 0.01))
 +    	{
 +    		double ox = roomOrigin.xCoord - posX;
 +    		double oz = roomOrigin.zCoord - posZ;
@@ -687,7 +709,6 @@
 +    					this.boundingBox.minY, 
 +    					posZ  + oz, false);
 +    					}
-+    
 +    	} else {
 +    		if(doY) {      	 
 +    			super.moveEntity(0,y,0);

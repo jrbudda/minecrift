@@ -99,7 +99,7 @@
  import net.minecraft.world.EnumDifficulty;
  import net.minecraft.world.WorldProviderEnd;
  import net.minecraft.world.WorldProviderHell;
-@@ -150,2988 +167,4697 @@
+@@ -150,2988 +167,4698 @@
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
@@ -1899,7 +1899,7 @@
 +	 * The minecriftVerString will be automatically updated by the build scripts, do not modify here.
 +	 * Modify minecriftversion.py in root minecrift dir.
 +	 */
-+    public final String minecriftVerString = "ViveCraft 1.7.10 Vivecraft-jrbudda22";
++    public final String minecriftVerString = "ViveCraft 1.7.10 Vivecraft-jrbudda23";
 +	/* end version */
 +	/** END MINECRIFT */
 +
@@ -5494,6 +5494,7 @@
 +		{
 +			if (this.playerController.isRidingHorse())
 +			{
++				MCOpenVR.startedOpeningInventory = getCurrentTimeSecs();	//prevent immediately closing it
 +				this.thePlayer.sendHorseInteraction();
 +			}
 +			else
@@ -7363,7 +7364,7 @@
 +		this.stereoProvider = new OpenVRStereoRenderer();
 +		this.vrPlayer = new OpenVRPlayer();
 +		this.roomScale = this.vrPlayer;
-+		
++		this.vrSettings.vrAllowCrawling = false;
 +		//hmdInfo = PluginManager.configureHMD("oculus");
 +
 +		//TODO: init new steroerenderer

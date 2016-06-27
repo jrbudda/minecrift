@@ -195,12 +195,12 @@ public class MCOpenVR
 	
 	public String getVersion() { return "Version TODO"; }
 
+	static KeyBinding hotbarNext = new KeyBinding("Hotbar Next", 201, "key.categories.gameplay");
+	static KeyBinding hotbarPrev = new KeyBinding("Hotbar Prev", 209, "key.categories.gameplay");
 	static KeyBinding rotateLeft = new KeyBinding("Rotate Left", 203, "key.categories.movement");
 	static KeyBinding rotateRight = new KeyBinding("Rotate Right", 205, "key.categories.movement");
 	static KeyBinding quickTorch = new KeyBinding("Quick Torch", 210, "key.categories.gameplay");
-	
-	
-	
+
 	public MCOpenVR()
 	{
 		super();
@@ -302,7 +302,11 @@ public class MCOpenVR
 	    mc.gameSettings.keyBindings = (KeyBinding[])((KeyBinding[])ArrayUtils.add(mc.gameSettings.keyBindings, rotateLeft));
 	    mc.gameSettings.keyBindings = (KeyBinding[])((KeyBinding[])ArrayUtils.add(mc.gameSettings.keyBindings, rotateRight));	
 	    mc.gameSettings.keyBindings = (KeyBinding[])((KeyBinding[])ArrayUtils.add(mc.gameSettings.keyBindings, quickTorch));	
+	    mc.gameSettings.keyBindings = (KeyBinding[])((KeyBinding[])ArrayUtils.add(mc.gameSettings.keyBindings, hotbarNext));	
+	    mc.gameSettings.keyBindings = (KeyBinding[])((KeyBinding[])ArrayUtils.add(mc.gameSettings.keyBindings, hotbarPrev));	
 
+		
+		
 		
 		initialized = true;
 		return true;
@@ -1090,6 +1094,10 @@ public class MCOpenVR
 			mc.vrSettings.vrWorldRotation = mc.vrSettings.vrWorldRotation % 360;
 			}
 		
+		if(hotbarNext.isPressed()) changeHotbar(-1);
+		
+		if(hotbarPrev.isPressed()) changeHotbar(1);
+		
 		if(quickTorch.isPressed() && mc.thePlayer != null){
 		    for (int slot=0;slot<9;slot++)
             {  
@@ -1275,23 +1283,23 @@ public class MCOpenVR
 				float swipeDistancePerInventorySlot = 0.4f;
 				if (inventory_swipe[c] > swipeDistancePerInventorySlot)
 				{
-					mc.thePlayer.inventory.changeCurrentItem(-1);
-					short duration = 250;
-					vrsystem.TriggerHapticPulse.apply(controllerDeviceIndex[c], 0, duration);
-
+					hotbarNext.pressKey();
 					inventory_swipe[c] -= swipeDistancePerInventorySlot;
 				} else if (inventory_swipe[c] < -swipeDistancePerInventorySlot)
 				{
-					mc.thePlayer.inventory.changeCurrentItem(1);
-
-					short duration = 250;
-					vrsystem.TriggerHapticPulse.apply(controllerDeviceIndex[c], 0, duration);
+					hotbarPrev.pressKey();
 					inventory_swipe[c] += swipeDistancePerInventorySlot;
 				}
 			}
 		}
 	}
 
+	private static void changeHotbar(int dir){
+		mc.thePlayer.inventory.changeCurrentItem(dir);
+		short duration = 250;
+		vrsystem.TriggerHapticPulse.apply(controllerDeviceIndex[1], 0, duration);
+	}
+	
 	private static void updatePose()
 	{
 		if ( vrsystem == null || vrCompositor == null )

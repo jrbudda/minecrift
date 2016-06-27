@@ -17,7 +17,13 @@
  import net.minecraft.util.Direction;
  import net.minecraft.util.EnumChatFormatting;
  import net.minecraft.util.FoodStats;
-@@ -40,35 +43,39 @@
+@@ -35,40 +38,45 @@
+ import net.minecraft.util.MathHelper;
+ import net.minecraft.util.ResourceLocation;
+ import net.minecraft.util.StringUtils;
++import net.minecraft.util.Vec3;
+ import net.minecraft.world.EnumSkyBlock;
+ import net.minecraft.world.chunk.Chunk;
  import org.lwjgl.opengl.GL11;
  import org.lwjgl.opengl.GL12;
  
@@ -71,10 +77,15 @@
      private static final String __OBFID = "CL_00000661";
  
      public GuiIngame(Minecraft p_i46379_1_)
-@@ -78,6 +85,30 @@
+@@ -78,6 +86,35 @@
          this.streamIndicator = new GuiStreamIndicator(this.mc);
      }
  
++    public String v3Format(Vec3 in){
++    	String frmat = "%.2f";
++        return "(" + String.format(frmat, in.xCoord) + ", " + String.format(frmat, in.yCoord)+ ", " + String.format(frmat, in.zCoord)+ ")";
++    }
++    
 +	public void drawMouseMenuQuad(int mouseX, int mouseY)
 +	{
 +		GL11.glEnable(GL11.GL_BLEND);
@@ -102,7 +113,7 @@
      /**
       * Render the ingame overlay with quick icon bar, ...
       */
-@@ -121,20 +152,36 @@
+@@ -121,20 +158,36 @@
          int var13;
  
          if (!this.mc.playerController.enableEverythingIsScrewedUpMode())
@@ -144,7 +155,7 @@
              this.mc.mcProfiler.endSection();
  
              if (this.mc.playerController.shouldDrawHUD())
-@@ -143,19 +190,20 @@
+@@ -143,19 +196,20 @@
              }
  
              this.mc.mcProfiler.startSection("actionBar");
@@ -177,7 +188,7 @@
              GL11.glDisable(GL11.GL_BLEND);
          }
  
-@@ -312,11 +360,14 @@
+@@ -312,11 +366,14 @@
          {
              this.mc.mcProfiler.startSection("debug");
              GL11.glPushMatrix();
@@ -197,7 +208,7 @@
              long var36 = Runtime.getRuntime().maxMemory();
              long var41 = Runtime.getRuntime().totalMemory();
              long var44 = Runtime.getRuntime().freeMemory();
-@@ -326,6 +377,21 @@
+@@ -326,12 +383,27 @@
              this.drawString(var8, var20, var6 - var8.getStringWidth(var20) - 2, 2, 14737632);
              var20 = "Allocated memory: " + var41 * 100L / var36 + "% (" + var41 / 1024L / 1024L + "MB)";
              this.drawString(var8, var20, var6 - var8.getStringWidth(var20) - 2, 12, 14737632);
@@ -219,28 +230,37 @@
              var22 = MathHelper.floor_double(this.mc.thePlayer.posX);
              var23 = MathHelper.floor_double(this.mc.thePlayer.posY);
              int var24 = MathHelper.floor_double(this.mc.thePlayer.posZ);
-@@ -347,6 +413,20 @@
+-            this.drawString(var8, String.format("x: %.5f (%d) // c: %d (%d)", new Object[] {Double.valueOf(this.mc.thePlayer.posX), Integer.valueOf(var22), Integer.valueOf(var22 >> 4), Integer.valueOf(var22 & 15)}), 2, 64, 14737632);
+-            this.drawString(var8, String.format("y: %.3f (feet pos, %.3f eyes pos)", new Object[] {Double.valueOf(this.mc.thePlayer.boundingBox.minY), Double.valueOf(this.mc.thePlayer.posY)}), 2, 72, 14737632);
+-            this.drawString(var8, String.format("z: %.5f (%d) // c: %d (%d)", new Object[] {Double.valueOf(this.mc.thePlayer.posZ), Integer.valueOf(var24), Integer.valueOf(var24 >> 4), Integer.valueOf(var24 & 15)}), 2, 80, 14737632);
++            this.drawString(var8, String.format("x: %.2f (%d) // c: %d (%d)", new Object[] {Double.valueOf(this.mc.thePlayer.posX), Integer.valueOf(var22), Integer.valueOf(var22 >> 4), Integer.valueOf(var22 & 15)}), 2, 64, 14737632);
++            this.drawString(var8, String.format("y: %.2f (feet pos, %.2f eyes pos)", new Object[] {Double.valueOf(this.mc.thePlayer.boundingBox.minY), Double.valueOf(this.mc.thePlayer.posY)}), 2, 72, 14737632);
++            this.drawString(var8, String.format("z: %.2f (%d) // c: %d (%d)", new Object[] {Double.valueOf(this.mc.thePlayer.posZ), Integer.valueOf(var24), Integer.valueOf(var24 >> 4), Integer.valueOf(var24 & 15)}), 2, 80, 14737632);
+             int var25 = MathHelper.floor_double((double)(this.mc.thePlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+             this.drawString(var8, "f: " + var25 + " (" + Direction.directions[var25] + ") / " + MathHelper.wrapAngleTo180_float(this.mc.thePlayer.rotationYaw), 2, 88, 14737632);
+ 
+@@ -347,6 +419,20 @@
              {
                  this.drawString(var8, String.format("shader: %s", new Object[] {this.mc.entityRenderer.getShaderGroup().getShaderGroupName()}), 2, 112, 14737632);
              }
-+            if(false){
-+            this.drawString(var8,"Room: " + mc.vrPlayer.getRoomOriginPos_World().toString() , 2, 124, 14737632);
-+            this.drawString(var8,"HMD: " + mc.vrPlayer.getHMDPos_Room().toString() + mc.vrPlayer.getHMDPos_World() , 2, 132, 14737632);
-+            this.drawString(var8,"Main: " + mc.vrPlayer.getControllerPos_Room(0) + mc.vrPlayer.getControllerMainPos_World().toString() , 2, 140, 14737632);
-+            this.drawString(var8,"Offhand: " + mc.vrPlayer.getControllerPos_Room(1) + mc.vrPlayer.getControllerOffhandPos_World().toString() , 2, 148, 14737632);
-+            this.drawString(var8,"Player: "  + mc.vrPlayer.getRoomOriginPos_World().subtract(mc.entityRenderer.interpolatedPlayerPos) +  mc.entityRenderer.interpolatedPlayerPos.toString() , 2, 156	, 14737632);
-+            this.drawString(var8,"Crosshair: " + mc.entityRenderer.crossVec.toString() , 2, 164	, 14737632);
-+            this.drawString(var8,"HMD Look: " + mc.vrPlayer.getHMDDir_World().toString() , 2, 172	, 14737632);
-+            this.drawString(var8,"Main Look: " + mc.vrPlayer.getControllerMainDir_World().toString(), 2, 180	, 14737632);
-+            this.drawString(var8,"Offhand Look: " + mc.vrPlayer.getControllerOffhandDir_World().toString() , 2, 188	, 14737632);
++            if(true){
++            this.drawString(var8,"Room: " + v3Format( mc.vrPlayer.getRoomOriginPos_World()) , 2, 124, 14737632);
++            this.drawString(var8,"HMD: " + v3Format(mc.vrPlayer.getHMDPos_Room()) + v3Format(mc.vrPlayer.getHMDPos_World()) , 2, 132, 14737632);
++            this.drawString(var8,"Main: " +v3Format( mc.vrPlayer.getControllerPos_Room(0) )+ v3Format(mc.vrPlayer.getControllerMainPos_World()) , 2, 140, 14737632);
++            this.drawString(var8,"Offhand: " +v3Format( mc.vrPlayer.getControllerPos_Room(1)) + v3Format(mc.vrPlayer.getControllerOffhandPos_World()) , 2, 148, 14737632);
++            this.drawString(var8,"Player: "  + v3Format(mc.vrPlayer.getRoomOriginPos_World().subtract(mc.entityRenderer.interpolatedPlayerPos)) + v3Format(mc.entityRenderer.interpolatedPlayerPos) , 2, 156	, 14737632);
++            this.drawString(var8,"Crosshair: " + v3Format(mc.entityRenderer.crossVec) , 2, 164	, 14737632);
++            this.drawString(var8,"HMD Look: " +v3Format( mc.vrPlayer.getHMDDir_World()) , 2, 172	, 14737632);
++            this.drawString(var8,"Main Look: " + v3Format(mc.vrPlayer.getControllerMainDir_World()), 2, 180	, 14737632);
++            this.drawString(var8,"Offhand Look: " + v3Format(mc.vrPlayer.getControllerOffhandDir_World()) , 2, 188	, 14737632);
 +            this.drawString(var8,"World Scale: " + mc.vrSettings.vrWorldScale + " World Rotation " + mc.vrSettings.vrWorldRotation , 2, 196	, 14737632);
-+            this.drawString(var8,"Gui " + MCOpenVR.guiPos_World.x + " " + MCOpenVR.guiPos_World.y + " " + MCOpenVR.guiPos_World.z, 2, 204	, 14737632);
-+            this.drawString(var8,"Swing " + mc.vrPlayer.tickDist * 20 + " " + mc.vrPlayer.lastmot, 2, 212	, 14737632);
++ //           this.drawString(var8,"Gui " + MCOpenVR.guiPos_World.x + " " + MCOpenVR.guiPos_World.y + " " + MCOpenVR.guiPos_World.z, 2, 204	, 14737632);
++            this.drawString(var8,"Swing " + mc.vrPlayer.tickDist * 20 + " " + mc.vrPlayer.lastmot, 2, 204	, 14737632);
 +            }
  
              GL11.glPopMatrix();
              this.mc.mcProfiler.endSection();
-@@ -501,9 +581,10 @@
+@@ -501,9 +587,10 @@
      {
          this.streamIndicator.render((int)(p_152126_1_ - 10.0F), 10);
      }
@@ -254,7 +274,7 @@
          Scoreboard var5 = p_96136_1_.getScoreboard();
          Collection var6 = var5.getSortedScores(p_96136_1_);
  
-@@ -549,9 +630,10 @@
+@@ -549,9 +636,10 @@
              }
          }
      }
@@ -268,7 +288,7 @@
          boolean var3 = this.mc.thePlayer.hurtResistantTime / 3 % 2 == 1;
  
          if (this.mc.thePlayer.hurtResistantTime < 10)
-@@ -830,7 +912,9 @@
+@@ -830,7 +918,9 @@
      /**
       * Renders dragon's (boss) health on the HUD
       */
@@ -279,7 +299,7 @@
      {
          if (BossStatus.bossName != null && BossStatus.statusBarTime > 0)
          {
-@@ -856,9 +940,15 @@
+@@ -856,9 +946,15 @@
              this.mc.getTextureManager().bindTexture(icons);
          }
      }
@@ -297,7 +317,7 @@
          GL11.glDisable(GL11.GL_DEPTH_TEST);
          GL11.glDepthMask(false);
          OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-@@ -881,8 +971,15 @@
+@@ -881,8 +977,15 @@
      /**
       * Renders the vignette. Args: vignetteBrightness, width, height
       */
@@ -314,7 +334,7 @@
          p_73829_1_ = 1.0F - p_73829_1_;
  
          if (p_73829_1_ < 0.0F)
-@@ -913,8 +1010,9 @@
+@@ -913,8 +1016,9 @@
          GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
          OpenGlHelper.glBlendFunc(770, 771, 1, 0);
      }
@@ -326,7 +346,7 @@
      {
          if (p_130015_1_ < 1.0F)
          {
-@@ -950,7 +1048,9 @@
+@@ -950,7 +1054,9 @@
      /**
       * Renders the specified item of the inventory slot at the specified location. Args: slot, x, y, partialTick
       */
@@ -337,7 +357,7 @@
      {
          ItemStack var5 = this.mc.thePlayer.inventory.mainInventory[p_73832_1_];
  
-@@ -1039,4 +1139,23 @@
+@@ -1039,4 +1145,23 @@
      {
          return this.updateCounter;
      }

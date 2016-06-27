@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Mark Browning, StellaArtois
+  * Copyright 2013 Mark Browning, StellaArtois
  * Licensed under the LGPL 3.0 or later (See LICENSE.md for details)
  */
 package com.mtbs3d.minecrift.gui;
@@ -37,7 +37,8 @@ public class GuiMinecriftSettings extends BaseGuiSettings implements GuiEventEx
             new VROption(VRSettings.VrOptions.REVERSE_HANDS,       VROption.Position.POS_CENTER,   4.5f, VROption.ENABLED, null),
             new VROption(VRSettings.VrOptions.WORLD_SCALE,       	VROption.Position.POS_LEFT,   6f, VROption.ENABLED, null),
             new VROption(VRSettings.VrOptions.WORLD_ROTATION,       VROption.Position.POS_RIGHT,   6f, VROption.ENABLED, null),
-            new VROption(221,									     VROption.Position.POS_CENTER,   7f, VROption.ENABLED, "Reset to Defaults"),
+            new VROption(VRSettings.VrOptions.WORLD_ROTATION_INCREMENT,VROption.Position.POS_RIGHT,   7f, VROption.ENABLED, null),
+            new VROption(221,									     VROption.Position.POS_LEFT,   7f, VROption.ENABLED, "Reset to Defaults"),
             
             
             // VIVE END - hide options not relevant to teleport/room scale
@@ -56,6 +57,8 @@ public class GuiMinecriftSettings extends BaseGuiSettings implements GuiEventEx
         settings = gameSettings;
     }
 
+    private GuiSliderEx rotationSlider;
+    
     /**
      * Adds the buttons (and other controls) to the screen in question.
      */
@@ -93,13 +96,18 @@ public class GuiMinecriftSettings extends BaseGuiSettings implements GuiEventEx
     			else if (o == VrOptions.WORLD_ROTATION){
                      minValue = 0f;
                      maxValue = 360f;
-                     increment = 45f;
+                     increment = Minecraft.getMinecraft().vrSettings.vrWorldRotationIncrement;
     			}
-    			
+    			else if (o == VrOptions.WORLD_ROTATION_INCREMENT){
+                    minValue = 0f;
+                    maxValue = 4f;
+                    increment = 1f;
+   			}
     	        GuiSliderEx slider = new GuiSliderEx(o.returnEnumOrdinal(), width, height, o, this.guivrSettings.getKeyBinding(o), minValue, maxValue, increment, this.guivrSettings.getOptionFloatValue(o));
     	        slider.setEventHandler(this);
     	        slider.enabled = true;
     	        this.buttonList.add(slider);
+    	        if (o == VrOptions.WORLD_ROTATION)rotationSlider = slider;
     		}
 	
     	}
@@ -180,6 +188,7 @@ public class GuiMinecriftSettings extends BaseGuiSettings implements GuiEventEx
                 mc.vrSettings.vrReverseHands = false;
                 mc.vrSettings.vrWorldRotation = 0;
                 mc.vrSettings.vrWorldScale = 1;
+                mc.vrSettings.vrWorldRotationIncrement = 45f;
                 
                 this.guivrSettings.saveOptions();
                 this.initGui();
@@ -188,7 +197,7 @@ public class GuiMinecriftSettings extends BaseGuiSettings implements GuiEventEx
             {
                 Minecraft.getMinecraft().vrSettings.saveOptions();
                 this.mc.displayGuiScreen(new GuiSelectSettingsProfile(this, this.guivrSettings));
-            }
+            }        	
         }
     }
 
@@ -236,6 +245,12 @@ public class GuiMinecriftSettings extends BaseGuiSettings implements GuiEventEx
                     "Adds extra rotation to your HMD.",
                     "More useful bound to a button or ",
                     "changed with the arrow keys."
+            };
+        case WORLD_ROTATION_INCREMENT:
+            return new String[] {
+                    "How many degrees to rotate when",
+                    "rotating the world."
+                    
             };
             default:
     		return null;
@@ -309,6 +324,13 @@ public class GuiMinecriftSettings extends BaseGuiSettings implements GuiEventEx
 
 	@Override
 	public boolean event(int id, VrOptions enumm) {
+		if(enumm == VrOptions.WORLD_ROTATION_INCREMENT){
+	        mc.vrSettings.vrWorldRotation = 0;
+	        rotationSlider.increment = mc.vrSettings.vrWorldRotationIncrement;
+	        rotationSlider.setValue(0);			
+		}
+
+		
 		// TODO Auto-generated method stub
 		return false;
 	}
