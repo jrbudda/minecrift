@@ -30,7 +30,6 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
             VRSettings.VrOptions.MONO_FOV,
             VRSettings.VrOptions.DUMMY,
             VRSettings.VrOptions.FSAA,
-            VRSettings.VrOptions.FSAA_SCALEFACTOR,
     };
 
     static VRSettings.VrOptions[] openVRDisplayOptions = new VRSettings.VrOptions[] {
@@ -75,9 +74,8 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
 
         // this.screenTitle = var1.translateKey("options.videoTitle");
         this.buttonList.clear();
-        this.buttonList.add(new GuiButtonEx(ID_GENERIC_DONE, this.width / 2 - 100, this.height / 6 + 170, "Done"));
-        this.buttonList.add(new GuiButtonEx(ID_GENERIC_DEFAULTS, this.width / 2 - 100, this.height / 6 + 150, "Reset To Defaults"));
-
+        this.buttonList.add(new GuiButtonEx(ID_GENERIC_DEFAULTS, this.width / 2 - 155 ,  this.height -25 ,150,20, "Reset To Defaults"));
+        this.buttonList.add(new GuiButtonEx(ID_GENERIC_DONE, this.width / 2 - 155  + 160, this.height -25,150,20, "Done"));
         VRSettings.VrOptions[] var10 = null;
         
         if( Minecraft.getMinecraft().stereoProvider.isStereo() )
@@ -111,12 +109,6 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
                     maxValue = 4.0f;
                     increment = 0.1f;
                 }
-                else if (var8 == VRSettings.VrOptions.FSAA_SCALEFACTOR)
-                {
-                    minValue = 0.5f;
-                    maxValue = 2.0f;
-                    increment = 0.1f;
-                }
                 else if (var8 == VRSettings.VrOptions.MONO_FOV)
                 {
                     minValue = 1f;
@@ -130,7 +122,7 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
             }
             else
             {
-                if (var8 == VRSettings.VrOptions.HMD_NAME_PLACEHOLDER)
+                if (false)
                 {
                     GuiSmallButtonEx button = new GuiSmallButtonEx(9999, width, height, var8, productName);
                     button.enabled = false;
@@ -164,21 +156,14 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
             }
             else if (par1GuiButton.id == ID_GENERIC_DEFAULTS)
             {
-                minecraft.vrSettings.useTimewarp = true;
-                minecraft.vrSettings.useTimewarpJitDelay = false;
-                minecraft.vrSettings.useVignette = true;
-                minecraft.vrSettings.useLowPersistence = true;
-                minecraft.vrSettings.useDynamicPrediction = true;
+
                 minecraft.vrSettings.renderScaleFactor = 1.0f;
                 minecraft.vrSettings.displayMirrorMode = VRSettings.MIRROR_ON_ONE_THIRD_FRAME_RATE;
                 minecraft.vrSettings.mixedRealityKeyColor = new Color();
                 minecraft.vrSettings.mixedRealityRenderHands = false;
                 minecraft.vrSettings.insideBlockSolidColor = false;
                 minecraft.gameSettings.fovSetting = 70f;
-                minecraft.vrSettings.useDisplayOverdrive = true;
-                minecraft.vrSettings.useHighQualityDistortion = true;
                 minecraft.vrSettings.useFsaa = false;
-                minecraft.vrSettings.fsaaScaleFactor = 1.4f;
                 minecraft.vrSettings.vrUseStencil = true;
                 minecraft.reinitFramebuffers = true;
 			    this.guivrSettings.saveOptions();
@@ -200,13 +185,7 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
                 par1GuiButton.displayString = this.guivrSettings.getKeyBinding(VRSettings.VrOptions.getEnumOptions(par1GuiButton.id));
             }
 
-            if (num == VRSettings.VrOptions.TIMEWARP ||
-                num == VRSettings.VrOptions.TIMEWARP_JIT_DELAY ||
-                num == VRSettings.VrOptions.VIGNETTE ||
-                num == VRSettings.VrOptions.MIRROR_DISPLAY ||
-                num == VRSettings.VrOptions.LOW_PERSISTENCE ||
-                num == VRSettings.VrOptions.DYNAMIC_PREDICTION ||
-                num == VRSettings.VrOptions.OVERDRIVE_DISPLAY ||
+            if (num == VRSettings.VrOptions.MIRROR_DISPLAY ||
                 num == VRSettings.VrOptions.FSAA)
 	        {
                 minecraft.reinitFramebuffers = true;
@@ -232,8 +211,7 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
     {
         boolean ret = false;
 
-        if (enumm == VRSettings.VrOptions.RENDER_SCALEFACTOR ||
-            enumm == VRSettings.VrOptions.FSAA_SCALEFACTOR)
+        if (     enumm == VRSettings.VrOptions.RENDER_SCALEFACTOR)
         {
             Minecraft.getMinecraft().reinitFramebuffers = true;
             ret = true;
@@ -295,33 +273,7 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
 	                    "Uses a fancier method of resampling the",
 	                    "game before sending it to the HMD. Works best",
 	                    "at high render scales. "};
-	    	case CHROM_AB_CORRECTION:
-	    		return new String[] {
-	    				"Chromatic aberration correction", 
-	    				"Corrects for color distortion due to lenses", 
-	    				"  OFF - no correction",
-	    				"  ON - correction applied"} ;
-	        case TIMEWARP:
-	            return new String[] {
-	                    "Reduces perceived head track latency by sampling sensor",
-	                    "position just before the view is presented to your eyes,",
-	                    "and rotating the rendered view subtly to match the new",
-	                    "sensor orientation.",
-	                    "  ON  - Timewarp applied. Some ghosting may be observed",
-	                    "        during fast changes of head position.",
-	                    "  OFF - No timewarp applied, higher latency head",
-	                    "        tracking."
-	            };
-            case TIMEWARP_JIT_DELAY:
-                return new String[] {
-                        "Enables a spin-wait that tries to push time-warp to",
-                        "be as close to V-sync as possible. WARNING - this",
-                        "may backfire and cause framerate loss and / or","" +
-                        "judder- use with caution.",
-                        "  ON  - Timewarp JIT delay applied. Lowest latency.",
-                        "  OFF - (Default) No timewarp JIT delay applied,",
-                        "        slightly higher latency head tracking."
-                };
+
             case RENDER_SCALEFACTOR:
                 return new String[] {
                         "The internal rendering scale of the game, relative",
@@ -357,55 +309,7 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
                         "The FOV used for the mixed reality and",
                         "undistorted mirror modes."
                 };
-            case DYNAMIC_PREDICTION:
-                return new String[]{
-                        "If supported by your HMD, reduces perceived head",
-                        " track latency by continually monitoring to head",
-                        "to screen latency, and adjusting the frame-timing",
-                        "appropriately.",
-                        "  ON  - Dynamic prediction applied. A small",
-                        "        coloured square will be seen in the top",
-                        "        right of any mirrored display",
-                        "  OFF - Not applied."
-                };
-            case OVERDRIVE_DISPLAY:
-                return new String[] {
-                        "If supported by your HMD, attempts to reduce",
-                        "perceived image smearing during black-to-",
-                        "bright transitions.",
-                        "  ON  - Smearing may be reduced.",
-                        "  OFF - Not applied."
-                };
-            case LOW_PERSISTENCE:
-                return new String[] {
-                        "If supported by your HMD, displays each frame on the",
-                        "the HMDs OLED screen for a very short period of time.",
-                        "This greatly reduces perceived blurring during head",
-                        "motion.",
-                        "  ON  - Low persistence reduces image blur on",
-                        "        head movement.",
-                        "  OFF - Not applied."
-                };
-            case VIGNETTE:
-                return new String[] {
-                        "If enabled, blurs the edges of the distortion",
-                        "displayed for each eye, making the edges less",
-                        "noticeable at the edges of your field of view.",
-                        "  ON  - FOV edges blurred.",
-                        "  OFF - No burring of distortion edges. The edge",
-                        "        of distortion may be more noticeable",
-                        "        within your field of view."
-                };
-            case HIGH_QUALITY_DISTORTION:
-                return new String[] {
-                        "If enabled, and render scale is greater than one,",
-                        "uses an improved downsampling algorithm to anti-",
-                        "alias the image.",
-                        "  ON  - Higher quality if render scale is increased",
-                        "        above 1. May increase perceived latency",
-                        "        slightly.",
-                        "  OFF - Standard downsampling algorithm used. Faster."
-                };
+
             case OTHER_RENDER_SETTINGS:
                 return new String[] {
                         "Configure IPD and FOV border settings."
@@ -433,11 +337,6 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
     private boolean getEnabledState(VRSettings.VrOptions var8)
     {
         String s = var8.getEnumString();
-
-        if (var8 == VRSettings.VrOptions.CHROM_AB_CORRECTION)
-        {
-            return false;
-        }
 
         return true;
     }

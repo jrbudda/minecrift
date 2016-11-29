@@ -60,7 +60,7 @@ public class RenderVRPlayer extends RenderPlayer
     public void setVR(boolean vrMode, boolean renderHeadWear, float offset) {
 
         vrOffset = vrMode? offset : 0.0F;
-        if (Minecraft.getMinecraft().vrSettings.allowAvatarIK) {
+        if (false) {
             this.modelBipedMain.vrMode = vrMode;
         }
         else {

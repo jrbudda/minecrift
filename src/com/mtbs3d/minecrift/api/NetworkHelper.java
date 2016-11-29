@@ -26,7 +26,9 @@ public class NetworkHelper {
 		CONTROLLER0DATA,
 		CONTROLLER1DATA,
 		WORLDSCALE,
-		DRAW	
+		DRAW,
+		MOVEMODE,
+		UBERPACKET
 	}
 
 	private final static String channel = "Vivecraft";
@@ -48,7 +50,7 @@ public class NetworkHelper {
 	private static float worldScallast = 0;
 	public static void sendVRPlayerPositions(IRoomscaleAdapter player) {
 		if(!serverWantsData) return;
-		float worldScale = Minecraft.getMinecraft().vrSettings.vrWorldScale;
+		float worldScale = Minecraft.getMinecraft().vrPlayer.worldScale;
 		if (worldScale != worldScallast) {
 			ByteBuf payload = Unpooled.buffer();
 			payload.writeFloat(worldScale);

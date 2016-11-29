@@ -1,0 +1,40 @@
+--- a/net/minecraft/util/Vec3.java
++++ b/net/minecraft/util/Vec3.java
+@@ -21,7 +21,8 @@
+         return new Vec3(x, y, z);
+     }
+ 
+-    protected Vec3(double x, double y, double z)
++    //vivecraft
++    public Vec3(double x, double y, double z)
+     {
+         if (x == -0.0D)
+         {
+@@ -240,4 +241,27 @@
+         double var8 = this.zCoord;
+         this.setComponents(var4, var6, var8);
+     }
++
++    //VIVECRAFT ADDITIONS
++	public Vec3 scale(double d) {
++		return new Vec3(this.xCoord*d, this.yCoord*d, this.zCoord*d);
++	}
++
++	public Vec3 add(Vec3 other) {
++		return new Vec3(this.xCoord*+other.xCoord, this.yCoord+other.yCoord, this.zCoord+other.zCoord);
++	}
++
++	public Vec3 subtract(double i, double d, double j) {
++		return new Vec3(this.xCoord-i, this.yCoord-d, this.zCoord-j);
++	}
++
++	public Vec3 rotateYaw(float angle) {
++        float var2 = MathHelper.cos(angle);
++        float var3 = MathHelper.sin(angle);
++        double var4 = this.xCoord * (double)var2 + this.zCoord * (double)var3;
++        double var6 = this.yCoord;
++        double var8 = this.zCoord * (double)var2 - this.xCoord * (double)var3;
++        return new Vec3(var4, var6, var8);
++	}    
++    
+ }

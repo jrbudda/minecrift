@@ -23,6 +23,7 @@ public class VivecraftMain
 	private static final String smcName = "shadersmodcore.transform.SMCClassTransformer";
 	private static final String[] encapsulatedTransformers = new String[]{
 		smcName,
+		"jp.mc.ancientred.starminer.core.SMTransformer", // lol this is so not going to work
 	};
 	private static final String[] removedTransformers = new String[]{
 		"com.pau101.fairylights.core.FairyLightsClassTransformer", // Get out of our EntityRenderer
@@ -51,6 +52,15 @@ public class VivecraftMain
 
 				if (t.getClass().getName().equals("cpw.mods.fml.common.asm.transformers.DeobfuscationTransformer")) {
 					passedDeobf = true;
+				}
+				if (t.getClass().getName().equals("jp.mc.ancientred.starminer.core.SMTransformer")) {
+					System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+					System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+					System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+					System.out.println("WARNING: STARMINER DETECTED - STUFF IS PROBABLY GOING TO EXPLODE HORRIBLY");
+					System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+					System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+					System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 				}
 				for (String dt : encapsulatedTransformers) {
 				    if (t.getClass().getName().equals(dt)) {

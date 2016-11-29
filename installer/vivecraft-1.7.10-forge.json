@@ -150,7 +150,7 @@
     },
     {
       "name": "com.sun:jna:4.2.1",
-      "url": "http://automat-gh.github.io/minecrift/"
+      "url": "http://vivecraft.org/jar/"
     },
     {
       "name": "org.lwjgl.lwjgl:lwjgl-platform:2.9.1",

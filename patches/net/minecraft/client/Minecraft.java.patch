@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
-@@ -1,40 +1,102 @@
+@@ -1,40 +1,108 @@
  package net.minecraft.client;
  
 -import com.google.common.collect.Iterables;
@@ -84,6 +84,12 @@
 +import com.mtbs3d.minecrift.api.IRoomscaleAdapter;
 +import com.mtbs3d.minecrift.api.IStereoProvider;
 +import com.mtbs3d.minecrift.gameplay.BowTracker;
++import com.mtbs3d.minecrift.gameplay.ClimbTracker;
++import com.mtbs3d.minecrift.gameplay.EatingTracker;
++import com.mtbs3d.minecrift.gameplay.JumpTracker;
++import com.mtbs3d.minecrift.gameplay.RunTracker;
++import com.mtbs3d.minecrift.gameplay.SneakTracker;
++import com.mtbs3d.minecrift.gameplay.SwimTracker;
 +import com.mtbs3d.minecrift.provider.MCOpenVR;
 +import com.mtbs3d.minecrift.provider.NullStereoRenderer;
 +import com.mtbs3d.minecrift.provider.OpenVRPlayer;
@@ -113,7 +119,7 @@
  import net.minecraft.client.entity.EntityClientPlayerMP;
  import net.minecraft.client.gui.FontRenderer;
  import net.minecraft.client.gui.GuiChat;
-@@ -68,6 +130,8 @@
+@@ -68,6 +136,8 @@
  import net.minecraft.client.renderer.RenderGlobal;
  import net.minecraft.client.renderer.Tessellator;
  import net.minecraft.client.renderer.WorldRenderer;
@@ -122,7 +128,7 @@
  import net.minecraft.client.renderer.entity.RenderManager;
  import net.minecraft.client.renderer.texture.DynamicTexture;
  import net.minecraft.client.renderer.texture.TextureManager;
-@@ -97,6 +161,7 @@
+@@ -97,6 +167,7 @@
  import net.minecraft.client.settings.GameSettings;
  import net.minecraft.client.settings.KeyBinding;
  import net.minecraft.client.shader.Framebuffer;
@@ -130,7 +136,7 @@
  import net.minecraft.client.stream.IStream;
  import net.minecraft.client.stream.NullStream;
  import net.minecraft.client.stream.TwitchStream;
-@@ -127,6 +192,8 @@
+@@ -127,6 +198,8 @@
  import net.minecraft.profiler.Profiler;
  import net.minecraft.server.MinecraftServer;
  import net.minecraft.server.integrated.IntegratedServer;
@@ -139,7 +145,7 @@
  import net.minecraft.stats.AchievementList;
  import net.minecraft.stats.IStatStringFormat;
  import net.minecraft.stats.StatFileWriter;
-@@ -142,6 +209,7 @@
+@@ -142,6 +215,7 @@
  import net.minecraft.util.Session;
  import net.minecraft.util.Timer;
  import net.minecraft.util.Util;
@@ -147,7 +153,7 @@
  import net.minecraft.world.EnumDifficulty;
  import net.minecraft.world.WorldProviderEnd;
  import net.minecraft.world.WorldProviderHell;
-@@ -150,2988 +218,4803 @@
+@@ -150,2988 +224,4801 @@
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
@@ -1751,8 +1757,14 @@
 +	// VIVE START - teleport movement
 +	public OpenVRPlayer vrPlayer; 
 +	public IRoomscaleAdapter roomScale;
-+	public BowTracker bowTracker = new BowTracker(); 
-+	
++	public BowTracker bowTracker = new BowTracker();
++	public SwimTracker swimTracker = new SwimTracker();
++	public EatingTracker autoFood=new EatingTracker();
++	public JumpTracker jumpTracker=new JumpTracker();
++	public SneakTracker sneakTracker=new SneakTracker();
++	public ClimbTracker climbTracker = new ClimbTracker();
++	public RunTracker runTracker  = new RunTracker();
++
 +	// VIVE END - teleport movement
 +
 +	// VIVE START - vive ui debugging
@@ -1971,7 +1983,7 @@
 +	 * The minecriftVerString will be automatically updated by the build scripts, do not modify here.
 +	 * Modify minecriftversion.py in root minecrift dir.
 +	 */
-+    public final String minecriftVerString = "Vivecraft 1.7.10 Vivecraft-jrbudda31r3";
++    public final String minecriftVerString = "Vivecraft 1.7.10 Vivecraft-jrbudda32";
 +	/* end version */
 +	/** END MINECRIFT */
 +
@@ -2414,13 +2426,6 @@
 +				this.displayGuiScreen(new GuiConnecting(new GuiMainMenu(), this, this.serverName, this.serverPort));
 +			}
 +		}
-+		else if (this.vrSettings.firstLoad) {
-+			// VIVE START - don't force options screen, player should try defaults first
-+			//this.displayGuiScreen(new GuiMinecriftSettings(new GuiMainMenu(), vrSettings, gameSettings) );
-+			this.displayGuiScreen(new GuiMainMenu());
-+			// VIVE END - don't force options screen, player should try defaults first
-+			this.vrSettings.firstLoad = false;
-+		}
 +		else
 +		{
 +			this.displayGuiScreen(new GuiMainMenu());
@@ -2776,6 +2781,7 @@
 +		finally
 +		{
 +			Display.destroy();
++			MCOpenVR.destroy();
 +
 +			if (!this.hasCrashed)
 +			{
@@ -5577,7 +5583,8 @@
 +		{
 +			if (!this.gameSettings.keyBindUseItem.getIsKeyPressed() && (bowTracker.isActive(thePlayer) == false || vrSettings.seated))
 +			{
-+				this.playerController.onStoppedUsingItem(this.thePlayer);
++				if(!autoFood.isEating())
++					this.playerController.onStoppedUsingItem(this.thePlayer);
 +			}
 +
 +			label391:
@@ -5603,7 +5610,7 @@
 +					}
 +				}
 +		}
-+		else
++		else //not using item
 +		{
 +			if (this.gameSettings.keyBindAttack.getIsKeyPressed() && currentScreen == null)
 +			{
@@ -6913,8 +6920,6 @@
 +	{
 +		boolean changeNonDestructiveRenderConfig = false;
 +
-+		glConfig.mirrorDisplay = this.vrSettings.displayMirrorMode == VRSettings.MIRROR_OFF ? false : true;
-+		glConfig.usePositionalTimewarp = this.vrSettings.usePositionalTimewarp;
 +	
 +		if (clipPlanesChanged())
 +		{
@@ -7193,7 +7198,6 @@
 +			{
 +				// We had an issue. Set the usual suspects to defaults...
 +				this.vrSettings.useFsaa = false;
-+				this.vrSettings.fsaaScaleFactor = 1.4f;
 +				this.vrSettings.saveOptions();
 +				System.out.println("[Minecrift] FAILED to setup FSAA: " + ex.getMessage());
 +				reinitFramebuffers = true;
@@ -7216,7 +7220,7 @@
 +					"\nRender target width:  " + (this.stereoProvider.isStereo() ? EyeTextureSize.w + EyeTextureSize.w: this.displayWidth) +
 +					", height: " + (this.stereoProvider.isStereo() ? Math.max(EyeTextureSize.h, EyeTextureSize.h) : this.displayHeight) +
 +					(this.stereoProvider.isStereo() ? " [Render scale: " + this.vrSettings.renderScaleFactor + "]" : "") +
-+					(this.vrSettings.useFsaa ? " [FSAA Scale: " + this.vrSettings.fsaaScaleFactor + "]" : "") +
++					(this.vrSettings.useFsaa ? " [FSAA Scale: " + this.vrSettings.renderScaleFactor + "]" : "") +
 +					"\nDisplay target width: " + this.displayFBWidth + ", height: " + displayFBHeight);
 +
 +			// Init shaders

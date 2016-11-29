@@ -430,7 +430,7 @@
          this.worldObj.playSound(this.posX, this.posY - (double)this.yOffset, this.posZ, name, volume, pitch, false);
      }
  
-@@ -662,4 +854,268 @@
+@@ -662,4 +854,285 @@
      }
  
      protected void sendHorseJump() {}
@@ -529,20 +529,36 @@
 +    		IRoomscaleAdapter con = mc.roomScale;
 +    		
 +            // Account for pitch if required
-+    		if(this.capabilities.isFlying || this.inWater)
-+            if (Minecraft.getMinecraft().vrSettings.allowPitchAffectsHeightWhileFlying) {
-+            	if (vr.useLControllerForRestricedMovement) {//these are negative cause directionvec is backwards in the z direction.
-+            			 directionVec.rotateAroundX(con.getControllerOffhandPitch_World() * PIOVER180);		   
-+            	} else {
-+            		directionVec.rotateAroundX(con.getHMDPitch_World()* PIOVER180);	
-+            	}		
-+            }
-+    		
-+    		// Account for yaw
-+            if (vr.useLControllerForRestricedMovement) { //these are negative cause directionvec is backwards in the z direction.
-+            	directionVec.rotateAroundY(-con.getControllerOffhandYaw_World() * PIOVER180);	
-+            } else {
-+    			directionVec.rotateAroundY(-con.getHMDYaw_World()* PIOVER180);
++    		if(mc.vrSettings.seated){
++            	directionVec=directionVec.rotateYaw(-con.getControllerOffhandYaw_World() * PIOVER180);	    		
++    		}else{
++        		if(this.capabilities.isFlying || this.inWater){
++        			switch (mc.vrSettings.vrFreeMoveMode){
++        			case VRSettings.FREEMOVE_CONTROLLER:
++        				directionVec.rotateAroundX(con.getControllerOffhandPitch_World() * PIOVER180);		   
++        				break;
++        			case VRSettings.FREEMOVE_HMD:
++        				directionVec.rotateAroundX(con.getHMDPitch_World()* PIOVER180);				
++        				break;
++        			case VRSettings.FREEMOVE_RUNINPLACE:
++        				//hmd pitch
++        				directionVec.rotateAroundX(con.getHMDPitch_World()* PIOVER180);	
++        				break;
++        			}
++        		}
++        		
++    			switch (mc.vrSettings.vrFreeMoveMode){
++    			case VRSettings.FREEMOVE_CONTROLLER:
++    				directionVec.rotateAroundY(-con.getControllerOffhandYaw_World() * PIOVER180);	
++    				break;
++    			case VRSettings.FREEMOVE_HMD:
++                	directionVec.rotateAroundY(-con.getHMDYaw_World() * PIOVER180);	
++    				break;
++    			case VRSettings.FREEMOVE_RUNINPLACE:
++    				directionVec.rotateAroundY((float) (-mc.runTracker.getYaw() * PIOVER180));
++    				directionVec = OpenVRPlayer.vecMult(directionVec, (float)mc.runTracker.getSpeed());
++    				break;
++    			}    		    	    			
 +    		}
 +    	
 +            mX = directionVec.xCoord;
@@ -663,6 +679,7 @@
 +    	boolean client = this instanceof EntityPlayerSP;
 +    	boolean freemove = OpenVRPlayer.get().getFreeMoveMode();
 +    	boolean doY = freemove || (Minecraft.getMinecraft().vrSettings.simulateFalling && !this.isOnLadder()) && !this.isSneaking();
++    	
 +    	Vec3 roomOrigin = OpenVRPlayer.get().getRoomOriginPos_World();
 + //   	Vec3 camloc = Minecraft.getMinecraft().roomScale.getHMDPos_World();
 +

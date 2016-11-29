@@ -11,30 +11,32 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
 {
     static VRSettings.VrOptions[] locomotionSettings = new VRSettings.VrOptions[]
     {
-            // VIVE START - hide options not relevant for standing
-            //VRSettings.VrOptions.ALLOW_FORWARD_PLUS_STRAFE,
-            VRSettings.VrOptions.WALK_UP_BLOCKS,
-            VRSettings.VrOptions.MOVEMENT_MULTIPLIER,
-            //VRSettings.VrOptions.STRAFE_MULTIPLIER,
-            VRSettings.VrOptions.INERTIA_FACTOR,
-            //VRSettings.VrOptions.VIEW_BOBBING,
-            VRSettings.VrOptions.PITCH_AFFECTS_FLYING,
-            VRSettings.VrOptions.SIMULATE_FALLING,              // VIVE new option
-            VRSettings.VrOptions.WEAPON_COLLISION,              // VIVE new option
-            // VIVE END - hide options not relevant for standing
-            //JRBUDDA
-            VRSettings.VrOptions.ALLOW_CRAWLING,
-            VRSettings.VrOptions.FREE_MOVE_DEFAULT,
-            VRSettings.VrOptions.LIMIT_TELEPORT,
+            VRSettings.VrOptions.WEAPON_COLLISION,
+            VRSettings.VrOptions.REALISTIC_JUMP,
             VRSettings.VrOptions.ALLOW_MODE_SWITCH,
+            VRSettings.VrOptions.REALISTIC_SNEAK,
             VRSettings.VrOptions.BCB_ON,
-            
-            //END JRBUDDA
-            
-            
-            
+            VRSettings.VrOptions.REALISTIC_CLIMB,
+            VRSettings.VrOptions.WALK_MULTIPLIER,
+            VRSettings.VrOptions.REALISTIC_SWIM,
+            VRSettings.VrOptions.DUMMY,
+            VRSettings.VrOptions.REALISTIC_ROW,
     };
 
+    static VRSettings.VrOptions[] teleportSettings = new VRSettings.VrOptions[]
+    {
+            VRSettings.VrOptions.WALK_UP_BLOCKS,
+            VRSettings.VrOptions.LIMIT_TELEPORT,
+            VRSettings.VrOptions.SIMULATE_FALLING
+
+    };
+    static VRSettings.VrOptions[] freeMoveSettings = new VRSettings.VrOptions[]
+    {
+    		VRSettings.VrOptions.FREEMOVE_MODE,
+            VRSettings.VrOptions.MOVEMENT_MULTIPLIER,
+            VRSettings.VrOptions.INERTIA_FACTOR,
+    };
+    
     public GuiLocomotionSettings(GuiScreen guiScreen, VRSettings guivrSettings) {
         super( guiScreen, guivrSettings );
         screenTitle = "Locomotion Settings";
@@ -46,11 +48,21 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
     public void initGui()
     {
         this.buttonList.clear();
-        this.buttonList.add(new GuiButtonEx(ID_GENERIC_DEFAULTS, this.width / 2 - 100, this.height / 6 + 148, "Reset To Defaults"));
-        this.buttonList.add(new GuiButtonEx(ID_GENERIC_DONE, this.width / 2 - 100, this.height / 6 + 168, "Done"));
+        this.buttonList.add(new GuiButtonEx(ID_GENERIC_DEFAULTS, this.width / 2 - 155 ,  this.height -25 ,150,20, "Reset To Defaults"));
+        this.buttonList.add(new GuiButtonEx(ID_GENERIC_DONE, this.width / 2 - 155  + 160, this.height -25,150,20, "Done"));
         VRSettings.VrOptions[] buttons = locomotionSettings;
+        addButtons(buttons,0);
+        GuiSmallButtonEx mode = new GuiSmallButtonEx(VRSettings.VrOptions.MOVE_MODE.returnEnumOrdinal(), this.width / 2 - 68, this.height / 6 + 102,VRSettings.VrOptions.MOVE_MODE, this.guivrSettings.getKeyBinding(VRSettings.VrOptions.MOVE_MODE));
+        mode.setEventHandler(this);
+        this.buttonList.add(mode);
+        if(mc.vrSettings.vrFreeMove)
+        	addButtons(freeMoveSettings,134);
+        else
+        	addButtons(teleportSettings,134);        
+    }
 
-        int extra = 0;
+	private void addButtons(VRSettings.VrOptions[] buttons, int startY) {
+		int extra = startY;
         for (int var12 = 2; var12 < buttons.length + 2; ++var12)
         {
             VRSettings.VrOptions var8 = buttons[var12 - 2];
@@ -83,17 +95,10 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                     maxValue = 1.0f;
                     increment = 0.01f;
                 }
-                else if ( var8 == VRSettings.VrOptions.VR_COMFORT_TRANSITION_ANGLE_DEGS)
-                {
-                    minValue = 15f;
-                    maxValue = 45f;
-                    increment = 15f;
-                }
-                else if ( var8 == VRSettings.VrOptions.VR_COMFORT_TRANSITION_TIME_SECS)
-                {
-                    minValue = 0f;
-                    maxValue = 0.75f;
-                    increment = 0.005f;
+                else if (var8 == VRSettings.VrOptions.WALK_MULTIPLIER){
+                    minValue=1f;
+                    maxValue=10f;
+                    increment=0.1f;
                 }
                 // VIVE START - new options
                 GuiSliderEx slider = new GuiSliderEx(var8.returnEnumOrdinal(), width, height - 20, var8, this.guivrSettings.getKeyBinding(var8), minValue, maxValue, increment, this.guivrSettings.getOptionFloatValue(var8));
@@ -109,13 +114,16 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                 this.buttonList.add(smallButton);
             }
         }
-    }
+	}
 
     private boolean getEnabledState(VRSettings.VrOptions var8)
     {
         String s = var8.getEnumString();
 
         if(s==VRSettings.VrOptions.ALLOW_CRAWLING.getEnumString()) return false;
+        if(s.equals(VRSettings.VrOptions.REALISTIC_JUMP.getEnumString()) ||
+                s.equals(VRSettings.VrOptions.REALISTIC_SNEAK.getEnumString()))
+            return !Minecraft.getMinecraft().vrSettings.seated;
         
 
         return true;
@@ -152,16 +160,23 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
             else if (par1GuiButton.id == ID_GENERIC_DEFAULTS)
             {
                 vr.inertiaFactor = VRSettings.INERTIA_NORMAL;
-                vr.allowPitchAffectsHeightWhileFlying = false;
-                vr.useKeyBindingForComfortYaw = false;
                 vr.movementSpeedMultiplier = 1f;
                 vr.simulateFalling = false;
                 //jrbudda//
+                vr.weaponCollision = true;
                 vr.vrAllowCrawling = false;
                 vr.vrAllowLocoModeSwotch = true;
-                vr.vrFreeMove = true;
+                vr.vrFreeMove = false;
                 vr.vrLimitedSurvivalTeleport = true;
                 vr.vrShowBlueCircleBuddy = true;
+                vr.walkMultiplier=1;
+                vr.vrFreeMoveMode = vr.FREEMOVE_CONTROLLER;
+                vr.realisticClimbEnabled = true;
+                vr.realisticJumpEnabled = true;
+                vr.realisticSneakEnabled = true;
+                vr.realisticSwimEnabled = true;
+                vr.realisticRowEnabled = true;
+                vr.vehicleRotation = false;
                 //end jrbudda
                 
                 Minecraft.getMinecraft().gameSettings.viewBobbing = true;
@@ -173,8 +188,13 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
             else if (par1GuiButton instanceof GuiSmallButtonEx)
             {
                 VRSettings.VrOptions num = VRSettings.VrOptions.getEnumOptions(par1GuiButton.id);
-                this.guivrSettings.setOptionValue(((GuiSmallButtonEx)par1GuiButton).returnVrEnumOptions(), 1);
-                par1GuiButton.displayString = this.guivrSettings.getKeyBinding(VRSettings.VrOptions.getEnumOptions(par1GuiButton.id));
+                    this.guivrSettings.setOptionValue(((GuiSmallButtonEx)par1GuiButton).returnVrEnumOptions(), 1);
+                    par1GuiButton.displayString = this.guivrSettings.getKeyBinding(VRSettings.VrOptions.getEnumOptions(par1GuiButton.id));
+                    
+                    if(num == VRSettings.VrOptions.MOVE_MODE){
+                    	this.reinit = true;
+                    }
+                    
             }
         }
     }
@@ -182,11 +202,6 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
     @Override
     public boolean event(int id, VRSettings.VrOptions enumm)
     {
-        if (enumm == VRSettings.VrOptions.USE_VR_COMFORT)
-        {
-            this.reinit = true;
-        }
-
         return true;
     }
 
@@ -233,59 +248,6 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                             "  ON:  You can walk up single blocks. May reduce",
                             "       locomotion induced simulator sickness for some."
                     } ;
-                case USE_VR_COMFORT:
-                    return new String[] {
-                            "Enables view ratcheting on controller yaw or pitch input.",
-                            "For some people this can allow a more comfortable",
-                            "viewing experience while moving around. Known as",
-                            "'VR Comfort Mode' (with thanks to Cloudhead Games)!",
-                            "  OFF: (Default) No view ratcheting is applied.",
-                            "  Yaw Only: View ratcheting applied to Yaw only.",
-                            "  Pitch Only: View ratcheting applied to Pitch only.",
-                            "  Yaw and Pitch: You guessed it...",
-                    } ;
-                case VR_COMFORT_TRANSITION_LINEAR:
-                    return new String[] {
-                            "Determines how the view transitions from one ratchet",
-                            "angle to the next.",
-                            "  Sinusoidal: (default) The view movement accelerates",
-                            "  and then decelerates to the required position. Can",
-                            "  feel more natural to some.",
-                            "  Linear: The view transitions to the next angle at a",
-                            "  constant velocity."
-                    } ;
-                case VR_COMFORT_TRANSITION_BLANKING_MODE:
-                    return new String[] {
-                            "Determines if the view is blanked as the view",
-                            "transitions from one ratchet angle to the next. This can",
-                            "relieve locomotion induced motion sickness for some.",
-                            "  None: (Default) No view blanking is applied.",
-                            "  Black: The view is completely black during transition.",
-                            "  Blink: A simulated blink. The view fades to black, and",
-                            "  and then fades in again over the transition period."
-                    } ;
-                case VR_COMFORT_TRANSITION_TIME_SECS:
-                    return new String[] {
-                            "Determines how long a ratchet transition takes, in ms.",
-                            "  0ms: Instant transition.",
-                            "  200-400ms: Human blink speed."
-                    } ;
-                case VR_COMFORT_TRANSITION_ANGLE_DEGS:
-                    return new String[]{
-                            "Determines how many degrees a ratchet transition",
-                            "rotates."
-                    };
-                case ALLOW_FORWARD_PLUS_STRAFE:
-                    return new String[] {
-                            "Determines if strafing (or sideways movement) is",
-                            "allowed while moving forward or backwards.",
-                            "  Allowed: (Default) Forwards and strafe movement is",
-                            "  allowed at the same time. May cause motion sickness",
-                            "  for some.",
-                            "  Disallowed: Anything more than a small forward",
-                            "  movement will cause any strafe input to be zeroed.",
-                            "  This can help make movement more 'natural'."
-                    } ;
                 case INERTIA_FACTOR:
                     return new String[]{
                             "Sets the player's movement inertia in single player",
@@ -296,38 +258,6 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                             "           movement.",
                             "  Automan < Normal < A lot < Even More. Does not",
                             "  affect lava, water or jumping movement currently."
-                    };
-                case VIEW_BOBBING:
-                    return new String[]{
-                            "If enabled, makes player movement more realistic by",
-                            "simulating the players view changing subtly as they",
-                            "walk along. Can cause motion sickness when ON for",
-                            "some. Yet others need this ON for a comfortable",
-                            "experience!",
-                            "  ON: (Default) View bobs up and down while moving.",
-                            "  OFF: No view bobbing, the player view 'floats' at",
-                            "       a constant height above the ground."
-                    };
-                case PITCH_AFFECTS_FLYING:
-                    return new String[]{
-                            "If enabled, uses controller pitch or HMD orientation",
-                            "pitch to create height changes while flying. Pitch up",
-                            "to move up, pitch down to move down.",
-                            "  OFF: (Default) No elevation changes based on pitch",
-                            "       input. Normal Minecraft operation.",
-                            "  ON:  (Recommended) Pitch input affects elevation",
-                            "       while flying. An enjoyable travel experience!"
-                    };
-                case VR_COMFORT_USE_KEY_BINDING_FOR_YAW:
-                    return new String[]{
-                            "Determines how a comfort mode yaw transition (player",
-                            "turn to the left or right) is triggered.",
-                            "  Crosshair: (Default) Moving the crosshair to the edge",
-                            "             of the keyhole will trigger a yaw",
-                            "             transition.",
-                            "  Key:       The 'Cycle Item Left / Right' key or",
-                            "             controller binding wil instead be used to",
-                            "             trigger a yaw transition."
                     };
                 // VIVE START - new options
                 case SIMULATE_FALLING:
@@ -351,9 +281,9 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                     return new String[] {
                             "If enabled the player will be able to duck under block"
                     } ;
-                case FREE_MOVE_DEFAULT:
+                case MOVE_MODE:
                     return new String[] {
-                            "Defaults to free move mode instead of teleport mode."
+                            "Current move mode. Teleport or Free Move."
                     } ;
                 case LIMIT_TELEPORT:
                     return new String[] {
@@ -368,6 +298,51 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                             "This is your Blue Circle Buddy (tm).",
                             "Do not lose your Blue Circle Buddy."
                     };
+                case REALISTIC_JUMP:
+                    return new String[]{
+                            "If turned on, once you jump in real life",
+                            "Your player will also jump"
+                    };
+                case REALISTIC_SNEAK:
+                    return new String[]{
+                            "If turned on, once you duck in real life",
+                            "Your player will also sneak"
+                    };
+                case REALISTIC_CLIMB:
+                    return new String[]{
+                            "If turned on, allow climbing ladders and vines",
+                            "by touching them."
+                    };
+                case REALISTIC_SWIM:
+                    return new String[]{
+                            "If turned on, allow swimming by doing the breaststoke",
+                            "with the controllers."
+                    };
+                case REALISTIC_ROW:
+                    return new String[]{
+                            "Row, row, row your boat... by flapping your arms like mad."
+                    };
+                case WALK_MULTIPLIER:
+                    return new String[]{
+                            "Multiplies your position in the room by a factor",
+                            "Allows you to walk around more,",
+                            "but may cause motion sickness"
+                    };
+                case FREEMOVE_MODE:
+                    return new String[] {
+                            "The source for freemove direction. Options are",
+                            "Controller: Uses left controller direction, max speed",
+                            "HMD: Uses head direction, max speed",
+                            "Run In Place: Use average controllers direction. Speed based",
+                            "on controller motion."
+                            
+                    } ;
+                case VEHICLE_ROTATION:
+                    return new String[] {
+                            "Riding in a vehicle will rotate the world",
+                            "as the vehicle rotates. May be disorienting."
+                            
+                    } ;
                 default:
                     return null;
             }

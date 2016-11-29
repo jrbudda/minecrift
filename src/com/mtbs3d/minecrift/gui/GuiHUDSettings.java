@@ -37,8 +37,8 @@ public class GuiHUDSettings extends BaseGuiSettings
     {
         this.buttonList.clear();
         this.buttonList.add(new GuiSmallButtonEx(VRSettings.VrOptions.HUD_HIDE.returnEnumOrdinal(), this.width / 2 - 78, this.height / 6 - 14, VRSettings.VrOptions.HUD_HIDE, this.guivrSettings.getKeyBinding(VRSettings.VrOptions.HUD_HIDE)));
-        this.buttonList.add(new GuiButtonEx(201, this.width / 2 - 100, this.height / 6 + 148, "Reset To Defaults"));
-        this.buttonList.add(new GuiButtonEx(200, this.width / 2 - 100, this.height / 6 + 168, "Done"));
+        this.buttonList.add(new GuiButtonEx(ID_GENERIC_DEFAULTS, this.width / 2 - 155 ,  this.height -25 ,150,20, "Reset To Defaults"));
+        this.buttonList.add(new GuiButtonEx(ID_GENERIC_DONE, this.width / 2 - 155  + 160, this.height -25,150,20, "Done"));
         VRSettings.VrOptions[] buttons = hudOptions;
 
         for (int var12 = 2; var12 < buttons.length + 2; ++var12)
@@ -109,12 +109,12 @@ public class GuiHUDSettings extends BaseGuiSettings
                 this.guivrSettings.setOptionValue(((GuiSmallButtonEx)par1GuiButton).returnVrEnumOptions(), 1);
                 par1GuiButton.displayString = this.guivrSettings.getKeyBinding(VRSettings.VrOptions.getEnumOptions(par1GuiButton.id));
             }
-            else if (par1GuiButton.id == 200)
+            else if (par1GuiButton.id == ID_GENERIC_DONE)
             {
                 Minecraft.getMinecraft().vrSettings.saveOptions();
                 this.mc.displayGuiScreen(this.parentGuiScreen);
             }
-            else if (par1GuiButton.id == 201)
+            else if (par1GuiButton.id == ID_GENERIC_DEFAULTS)
             {
                 this.guivrSettings.hudDistance = 1.25f;
                 this.guivrSettings.hudScale = 1.5f;

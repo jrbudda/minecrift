@@ -39,22 +39,6 @@ public class VRHotkeys {
 			gotKey = true;
 		}
 
-		// Debug pos
-		if (Keyboard.getEventKey() == Keyboard.KEY_P && Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
-		{
-			mc.vrSettings.debugPos = !mc.vrSettings.debugPos;
-			mc.printChatMessage("Debug position (RCTRL+P): " + mc.vrSettings.debugPos);
-			gotKey = true;
-		}
-
-		// Pause pose updates for Timewarp test
-		if (Keyboard.getEventKey() == Keyboard.KEY_T && Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
-		{
-			mc.vrSettings.testTimewarp = !mc.vrSettings.testTimewarp;
-			mc.printChatMessage("Test Timewarp (RCTRL+T): " + mc.vrSettings.testTimewarp);
-			gotKey = true;
-		}
-
 		// Walk up blocks
 		if (Keyboard.getEventKey() == Keyboard.KEY_B && Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
 		{
@@ -246,9 +230,9 @@ public class VRHotkeys {
 
 	public static void snapMRCam(Minecraft mc) {
 		Vec3 pos = Minecraft.getMinecraft().roomScale.getControllerPos_Room(0);
-		mc.vrSettings.vrFixedCamposX = (float) pos.xCoord /mc.vrSettings.vrWorldScale;
-		mc.vrSettings.vrFixedCamposY = (float) pos.yCoord /mc.vrSettings.vrWorldScale;
-		mc.vrSettings.vrFixedCamposZ = (float) pos.zCoord /mc.vrSettings.vrWorldScale;
+		mc.vrSettings.vrFixedCamposX = (float) pos.xCoord /mc.vrPlayer.worldScale;
+		mc.vrSettings.vrFixedCamposY = (float) pos.yCoord /mc.vrPlayer.worldScale;
+		mc.vrSettings.vrFixedCamposZ = (float) pos.zCoord /mc.vrPlayer.worldScale;
 
 		mc.vrSettings.vrFixedCamrotPitch = -Minecraft.getMinecraft().roomScale.getControllerMainPitch_World();
 		mc.vrSettings.vrFixedCamrotYaw = Minecraft.getMinecraft().roomScale.getControllerMainYaw_World() + mc.vrSettings.vrWorldRotation;

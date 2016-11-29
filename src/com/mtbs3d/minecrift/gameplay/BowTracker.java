@@ -111,7 +111,7 @@ public class BowTracker {
 
 		pressed = Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed();
 
-		float notchDistThreshold = (float) (0.3 * Minecraft.getMinecraft().vrSettings.vrWorldScale);
+		float notchDistThreshold = (float) (0.3 * Minecraft.getMinecraft().vrPlayer.worldScale);
 		
 		boolean infiniteAmmo = player.capabilities.isCreativeMode || EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, bow) > 0;
 

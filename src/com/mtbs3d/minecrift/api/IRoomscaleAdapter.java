@@ -60,6 +60,8 @@ public interface IRoomscaleAdapter  {
 	public void triggerHapticPulse(int controller, int duration);
 	public Vec3 getControllerPos_Room(int i);
 	public Vec3 getControllerPos_World(int c);
+	public Vec3 getControllerDir_World(int c);
+	public Vec3 getControllerDir_Room(int c);
 
 }
 
