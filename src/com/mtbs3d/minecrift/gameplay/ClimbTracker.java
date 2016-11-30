@@ -42,7 +42,7 @@ public class ClimbTracker {
 			return false;
 		if(p.isRiding())
 			return false;
-		if(p.moveForward > 0) 
+		if(p.moveForward > 0 && Minecraft.getMinecraft().vrSettings.vrFreeMove ) 
 			return false;
 		return true;
 	}
@@ -68,7 +68,7 @@ public class ClimbTracker {
 	        
 			Block b = minecraft.theWorld.getBlock(bx, by, bz);
 			if(b == Blocks.ladder || b ==Blocks.vine){
-				int meta = b.getDamageValue(minecraft.theWorld, bx, by, bz);
+				int meta = minecraft.theWorld.getBlockMetadata(bx,  by,  bz);
 				Vec3 cpos = Vec3.createVectorHelper(controllerPos.xCoord - bx, controllerPos.yCoord - by, controllerPos.zCoord - bz);
 
 				if(meta == 2){

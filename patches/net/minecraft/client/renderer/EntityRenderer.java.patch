@@ -86,7 +86,7 @@
  import net.minecraft.potion.Potion;
  import net.minecraft.server.integrated.IntegratedServer;
  import net.minecraft.src.Config;
-@@ -61,2593 +99,4840 @@
+@@ -61,2593 +99,4842 @@
  import net.minecraft.world.World;
  import net.minecraft.world.WorldProvider;
  import net.minecraft.world.biome.BiomeGenBase;
@@ -4326,7 +4326,7 @@
 +   			if(mc.theWorld == null)	mc.vrPlayer.worldRotationRadians = 0;
 +		
 +			Vec3 eye =mc.entityRenderer.getEyeRenderPos(currentPass);
-+			if (mc.theWorld==null || mc.currentScreen instanceof GuiWinGame ) {
++			if (mc.theWorld==null) {
 +				eye = mc.roomScale.getEyePos_Room(currentPass);
 +			}
 +			Vector3f guipos = MCOpenVR.guiPos_World;
@@ -4448,10 +4448,12 @@
 +					}
 +				} 
 +			} else {
-+				
-+				guipos = guipos.add(new Vector3f((float)interPolatedRoomOrigin.xCoord,
++				if (mc.theWorld==null || mc.currentScreen instanceof GuiWinGame){
++				}
++				else {
++					guipos = guipos.add(new Vector3f((float)interPolatedRoomOrigin.xCoord,
 +						(float) interPolatedRoomOrigin.yCoord, (float) interPolatedRoomOrigin.zCoord));
-+				
++				}			
 +			}
 +			// otherwise, looking at inventory screen. use pose calculated when screen was opened
 +			//where is this set up... should be here....

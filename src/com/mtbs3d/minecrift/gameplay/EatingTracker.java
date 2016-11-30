@@ -66,11 +66,13 @@ public void doProcess(Minecraft minecraft, EntityPlayerSP player){
 		}
 
 		if(!eating[c]){
-			if(	Minecraft.getMinecraft().playerController.onPlayerRightClick(player, player.worldObj,is,0,0,0,0, new Vec3(0,0,0))){
-				minecraft.entityRenderer.itemRenderer.resetEquippedProgress();
-				eating[c]=true;
-				eatStart=Minecraft.getSystemTime();
-			}
+			Minecraft.getMinecraft().playerController.sendUseItem(player, player.worldObj, is);//server
+			eating[c]=true;
+			eatStart=Minecraft.getSystemTime();			
+			
+//			if(	Minecraft.getMinecraft().playerController.onPlayerRightClick(player, player.worldObj,is,0,0,0,0, new Vec3(0,0,0))){
+//				//minecraft.entityRenderer.itemRenderer.resetEquippedProgress();
+//			}
 		}
 		int crunchiness;
 		if(is.getItemUseAction() == EnumAction.drink){

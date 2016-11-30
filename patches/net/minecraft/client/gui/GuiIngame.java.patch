@@ -365,7 +365,7 @@
              int var25 = MathHelper.floor_double((double)(this.mc.thePlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
              this.drawString(var8, "f: " + var25 + " (" + Direction.directions[var25] + ") / " + MathHelper.wrapAngleTo180_float(this.mc.thePlayer.rotationYaw), 2, 88, 14737632);
  
-@@ -347,11 +421,28 @@
+@@ -347,11 +421,29 @@
              {
                  this.drawString(var8, String.format("shader: %s", new Object[] {this.mc.entityRenderer.getShaderGroup().getShaderGroupName()}), 2, 112, 14737632);
              }
@@ -381,9 +381,10 @@
 +            this.drawString(var8,"Offhand Look: " + v3Format(mc.roomScale.getControllerOffhandDir_World()) , 2, 188	, 14737632);
 +            this.drawString(var8,"World Scale: " + mc.vrSettings.vrWorldScale + " World Rotation " + mc.vrSettings.vrWorldRotation , 2, 196	, 14737632);
 + //           this.drawString(var8,"Gui " + MCOpenVR.guiPos_World.x + " " + MCOpenVR.guiPos_World.y + " " + MCOpenVR.guiPos_World.z, 2, 204	, 14737632);
-+              this.drawString(var8,"R Touchpad x " + String.format("%.2f",MCOpenVR.rtbX) + " y " + String.format("%.2f",MCOpenVR.rtbY), 2, 212	, 14737632);
-+            this.drawString(var8,"3rd Person Camera: " + v3Format(mc.entityRenderer.getEyeRenderPos(renderPass.Third)), 2, 220	, 14737632);
++//              this.drawString(var8,"R Touchpad x " + String.format("%.2f",MCOpenVR.rtbX) + " y " + String.format("%.2f",MCOpenVR.rtbY), 2, 212	, 14737632);
++            //this.drawString(var8,"3rd Person Camera: " + v3Format(mc.entityRenderer.getEyeRenderPos(renderPass.Third)), 2, 220	, 14737632);
 +            //this.drawString(var8,"Depth: " + mc.getDepthOfPosition(mc.roomScale.getHMDPos_World()), 2, 228	, 14737632);
++            this.drawString(var8,"RunDir: " + mc.runTracker.getYaw() , 2, 212	, 14737632);
 +            
 +            }
  
@@ -395,7 +396,7 @@
          if (this.recordPlayingUpFor > 0)
          {
              this.mc.mcProfiler.startSection("overlayMessage");
-@@ -366,7 +457,7 @@
+@@ -366,7 +458,7 @@
              if (var13 > 8)
              {
                  GL11.glPushMatrix();
@@ -404,7 +405,7 @@
                  GL11.glEnable(GL11.GL_BLEND);
                  OpenGlHelper.glBlendFunc(770, 771, 1, 0);
                  var14 = 16777215;
-@@ -388,14 +479,14 @@
+@@ -388,14 +480,14 @@
  
          if (var37 != null)
          {
@@ -421,7 +422,7 @@
          this.mc.mcProfiler.startSection("chat");
          this.persistantChatGUI.drawChat(this.updateCounter);
          this.mc.mcProfiler.endSection();
-@@ -422,7 +513,7 @@
+@@ -422,7 +514,7 @@
                  var46 = 150;
              }
  
@@ -430,7 +431,7 @@
              byte var47 = 10;
              drawRect(var19 - 1, var47 - 1, var19 + var46 * var17, var47 + 9 * var16, Integer.MIN_VALUE);
  
-@@ -501,9 +592,10 @@
+@@ -501,9 +593,10 @@
      {
          this.streamIndicator.render((int)(p_152126_1_ - 10.0F), 10);
      }
@@ -444,7 +445,7 @@
          Scoreboard var5 = p_96136_1_.getScoreboard();
          Collection var6 = var5.getSortedScores(p_96136_1_);
  
-@@ -549,9 +641,10 @@
+@@ -549,9 +642,10 @@
              }
          }
      }
@@ -458,7 +459,7 @@
          boolean var3 = this.mc.thePlayer.hurtResistantTime / 3 % 2 == 1;
  
          if (this.mc.thePlayer.hurtResistantTime < 10)
-@@ -559,52 +652,52 @@
+@@ -559,52 +653,52 @@
              var3 = false;
          }
  
@@ -535,7 +536,7 @@
                  {
                      this.drawTexturedModalRect(var23, var18, 16, 9, 9, 9);
                  }
-@@ -616,7 +709,7 @@
+@@ -616,7 +710,7 @@
          int var26;
          int var27;
  
@@ -544,7 +545,7 @@
          {
              var23 = 16;
  
-@@ -636,16 +729,16 @@
+@@ -636,16 +730,16 @@
                  var24 = 1;
              }
  
@@ -565,7 +566,7 @@
              {
                  var27 -= 2;
              }
-@@ -661,12 +754,12 @@
+@@ -661,12 +755,12 @@
  
              if (var3)
              {
@@ -580,7 +581,7 @@
                  {
                      this.drawTexturedModalRect(var26, var27, var23 + 63, 9 * var28, 9, 9);
                  }
-@@ -674,7 +767,7 @@
+@@ -674,7 +768,7 @@
  
              if (var19 > 0.0F)
              {
@@ -589,7 +590,7 @@
                  {
                      this.drawTexturedModalRect(var26, var27, var23 + 153, 9 * var28, 9, 9);
                  }
-@@ -687,22 +780,22 @@
+@@ -687,22 +781,22 @@
              }
              else
              {
@@ -616,7 +617,7 @@
          {
              this.mc.mcProfiler.endStartSection("food");
  
-@@ -718,7 +811,7 @@
+@@ -718,7 +812,7 @@
                      var38 = 13;
                  }
  
@@ -625,7 +626,7 @@
                  {
                      var36 = var13 + (this.rand.nextInt(3) - 1);
                  }
-@@ -733,32 +826,32 @@
+@@ -733,32 +827,32 @@
  
                  if (var6)
                  {
@@ -664,7 +665,7 @@
              var36 = (int)Math.ceil((double)var35.getHealth());
              float var37 = var35.getMaxHealth();
              var26 = (int)(var37 + 0.5F) / 2;
-@@ -830,7 +923,9 @@
+@@ -830,7 +924,9 @@
      /**
       * Renders dragon's (boss) health on the HUD
       */
@@ -675,7 +676,7 @@
      {
          if (BossStatus.bossName != null && BossStatus.statusBarTime > 0)
          {
-@@ -856,9 +951,15 @@
+@@ -856,9 +952,15 @@
              this.mc.getTextureManager().bindTexture(icons);
          }
      }
@@ -693,7 +694,7 @@
          GL11.glDisable(GL11.GL_DEPTH_TEST);
          GL11.glDepthMask(false);
          OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-@@ -881,8 +982,15 @@
+@@ -881,8 +983,15 @@
      /**
       * Renders the vignette. Args: vignetteBrightness, width, height
       */
@@ -710,7 +711,7 @@
          p_73829_1_ = 1.0F - p_73829_1_;
  
          if (p_73829_1_ < 0.0F)
-@@ -913,44 +1021,22 @@
+@@ -913,44 +1022,22 @@
          GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
          OpenGlHelper.glBlendFunc(770, 771, 1, 0);
      }
@@ -765,7 +766,7 @@
      {
          ItemStack var5 = this.mc.thePlayer.inventory.mainInventory[p_73832_1_];
  
-@@ -1039,4 +1125,23 @@
+@@ -1039,4 +1126,23 @@
      {
          return this.updateCounter;
      }

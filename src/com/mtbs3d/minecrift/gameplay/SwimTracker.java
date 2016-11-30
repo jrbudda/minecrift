@@ -55,7 +55,7 @@ public class SwimTracker {
 			
 			if(!mat.isLiquid())
 			{
-				waterLine=bp.getBlockBoundsMinY();
+				waterLine=by;
 				break;
 			}
 			by++;
@@ -127,11 +127,11 @@ public class SwimTracker {
 		Vec3 controllerR= minecraft.roomScale.getControllerPos_World(0);
 		Vec3 controllerL= minecraft.roomScale.getControllerPos_World(1);
 
-		Vec3 middle= controllerL.subtract(controllerR).scale(0.5).add(controllerR);
+		Vec3 middle= (controllerL.subtractProperly(controllerR).scale(0.5)).add(controllerR);
 
-		Vec3 hmdPos=minecraft.roomScale.getHMDPos_World().subtract(0,0.3,0);
+		Vec3 hmdPos=minecraft.roomScale.getHMDPos_World().subtractProperly(0,0.3,0);
 
-		Vec3 movedir=middle.subtract(hmdPos).normalize().add(
+		Vec3 movedir=middle.subtractProperly(hmdPos).normalize().add(
 				minecraft.roomScale.getHMDDir_World()).scale(0.5);
 
 		Vec3 contollerDir= minecraft.roomScale.getCustomControllerVector(0,new Vec3(0,0,-1)).add(
@@ -142,9 +142,8 @@ public class SwimTracker {
 		double distDelta=lastDist-distance;
 
 		if(distDelta>0){
-			Vec3 velo= OpenVRPlayer.vecMult(movedir, (float)(distDelta*swimspeed*dirfactor));
-		
-			motion=motion.add(OpenVRPlayer.vecMult(velo,0.15f));
+			Vec3 velo= movedir.scale(distDelta*swimspeed*dirfactor);	
+			motion=motion.add(velo.scale(0.15));
 		}
 
 		lastDist=distance;

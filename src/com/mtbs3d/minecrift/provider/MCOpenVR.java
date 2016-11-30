@@ -1754,7 +1754,7 @@ public class MCOpenVR
 		}
 		
 		// main menu/win game/
-		if (mc.theWorld==null || mc.currentScreen instanceof GuiWinGame ) {
+		if (mc.theWorld==null || newScreen instanceof GuiWinGame ) {
 			//TODO reset scale things
 			MCOpenVR.guiScale = 2.0f;
 			mc.vrPlayer.worldScale = 1;
@@ -2012,9 +2012,8 @@ public class MCOpenVR
 		
 		// grab controller position in tracker space, scaled to minecraft units
 		Vector3f controllerPos = OpenVRUtil.convertMatrix4ftoTranslationVector(controllerPose[0]);
-		aimSource[0].xCoord = controllerPos.x;
-		aimSource[0].yCoord = controllerPos.y;
-		aimSource[0].zCoord = controllerPos.z;
+		
+		aimSource[0] = Vec3.createVectorHelper(controllerPos.x, controllerPos.y, controllerPos.z);
 
 		controllerHistory[0].add(aimSource[0]);
 		
@@ -2103,9 +2102,8 @@ public class MCOpenVR
 	
 		// update off hand aim
 		Vector3f leftControllerPos = OpenVRUtil.convertMatrix4ftoTranslationVector(controllerPose[1]);
-		aimSource[1].xCoord = leftControllerPos.x;
-		aimSource[1].yCoord = leftControllerPos.y;
-		aimSource[1].zCoord = leftControllerPos.z;
+		
+		aimSource[1] = Vec3.createVectorHelper(leftControllerPos.x, leftControllerPos.y, leftControllerPos.z);
 
 		controllerHistory[1].add(aimSource[1]);
 		

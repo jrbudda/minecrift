@@ -36,8 +36,8 @@ public class Installer extends JPanel  implements PropertyChangeListener
     private static final boolean ALLOW_HYDRA_INSTALL = false;  // TODO: Change to true once Hydra is fixed up
 	private static final boolean ALLOW_SHADERSMOD_INSTALL = true;  
 
-    private static final boolean NEEDS_2010_REDIST = true;
-    private static final boolean NEEDS_2012_REDIST = true;
+    private static final boolean NEEDS_2010_REDIST = false;
+    private static final boolean NEEDS_2012_REDIST = false;
 
     // Currently needed for Win boxes - C++ redists
 

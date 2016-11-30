@@ -128,7 +128,7 @@ public class Vec3History {
 			out=out.addVector(i.data.xCoord, i.data.yCoord, i.data.zCoord);
 		}
 		if(j==0) return out;
-		return Vec3.createVectorHelper(out.xCoord/j, out.yCoord/j, out.yCoord/j);
+		return Vec3.createVectorHelper(out.xCoord/j, out.yCoord/j, out.zCoord/j);
 	}
 	
 }

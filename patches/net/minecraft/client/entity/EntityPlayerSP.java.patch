@@ -41,7 +41,7 @@
  import net.minecraft.world.World;
  
  public class EntityPlayerSP extends AbstractClientPlayer
-@@ -61,6 +77,20 @@
+@@ -61,6 +77,19 @@
       */
      protected int sprintToggleTimer;
  
@@ -56,13 +56,12 @@
 +    public double additionZ = 0;
 +    public double additionY = 0;
 +    public final float PIOVER180 = (float)Math.PI / 180.0F;
-+    public Vec3 directionVec = Vec3.createVectorHelper(0, 0, 0);
 +    /** END MINECRIFT **/
 +    
      /** Ticks left before sprinting is disabled. */
      public int sprintingTicksLeft;
      public float renderArmYaw;
-@@ -80,13 +110,46 @@
+@@ -80,13 +109,46 @@
      public float prevTimeInPortal;
      private static final String __OBFID = "CL_00000938";
  
@@ -109,7 +108,7 @@
      public void updateEntityActionState()
      {
          super.updateEntityActionState();
-@@ -99,6 +162,7 @@
+@@ -99,6 +161,7 @@
          this.renderArmYaw = (float)((double)this.renderArmYaw + (double)(this.rotationYaw - this.renderArmYaw) * 0.5D);
      }
  
@@ -117,7 +116,7 @@
      /**
       * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
       * use this to react to sunlight and start to burn.
-@@ -182,7 +246,9 @@
+@@ -182,7 +245,9 @@
              }
  
              boolean var1 = this.movementInput.jump;
@@ -128,7 +127,7 @@
              boolean var3 = this.movementInput.moveForward >= var2;
              this.movementInput.updatePlayerMoveState();
  
-@@ -195,20 +261,28 @@
+@@ -195,20 +260,28 @@
  
              if (this.movementInput.sneak && this.yOffset2 < 0.2F)
              {
@@ -163,7 +162,7 @@
                  }
                  else
                  {
-@@ -252,7 +326,7 @@
+@@ -252,7 +325,7 @@
                      this.motionY += 0.15D;
                  }
              }
@@ -172,7 +171,7 @@
              if (this.isRidingHorse())
              {
                  if (this.horseJumpPowerCounter < 0)
-@@ -296,6 +370,10 @@
+@@ -296,6 +369,10 @@
  
              super.onLivingUpdate();
  
@@ -183,7 +182,7 @@
              if (this.onGround && this.capabilities.isFlying)
              {
                  this.capabilities.isFlying = false;
-@@ -341,7 +419,14 @@
+@@ -341,7 +418,14 @@
              var1 *= 1.0F - var4 * 0.15F;
          }
  
@@ -199,7 +198,7 @@
      }
  
      /**
-@@ -524,70 +609,168 @@
+@@ -524,70 +608,168 @@
      {
          return this.worldObj.getBlock(p_71153_1_, p_71153_2_, p_71153_3_).isNormalCube();
      }
@@ -414,7 +413,7 @@
  
          return false;
      }
-@@ -640,6 +823,15 @@
+@@ -640,6 +822,15 @@
  
      public void playSound(String name, float volume, float pitch)
      {
@@ -430,7 +429,7 @@
          this.worldObj.playSound(this.posX, this.posY - (double)this.yOffset, this.posZ, name, volume, pitch, false);
      }
  
-@@ -662,4 +854,285 @@
+@@ -662,4 +853,283 @@
      }
  
      protected void sendHorseJump() {}
@@ -520,9 +519,7 @@
 +            strafe *= speed;
 +            forward *= speed;
 +
-+            directionVec.xCoord = strafe;
-+            directionVec.yCoord = 0;
-+            directionVec.zCoord = forward;
++            Vec3 directionVec = Vec3.createVectorHelper(strafe, 0, forward);
 +	  						
 +         	//VIVE DO PITCH FLYING		
 +
@@ -555,8 +552,8 @@
 +                	directionVec.rotateAroundY(-con.getHMDYaw_World() * PIOVER180);	
 +    				break;
 +    			case VRSettings.FREEMOVE_RUNINPLACE:
-+    				directionVec.rotateAroundY((float) (-mc.runTracker.getYaw() * PIOVER180));
-+    				directionVec = OpenVRPlayer.vecMult(directionVec, (float)mc.runTracker.getSpeed());
++                	directionVec=directionVec.rotateYaw((float) (-mc.runTracker.getYaw() * PIOVER180));
++    				directionVec=directionVec.scale(mc.runTracker.getSpeed());
 +    				break;
 +    			}    		    	    			
 +    		}

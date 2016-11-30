@@ -264,7 +264,7 @@
  
          GL11.glPopMatrix();
      }
-@@ -240,372 +257,587 @@
+@@ -240,372 +257,600 @@
  
          p_78439_0_.draw();
      }
@@ -603,6 +603,7 @@
 +	    			EnumAction var23 = renderitem8.getItemUseAction();
 +	    			if (var23 == EnumAction.eat || var23 == EnumAction.drink)
 +	    			{
++	    			if(!Minecraft.getMinecraft().autoFood.isEating()) {
 +	    				var14 = (float)player.getItemInUseCount() - nano + 1.0F;
 +	    				var15 = 1.0F - var14 / (float)renderitem8.getMaxItemUseDuration();
 +	    				var16 = 1.0F - var15;
@@ -616,6 +617,10 @@
 +	    				GL11.glRotatef(var17 * 10.0F, 1.0F, 0.0F, 0.0F);
 +	    				GL11.glRotatef(var17 * 30.0F, 0.0F, 0.0F, 1.0F);
 +	    				swing = false;
++	    		    } else { //OM NOM NOM NOM
++	    				long t = player.getItemInUseCount();
++	    				GL11.glTranslatef(0,(float) (0.006*Math.sin(t)), 0);
++	    		    }
 +	    			}
 +	    		}
 +	    		
@@ -1035,23 +1040,31 @@
 +		// VIVE start - screen flash when hurt instead of view tilt
 +		 EntityClientPlayerMP player = mc.thePlayer;
 +		if (player!=null) {
-+			if( player.getHealth() > 0.0f)		
++			float var3 = (float)player.hurtTime - par1_;
++
++			float percent = 1 - player.getHealth() / player.getMaxHealth();
++			percent = percent * 0.15f;
++
++			if (var3>0.0f)
 +			{
-+				float var3 = (float)player.hurtTime - par1_;
-+				if (var3>0.0f)
-+				{
-+					var3 /= (float) player.maxHurtTime;
-+					var3 = MathHelper.sin(var3 * var3 * var3 * var3 * (float) Math.PI) * 0.5f;
-+					r = 1;
-+					a = var3;
-+				} 
-+			} 
++				var3 /= (float) player.maxHurtTime;
++				var3 = percent + MathHelper.sin(var3 * var3 * var3 * var3 * (float) Math.PI) * 0.5f;
++				r = 1;
++				a = var3;
++			} else {
++				r = 1;
++				a = percent;
++				if (mc.playerController.isInCreativeMode()) a = 0;
++			}
++
 +
 +			if (player.isPlayerSleeping()){
++				r=g=b=0;
 +				a = .8f;
 +			}
 +			
 +			if (MCOpenVR.isWalkingAbout){
++				r=g=b=0;
 +				a = .8f;
 +			}
 +			
@@ -1189,7 +1202,7 @@
      }
  
      /**
-@@ -621,14 +853,17 @@
+@@ -621,14 +866,17 @@
          GL11.glEnable(GL11.GL_BLEND);
          OpenGlHelper.glBlendFunc(770, 771, 1, 0);
          GL11.glPushMatrix();

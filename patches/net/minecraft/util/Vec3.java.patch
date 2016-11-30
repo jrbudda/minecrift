@@ -10,7 +10,7 @@
      {
          if (x == -0.0D)
          {
-@@ -240,4 +241,27 @@
+@@ -240,4 +241,31 @@
          double var8 = this.zCoord;
          this.setComponents(var4, var6, var8);
      }
@@ -21,11 +21,15 @@
 +	}
 +
 +	public Vec3 add(Vec3 other) {
-+		return new Vec3(this.xCoord*+other.xCoord, this.yCoord+other.yCoord, this.zCoord+other.zCoord);
++		return new Vec3(this.xCoord+other.xCoord, this.yCoord+other.yCoord, this.zCoord+other.zCoord);
 +	}
 +
-+	public Vec3 subtract(double i, double d, double j) {
-+		return new Vec3(this.xCoord-i, this.yCoord-d, this.zCoord-j);
++	public Vec3 subtractProperly(double x, double y, double z) {
++		return new Vec3(this.xCoord-x, this.yCoord-y, this.zCoord-z);
++	}
++	
++	public Vec3 subtractProperly(Vec3 other) {
++		return new Vec3(this.xCoord-other.xCoord, this.yCoord-other.yCoord, this.zCoord-other.zCoord);
 +	}
 +
 +	public Vec3 rotateYaw(float angle) {
