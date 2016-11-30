@@ -203,7 +203,7 @@ public class VR_IVRSystem_FnTable extends Structure {
 		jopenvr.HiddenAreaMesh_t.ByValue apply(int eEye);
 	};
 	public interface GetControllerState_callback extends Callback {
-		byte apply(int unControllerDeviceIndex, VRControllerState_t pControllerState);
+		byte apply(int unControllerDeviceIndex, VRControllerState_t pControllerState, int controllerStateSize);
 	};
 	public interface GetControllerStateWithPose_callback extends Callback {
 		byte apply(int eOrigin, int unControllerDeviceIndex, VRControllerState_t pControllerState, TrackedDevicePose_t pTrackedDevicePose);

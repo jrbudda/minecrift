@@ -1074,7 +1074,7 @@ public class MCOpenVR
 			// read new state
 			if (controllerDeviceIndex[c] != -1)
 			{			
-				vrsystem.GetControllerState.apply(controllerDeviceIndex[c], inputStateRefernceArray[c]);
+				vrsystem.GetControllerState.apply(controllerDeviceIndex[c], inputStateRefernceArray[c], inputStateRefernceArray[c].size());
 				inputStateRefernceArray[c].read();
 				controllerStateReference[c] = inputStateRefernceArray[c];			
 			} else
