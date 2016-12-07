@@ -17,6 +17,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.mtbs3d.minecrift.control.VRControllerButtonMapping;
 import com.mtbs3d.minecrift.control.ViveButtons;
 import com.mtbs3d.minecrift.gui.framework.GuiEnterText;
+import com.mtbs3d.minecrift.provider.MCOpenVR;
 
 public class GuiVRControlsList extends GuiListExtended
 {
@@ -72,17 +73,22 @@ public class GuiVRControlsList extends GuiListExtended
         this.parent = parent;
         this.mc = mc;
         
-        VRControllerButtonMapping[] bindings = (VRControllerButtonMapping[])ArrayUtils.clone(mc.vrSettings.buttonMappings);
         
-        this.listEntries = new GuiListExtended.IGuiListEntry[bindings.length];
-        
-      //  Arrays.sort(bindings);
+        ArrayList<VRControllerButtonMapping> bindings = new ArrayList<VRControllerButtonMapping>();
+        for (VRControllerButtonMapping vb : mc.vrSettings.buttonMappings) {
+        	if(MCOpenVR.isVive && vb.Button.name().startsWith("BUTTON")) bindings.add(vb);
+        	if(!MCOpenVR.isVive && vb.Button.name().startsWith("OCULUS")) bindings.add(vb); 
+        }
+
+        this.listEntries = new GuiListExtended.IGuiListEntry[bindings.size()];
+
+        //  Arrays.sort(bindings);
         String var5 = null;
         int var4 = 0;
-        int var7 = bindings.length;
+        int var7 = bindings.size();
         for (int i = 0; i < var7; i++)
         {
-        	VRControllerButtonMapping kb = bindings[i];
+        	VRControllerButtonMapping kb = bindings.get(i);
             String cat = "VR"; // kb.getKeyCategory();
 
             if (!cat.equals(var5))
@@ -175,7 +181,7 @@ public class GuiVRControlsList extends GuiListExtended
         public void drawEntry(int p_148279_1_, int x, int y, int p_148279_4_, int p_148279_5_, Tessellator p_148279_6_, int p_148279_7_, int p_148279_8_, boolean p_148279_9_)
         {
 
-        	GuiVRControlsList.this.mc.fontRendererObj.drawString(myKey.Button.toString().replace("BUTTON_", ""), x + 40  - GuiVRControlsList.this.maxListLabelWidth, y + p_148279_5_ / 2 - GuiVRControlsList.this.mc.fontRendererObj.FONT_HEIGHT / 2, 16777215);
+        	GuiVRControlsList.this.mc.fontRendererObj.drawString(myKey.Button.toString().replace("BUTTON_", "").replace("OCULUS_", ""), x + 40  - GuiVRControlsList.this.maxListLabelWidth, y + p_148279_5_ / 2 - GuiVRControlsList.this.mc.fontRendererObj.FONT_HEIGHT / 2, 16777215);
         	this.btnChangeKeyBinding.xPosition = x + 90;
         	this.btnChangeKeyBinding.yPosition = y;
         	this.btnChangeKeyBinding.displayString = I18n.format(this.myKey.FunctionDesc, new Object[0]);             

@@ -5,6 +5,8 @@
 package com.mtbs3d.minecrift.api;
 
 
+import com.mtbs3d.minecrift.render.RenderConfigException;
+
 import de.fruitfly.ovr.enums.EyeType;
 import de.fruitfly.ovr.structs.*;
 import net.minecraft.client.Minecraft.renderPass;
@@ -64,7 +66,7 @@ public interface IStereoProvider
 
 	RenderTextureInfo getRenderTextureSizes(float renderScaleFactor);
 
-	public void endFrame();
+	public void endFrame() throws RenderConfigException;
 
 	public String getName();
 

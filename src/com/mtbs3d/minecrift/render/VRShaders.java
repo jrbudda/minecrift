@@ -122,5 +122,35 @@ public class VRShaders {
 					"\n" +
 					"     gl_FragColor = fragmentColor;\n" +
 					" }\n";
+
+	public static final String FOV_REDUCTION_VERTEX_SHADER = 
+			"#version 110\n" +
+			"void main() {\n" +
+			    "gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n" +
+			    "gl_TexCoord[0] = gl_MultiTexCoord0;" +
+			"}\n";
+	
+	public static final String FOV_REDUCTION_FRAGMENT_SHADER =
+			"#version 120\n" +
+					"\n" +
+					" uniform sampler2D tex0;\n" +
+					" uniform float circle_radius;"+
+					" uniform float border;"+
+					"\n" +				
+					" void main(){\n" +
+					"  vec4 circle_color = vec4(0.0, 0, 0, 1.0);"+
+					"  vec2 circle_center = vec2(0.5, 0.5);"+
+					"  vec2 uv = gl_TexCoord[0].xy; "+				  
+					"  vec4 bkg_color = texture2D(tex0,gl_TexCoord[0].st); "+					  
+					"  uv -= circle_center; "+					  
+					"  float dist =  sqrt(dot(uv, uv)); "+
+					"  float t = 1.0 + smoothstep(circle_radius, circle_radius+10, dist)"+ 
+		            "  - smoothstep(circle_radius-border, circle_radius, dist);"+
+					"  gl_FragColor = mix(circle_color, bkg_color,t);"+
+					" }\n";
 	
 }
+
+
+
+

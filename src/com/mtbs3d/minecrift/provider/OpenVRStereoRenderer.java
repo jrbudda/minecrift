@@ -1,6 +1,7 @@
 package com.mtbs3d.minecrift.provider;
 
 import com.mtbs3d.minecrift.api.IStereoProvider;
+import com.mtbs3d.minecrift.render.RenderConfigException;
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 
@@ -12,6 +13,7 @@ import jopenvr.JOpenVRLibrary;
 import jopenvr.OpenVRUtil;
 import jopenvr.Texture_t;
 import jopenvr.VRTextureBounds_t;
+import jopenvr.JOpenVRLibrary.EVRCompositorError;
 import net.minecraft.client.Minecraft.renderPass;
 import net.minecraft.client.gui.GuiScreen;
 
@@ -203,22 +205,54 @@ public class OpenVRStereoRenderer implements IStereoProvider
 	}
 
 	
-	public void endFrame() {
+	public void endFrame() throws RenderConfigException {
 		if(MCOpenVR.vrCompositor.Submit == null) return;
 		
-		MCOpenVR.vrCompositor.Submit.apply(
+		int lret = MCOpenVR.vrCompositor.Submit.apply(
 				JOpenVRLibrary.EVREye.EVREye_Eye_Left,
 				MCOpenVR.texType0, null,
 				JOpenVRLibrary.EVRSubmitFlags.EVRSubmitFlags_Submit_Default);
 
-		 MCOpenVR.vrCompositor.Submit.apply(
+		int rret = MCOpenVR.vrCompositor.Submit.apply(
 				JOpenVRLibrary.EVREye.EVREye_Eye_Right,
 				MCOpenVR.texType1, null,
 				JOpenVRLibrary.EVRSubmitFlags.EVRSubmitFlags_Submit_Default);
 
+		if(lret + rret > 0){
+			throw new RenderConfigException("Compositor Error","Texture submission error: Left/Right " + getCompostiorError(lret) + "/" + getCompostiorError(rret));		
+		}
+
 		MCOpenVR.vrCompositor.PostPresentHandoff.apply();
 	}
 
+	
+	public String getCompostiorError(int code){
+		switch (code){
+		case EVRCompositorError.EVRCompositorError_VRCompositorError_DoNotHaveFocus:
+			return "DoesNotHaveFocus";
+		case EVRCompositorError.EVRCompositorError_VRCompositorError_IncompatibleVersion:
+			return "IncompatibleVersion";
+		case EVRCompositorError.EVRCompositorError_VRCompositorError_IndexOutOfRange:
+			return "IndexOutOfRange";
+		case EVRCompositorError.EVRCompositorError_VRCompositorError_InvalidTexture:
+			return "InvalidTexture";
+		case EVRCompositorError.EVRCompositorError_VRCompositorError_IsNotSceneApplication:
+			return "IsNotSceneApplication";
+		case EVRCompositorError.EVRCompositorError_VRCompositorError_RequestFailed:
+			return "RequestFailed";
+		case EVRCompositorError.EVRCompositorError_VRCompositorError_SharedTexturesNotSupported:
+			return "SharedTexturesNotSupported";
+		case EVRCompositorError.EVRCompositorError_VRCompositorError_TextureIsOnWrongDevice:
+			return "TextureIsOnWrongDevice";
+		case EVRCompositorError.EVRCompositorError_VRCompositorError_TextureUsesUnsupportedFormat:
+			return "TextureUsesUnsupportedFormat:";
+		case EVRCompositorError.EVRCompositorError_VRCompositorError_None:
+			return "None:";
+		case EVRCompositorError.EVRCompositorError_VRCompositorError_AlreadySubmitted:
+			return "AlreadySubmitted:";
+		}
+		return "Unknown";
+	}
 	
 	@Override
 	public boolean providesStencilMask() {

@@ -86,7 +86,7 @@
  import net.minecraft.potion.Potion;
  import net.minecraft.server.integrated.IntegratedServer;
  import net.minecraft.src.Config;
-@@ -61,2593 +99,4842 @@
+@@ -61,2593 +99,4841 @@
  import net.minecraft.world.World;
  import net.minecraft.world.WorldProvider;
  import net.minecraft.world.biome.BiomeGenBase;
@@ -4613,8 +4613,7 @@
 +		int mouseX = 0;
 +		int mouseY = 0;
 +		final ScaledResolution var15 = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
-+
-+		
++	
 +		if (this.mc.showSplashScreen)
 +		{
 +    		this.mc.showSplash(this.mc.getFramebuffer());

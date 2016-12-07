@@ -153,7 +153,7 @@
  import net.minecraft.world.EnumDifficulty;
  import net.minecraft.world.WorldProviderEnd;
  import net.minecraft.world.WorldProviderHell;
-@@ -150,2988 +224,4801 @@
+@@ -150,2988 +224,4838 @@
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
@@ -1941,6 +1941,10 @@
 +	public int _DepthMask_viewMatrix = -1;
 +	public int _DepthMask_passUniform = -1;
 +	public int _DepthMask_keyColorUniform = -1;
++	public int _FOVReduction_RadiusUniform = -1;
++	public int _FOVReduction_BorderUniform = -1;
++	public int _FOVReduction_TextureUniform= -1;
++	public int _FOVReduction_shaderProgramId = -1;
 +	private FloatBuffer matrixBuffer = GLAllocation.createDirectFloatBuffer(16);
 +	private Framebuffer mirrorFB = null;
 +	private Framebuffer fsaaFirstPassResultFBO;
@@ -1983,7 +1987,7 @@
 +	 * The minecriftVerString will be automatically updated by the build scripts, do not modify here.
 +	 * Modify minecriftversion.py in root minecrift dir.
 +	 */
-+    public final String minecriftVerString = "Vivecraft 1.7.10 Vivecraft-jrbudda32";
++    public final String minecriftVerString = "Vivecraft 1.7.10 Vivecraft-jrbudda33";
 +	/* end version */
 +	/** END MINECRIFT */
 +
@@ -3071,7 +3075,11 @@
 +			mcProfiler.endSection();
 +			
 +			mcProfiler.startSection("Display/Reproject");
++			try {
 +				this.stereoProvider.endFrame();
++			} catch (Exception e) {
++				logger.error(e);
++			}
 +			mcProfiler.endSection();
 +
 +			////END MAIN VIVECRAFT RENDERING
@@ -3180,8 +3188,24 @@
 +							framebufferEye0.bindFramebuffer(true); //draw to L eye tex
 +						else
 +							framebufferEye1.bindFramebuffer(true); //draw to R eye tex
-+						framebuffer.framebufferRender(framebufferEye0.framebufferWidth, framebufferEye0.framebufferHeight);
-+					}
++						if(vrSettings.useFOVReduction && vrSettings.vrFreeMove){
++							if( thePlayer !=null && (Math.abs(thePlayer.moveForward) > 0 || Math.abs(thePlayer.moveStrafing) > 0)) {	
++							fov -=0.05;
++							if(fov < 0.22) fov = 0.22f;
++							} else {
++								fov +=0.01;
++								if(fov > 0.8) fov = 0.8f;				
++							}
++							ARBShaderObjects.glUseProgramObjectARB(_FOVReduction_shaderProgramId);
++							ARBShaderObjects.glUniform1fARB(_FOVReduction_RadiusUniform, fov);
++							ARBShaderObjects.glUniform1iARB(_FOVReduction_TextureUniform, 0);
++							ARBShaderObjects.glUniform1fARB(_FOVReduction_BorderUniform, 0.06f);
++							framebuffer.framebufferRender(framebufferEye0.framebufferWidth, framebufferEye0.framebufferHeight);
++							ARBShaderObjects.glUseProgramObjectARB(0);
++						}	
++						else{
++							framebuffer.framebufferRender(framebufferEye0.framebufferWidth, framebufferEye0.framebufferHeight);
++						}					}
 +				this.mcProfiler.endSection();
 +			
 +				//this.mcProfiler.startSection("OpenGL Finish");
@@ -3192,7 +3216,12 @@
 +					if(this.stereoProvider.isStereo())
 +						this.stereoProvider.endFrame(this.currentPass);
 +					else
-+						this.stereoProvider.endFrame();
++						try {
++							this.stereoProvider.endFrame();
++						} catch (RenderConfigException e) {
++							// TODO Auto-generated catch block
++							e.printStackTrace();
++						}
 +				this.mcProfiler.endSection();
 +			}
 +	
@@ -3206,6 +3235,8 @@
 +		return shouldupdate;
 +	}
 +
++	private float fov;
++	
 +	/**
 +	 * Called to ensure everything gets drawn right when window size is changed
 +	 */
@@ -7155,6 +7186,20 @@
 +			_DepthMask_passUniform = ARBShaderObjects.glGetUniformLocationARB(_DepthMask_shaderProgramId, "pass");
 +			_DepthMask_keyColorUniform = ARBShaderObjects.glGetUniformLocationARB(_DepthMask_shaderProgramId, "keyColor");
 +			
++			
++			_FOVReduction_shaderProgramId = ShaderHelper.initShaders(VRShaders.FOV_REDUCTION_VERTEX_SHADER, VRShaders.FOV_REDUCTION_FRAGMENT_SHADER, true);
++			if (_FOVReduction_shaderProgramId == 0) {
++				throw new Exception("Failed to validate FOV shader!");
++			}
++
++			ShaderHelper.checkGLError("@1");
++
++			// Setup uniform IDs
++			_FOVReduction_RadiusUniform = ARBShaderObjects.glGetUniformLocationARB(_FOVReduction_shaderProgramId, "circle_radius");
++			_FOVReduction_BorderUniform = ARBShaderObjects.glGetUniformLocationARB(_FOVReduction_shaderProgramId, "border");
++			_FOVReduction_TextureUniform = ARBShaderObjects.glGetUniformLocationARB(_FOVReduction_shaderProgramId, "tex0");
++
++			ShaderHelper.checkGLError("FBO init FOV shader");
 +			checkGLError("post select");
 +			entityRenderer.setupClipPlanes();
 +
@@ -7468,14 +7513,6 @@
 +		{
 +			e.printStackTrace();
 +		}
-+	}
-+
-+	public boolean endFrame()
-+	{				
-+		if (this.stereoProvider != null)
-+			this.stereoProvider.endFrame();
-+
-+		return true;
 +	}
 +
 +	public double getCurrentTimeSecs()

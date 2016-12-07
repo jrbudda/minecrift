@@ -4,6 +4,9 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
+
+import jopenvr.JOpenVRLibrary.EVRCompositorError;
+
 import java.util.Arrays;
 import java.util.List;
 /**

@@ -35,6 +35,7 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
     		VRSettings.VrOptions.FREEMOVE_MODE,
             VRSettings.VrOptions.MOVEMENT_MULTIPLIER,
             VRSettings.VrOptions.INERTIA_FACTOR,
+            VRSettings.VrOptions.FOV_REDUCTION
     };
     
     public GuiLocomotionSettings(GuiScreen guiScreen, VRSettings guivrSettings) {
@@ -177,6 +178,7 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                 vr.realisticSwimEnabled = true;
                 vr.realisticRowEnabled = true;
                 vr.vehicleRotation = false;
+                vr.useFOVReduction = false;
                 //end jrbudda
                 
                 Minecraft.getMinecraft().gameSettings.viewBobbing = true;
@@ -342,6 +344,11 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                             "Riding in a vehicle will rotate the world",
                             "as the vehicle rotates. May be disorienting."
                             
+                    } ;
+                case FOV_REDUCTION:
+                    return new String[] {
+                            "Shrinks the field of view while moving. Can help with",
+                            "motion sickness."
                     } ;
                 default:
                     return null;

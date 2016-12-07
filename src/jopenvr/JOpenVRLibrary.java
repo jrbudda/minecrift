@@ -577,6 +577,7 @@ public class JOpenVRLibrary implements Library {
 	public static interface EChaperoneImportFlags {
 		public static final int EChaperoneImportFlags_EChaperoneImport_BoundsOnly = 1;
 	};
+	
 	public static interface EVRCompositorError {
 		public static final int EVRCompositorError_VRCompositorError_None = 0;
 		public static final int EVRCompositorError_VRCompositorError_RequestFailed = 1;
@@ -588,6 +589,7 @@ public class JOpenVRLibrary implements Library {
 		public static final int EVRCompositorError_VRCompositorError_TextureUsesUnsupportedFormat = 105;
 		public static final int EVRCompositorError_VRCompositorError_SharedTexturesNotSupported = 106;
 		public static final int EVRCompositorError_VRCompositorError_IndexOutOfRange = 107;
+		public static final int EVRCompositorError_VRCompositorError_AlreadySubmitted= 108;	
 	};
 	/** enum values */
 	public static interface VROverlayInputMethod {

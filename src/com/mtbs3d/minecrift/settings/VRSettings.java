@@ -95,6 +95,7 @@ public class VRSettings
     public float hudYawOffset = 0.0f;
     public boolean floatInventory = true; //false not working yet, have to account for rotation and tilt in MCOpenVR>processGui()
     public boolean useFsaa = false;   // default to off
+    public boolean useFOVReduction = false;   // default to off
     public String stereoProviderPluginID = "openvr";
     public String badStereoProviderPluginID = "";
     public float crosshairScale = 1.0f;
@@ -514,8 +515,12 @@ public class VRSettings
                     if(optionTokens[0].equals("vehicleRotation")){
                         this.vehicleRotation=optionTokens[1].equals("true");
                     }
+                    
+                    if(optionTokens[0].equals("fovReduction")){
+                        this.useFOVReduction=optionTokens[1].equals("true");
+                    }
 
-                    if (optionTokens[0].startsWith("BUTTON_"))
+                    if (optionTokens[0].startsWith("BUTTON_")  || optionTokens[0].startsWith("OCULUS_"))
                     {
                        VRControllerButtonMapping vb = new VRControllerButtonMapping(
                     		   Enum.valueOf(ViveButtons.class, optionTokens[0]),"");
@@ -561,12 +566,13 @@ public class VRSettings
     }
 
 	public void processBindings() {
-		//process button mappings           
-		for (int i = 0; i < 16;i++){
+		//process button mappings     
+		int offset = 0;
+		for (int i = 0; i < buttonMappings.length;i++){
 			VRControllerButtonMapping vb = buttonMappings[i];
 
 			if(vb==null) { //shouldnt
-		        vb = new VRControllerButtonMapping(ViveButtons.values()[i],"none");
+		        vb = new VRControllerButtonMapping(ViveButtons.values()[i + offset],"none");
 		        buttonMappings[i] = vb;
 			}
 			
@@ -796,6 +802,8 @@ public class VRSettings
                 case FREEMOVE_RUNINPLACE:
                 	return var4 + " RunInPlace";
                 }
+            case FOV_REDUCTION:
+                return this.useFOVReduction ? var4 + "ON" : var4 + "OFF";
  	        default:
 	        	return "";
         }
@@ -1031,7 +1039,9 @@ public class VRSettings
                 	break;
                 }
                 break;
-                
+            case FOV_REDUCTION:
+            	useFOVReduction = !useFOVReduction;
+            	break;
             default:
                     break;
     	}
@@ -1213,7 +1223,8 @@ public class VRSettings
             var5.println("autoCalibration:" + this.autoCalibration);
             var5.println("manualCalibration:" + this.manualCalibration);
             var5.println("vehicleRotation:" + this.vehicleRotation);
-
+            var5.println("fovReduction:" + this.useFOVReduction);
+            
             if (vrQuickCommands == null) vrQuickCommands = getQuickCommandsDefaults(); //defaults
             
             for (int i = 0; i < 11 ; i++){
@@ -1223,7 +1234,7 @@ public class VRSettings
            
             if (buttonMappings == null) resetBindings(); //defaults
               
-            for (int i = 0; i<16;i++){
+            for (int i = 0; i<buttonMappings.length;i++){
             	VRControllerButtonMapping vb = buttonMappings[i];
             	var5.println(vb.toString());
 			}
@@ -1384,6 +1395,7 @@ public class VRSettings
         X_SENSITIVITY("Rotation Speed",true,false),
         Y_SENSITIVITY("Y Sensitivity",true,false),
         KEYHOLE("Keyhole",true,false),
+        FOV_REDUCTION("FOV Comfort Reduction",false,true),
         
         // OTher buttons
         OTHER_HUD_SETTINGS("Overlay/Crosshair/Chat...", false, true),
@@ -1659,30 +1671,50 @@ public class VRSettings
     }
 
     private VRControllerButtonMapping[] getBindingsDefaults(){
-   	
-    	VRControllerButtonMapping[] out = new VRControllerButtonMapping[16];
-    	
-    	out[ViveButtons.BUTTON_RIGHT_TRIGGER.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TRIGGER, "key.attack");
-    	out[ViveButtons.BUTTON_RIGHT_TRIGGER_FULLCLICK.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TRIGGER_FULLCLICK, "none");
-    	out[ViveButtons.BUTTON_RIGHT_GRIP.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_GRIP, "key.pickItem");
-    	out[ViveButtons.BUTTON_RIGHT_APPMENU.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_APPMENU, "key.drop");
-    	out[ViveButtons.BUTTON_RIGHT_TOUCHPAD_BL.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TOUCHPAD_BL, "key.use");
-    	out[ViveButtons.BUTTON_RIGHT_TOUCHPAD_BR.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TOUCHPAD_BR, "key.use");
-    	out[ViveButtons.BUTTON_RIGHT_TOUCHPAD_UL.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TOUCHPAD_UL, "key.use");
-    	out[ViveButtons.BUTTON_RIGHT_TOUCHPAD_UR.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TOUCHPAD_UR, "key.use");
-  
-    	out[ViveButtons.BUTTON_LEFT_TRIGGER.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TRIGGER, "key.forward");
-    	out[ViveButtons.BUTTON_LEFT_TRIGGER_FULLCLICK.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TRIGGER_FULLCLICK, "key.sprint");
-    	out[ViveButtons.BUTTON_LEFT_GRIP.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_GRIP, "key.sneak");
-    	out[ViveButtons.BUTTON_LEFT_APPMENU.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_APPMENU, "none");
-    	out[ViveButtons.BUTTON_LEFT_TOUCHPAD_BL.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_BL, "key.jump");
-    	out[ViveButtons.BUTTON_LEFT_TOUCHPAD_BR.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_BR, "key.jump");
-    	out[ViveButtons.BUTTON_LEFT_TOUCHPAD_UL.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_UL, "key.inventory");
-    	out[ViveButtons.BUTTON_LEFT_TOUCHPAD_UR.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_UR, "key.inventory");
-    	
-    	
+
+    	VRControllerButtonMapping[] out = new VRControllerButtonMapping[ViveButtons.values().length];
+    		//vive
+    		out[ViveButtons.BUTTON_RIGHT_TRIGGER.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TRIGGER, "key.attack");
+    		out[ViveButtons.BUTTON_RIGHT_TRIGGER_FULLCLICK.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TRIGGER_FULLCLICK, "none");
+    		out[ViveButtons.BUTTON_RIGHT_GRIP.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_GRIP, "key.pickItem");
+    		out[ViveButtons.BUTTON_RIGHT_APPMENU.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_APPMENU, "key.drop");
+    		out[ViveButtons.BUTTON_RIGHT_TOUCHPAD_BL.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TOUCHPAD_BL, "key.use");
+    		out[ViveButtons.BUTTON_RIGHT_TOUCHPAD_BR.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TOUCHPAD_BR, "key.use");
+    		out[ViveButtons.BUTTON_RIGHT_TOUCHPAD_UL.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TOUCHPAD_UL, "key.use");
+    		out[ViveButtons.BUTTON_RIGHT_TOUCHPAD_UR.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TOUCHPAD_UR, "key.use");
+    		out[ViveButtons.BUTTON_LEFT_TRIGGER.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TRIGGER, "key.forward");
+    		out[ViveButtons.BUTTON_LEFT_TRIGGER_FULLCLICK.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TRIGGER_FULLCLICK, "key.sprint");
+    		out[ViveButtons.BUTTON_LEFT_GRIP.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_GRIP, "key.sneak");
+    		out[ViveButtons.BUTTON_LEFT_APPMENU.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_APPMENU, "none");
+    		out[ViveButtons.BUTTON_LEFT_TOUCHPAD_BL.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_BL, "key.jump");
+    		out[ViveButtons.BUTTON_LEFT_TOUCHPAD_BR.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_BR, "key.jump");
+    		out[ViveButtons.BUTTON_LEFT_TOUCHPAD_UL.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_UL, "key.inventory");
+    		out[ViveButtons.BUTTON_LEFT_TOUCHPAD_UR.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_UR, "key.inventory");
+    		//touch
+    		out[ViveButtons.OCULUS_RIGHT_INDEX_TRIGGER_PRESS.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_RIGHT_INDEX_TRIGGER_PRESS, "key.attack");
+    		out[ViveButtons.OCULUS_RIGHT_INDEX_TRIGGER_TOUCH.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_RIGHT_INDEX_TRIGGER_TOUCH, "none");
+    		out[ViveButtons.OCULUS_RIGHT_A_PRESS.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_RIGHT_A_PRESS, "key.pickItem");
+    		out[ViveButtons.OCULUS_RIGHT_B_PRESS.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_RIGHT_B_PRESS, "key.drop");
+    		out[ViveButtons.OCULUS_RIGHT_A_TOUCH.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_RIGHT_A_TOUCH, "none");
+    		out[ViveButtons.OCULUS_RIGHT_B_TOUCH.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_RIGHT_B_TOUCH, "none");
+    		out[ViveButtons.OCULUS_RIGHT_HAND_TRIGGER_PRESS.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_RIGHT_HAND_TRIGGER_PRESS, "key.use");
+    		out[ViveButtons.OCULUS_RIGHT_HAND_TRIGGER_TOUCH.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_RIGHT_HAND_TRIGGER_TOUCH, "none");
+    		out[ViveButtons.OCULUS_RIGHT_STICK_PRESS.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_RIGHT_STICK_PRESS, "none");
+    		out[ViveButtons.OCULUS_RIGHT_STICK_TOUCH.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_RIGHT_STICK_TOUCH, "none");
+    		//out[ViveButtons.OCULUS_RIGHT_THUMBPAD_TOUCH.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_RIGHT_THUMBPAD_TOUCH, "none");
+    		out[ViveButtons.OCULUS_LEFT_INDEX_TRIGGER_PRESS.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_LEFT_INDEX_TRIGGER_PRESS, "key.forward");
+    		out[ViveButtons.OCULUS_LEFT_INDEX_TRIGGER_TOUCH.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_LEFT_INDEX_TRIGGER_TOUCH, "none");
+    		out[ViveButtons.OCULUS_LEFT_X_PRESS.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_LEFT_X_PRESS, "key.jump");
+    		out[ViveButtons.OCULUS_LEFT_Y_PRESS.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_LEFT_Y_PRESS, "none");
+    		out[ViveButtons.OCULUS_LEFT_X_TOUCH.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_LEFT_X_TOUCH, "none");
+    		out[ViveButtons.OCULUS_LEFT_Y_TOUCH.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_LEFT_Y_TOUCH, "none");
+    		out[ViveButtons.OCULUS_LEFT_HAND_TRIGGER_PRESS.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_LEFT_HAND_TRIGGER_PRESS, "key.sneak");
+    		out[ViveButtons.OCULUS_LEFT_HAND_TRIGGER_TOUCH.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_LEFT_HAND_TRIGGER_TOUCH, "none");
+    		out[ViveButtons.OCULUS_LEFT_STICK_PRESS.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_LEFT_STICK_PRESS, "key.inventory");
+    		out[ViveButtons.OCULUS_LEFT_STICK_TOUCH.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_LEFT_STICK_TOUCH, "none");
+    		//out[ViveButtons.OCULUS_LEFT_THUMBPAD_TOUCH.ordinal()] = new VRControllerButtonMapping(ViveButtons.OCULUS_LEFT_THUMBPAD_TOUCH, "none");
     	return out;
-    	
+
     }
     
 }

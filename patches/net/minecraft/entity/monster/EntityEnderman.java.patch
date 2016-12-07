@@ -1,0 +1,126 @@
+--- a/net/minecraft/entity/monster/EntityEnderman.java
++++ b/net/minecraft/entity/monster/EntityEnderman.java
+@@ -1,8 +1,10 @@
+ package net.minecraft.entity.monster;
+ 
++import java.util.IdentityHashMap;
+ import java.util.UUID;
+ import net.minecraft.block.Block;
+ import net.minecraft.block.material.Material;
++import net.minecraft.client.Minecraft;
+ import net.minecraft.entity.Entity;
+ import net.minecraft.entity.SharedMonsterAttributes;
+ import net.minecraft.entity.ai.attributes.AttributeModifier;
+@@ -13,6 +15,7 @@
+ import net.minecraft.item.Item;
+ import net.minecraft.item.ItemStack;
+ import net.minecraft.nbt.NBTTagCompound;
++import net.minecraft.src.Reflector;
+ import net.minecraft.util.DamageSource;
+ import net.minecraft.util.EntityDamageSource;
+ import net.minecraft.util.EntityDamageSourceIndirect;
+@@ -24,6 +27,7 @@
+ {
+     private static final UUID attackingSpeedBoostModifierUUID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
+     private static final AttributeModifier attackingSpeedBoostModifier = (new AttributeModifier(attackingSpeedBoostModifierUUID, "Attacking speed boost", 6.199999809265137D, 0)).setSaved(false);
++    @Deprecated //DO NOT TOUCH THIS EVER
+     private static boolean[] carriableBlocks = new boolean[256];
+ 
+     /**
+@@ -130,8 +134,17 @@
+         }
+         else
+         {
+-            Vec3 var3 = p_70821_1_.getLook(1.0F).normalize();
+-            Vec3 var4 = Vec3.createVectorHelper(this.posX - p_70821_1_.posX, this.boundingBox.minY + (double)(this.height / 2.0F) - (p_70821_1_.posY + (double)p_70821_1_.getEyeHeight()), this.posZ - p_70821_1_.posZ);
++        	
++        	//VIVE FIX
++            Vec3 var3;
++        	if(Minecraft.getMinecraft().isSingleplayer()){
++        		var3 = Minecraft.getMinecraft().vrPlayer.getHMDDir_World();
++        	}else {
++        		var3 = p_70821_1_.getLook(1.0F).normalize();        		
++        	}
++        	//
++
++        	Vec3 var4 = Vec3.createVectorHelper(this.posX - p_70821_1_.posX, this.boundingBox.minY + (double)(this.height / 2.0F) - (p_70821_1_.posY + (double)p_70821_1_.getEyeHeight()), this.posZ - p_70821_1_.posZ);
+             double var5 = var4.lengthVector();
+             var4 = var4.normalize();
+             double var7 = var3.dotProduct(var4);
+@@ -179,7 +192,7 @@
+                     var3 = MathHelper.floor_double(this.posZ - 2.0D + this.rand.nextDouble() * 4.0D);
+                     var4 = this.worldObj.getBlock(var6, var2, var3);
+ 
+-                    if (carriableBlocks[Block.getIdFromBlock(var4)])
++                    if (EntityEnderman.getCarriable(var4))
+                     {
+                         this.setCarriedBlock(var4);
+                         this.setCarryingData(this.worldObj.getBlockMetadata(var6, var2, var3));
+@@ -299,12 +312,30 @@
+      */
+     protected boolean teleportTo(double p_70825_1_, double p_70825_3_, double p_70825_5_)
+     {
++    	
++        Object event = null;
++        if (Reflector.forgeExists())
++        {
++           event = Reflector.newInstance(Reflector.EnderTeleportEvent_Constuctor, new Object[] {this,p_70825_1_,p_70825_3_,p_70825_5_,0});
++           if (Reflector.postForgeBusEvent(event))
++               return false;
++        }
++    	
+         double var7 = this.posX;
+         double var9 = this.posY;
+         double var11 = this.posZ;
+-        this.posX = p_70825_1_;
+-        this.posY = p_70825_3_;
+-        this.posZ = p_70825_5_;
++        if (Reflector.forgeExists())
++        {
++            this.posX = (Double)Reflector.getFieldValue(event, Reflector.EnderTeleportEvent_targetX);
++            this.posY = (Double)Reflector.getFieldValue(event, Reflector.EnderTeleportEvent_targetY);
++            this.posZ = (Double)Reflector.getFieldValue(event, Reflector.EnderTeleportEvent_targetZ);
++        }
++        else
++        {
++            this.posX = p_70825_1_;
++            this.posY = p_70825_3_;
++            this.posZ = p_70825_5_;
++        }
+         boolean var13 = false;
+         int var14 = MathHelper.floor_double(this.posX);
+         int var15 = MathHelper.floor_double(this.posY);
+@@ -476,7 +507,7 @@
+                     }
+                 }
+ 
+-                return false;
++                return super.attackEntityFrom(source, amount);
+             }
+             else
+             {
+@@ -511,5 +542,24 @@
+         carriableBlocks[Block.getIdFromBlock(Blocks.pumpkin)] = true;
+         carriableBlocks[Block.getIdFromBlock(Blocks.melon_block)] = true;
+         carriableBlocks[Block.getIdFromBlock(Blocks.mycelium)] = true;
++        for (int x = 0; x < carriableBlocks.length; x++)
++        {
++            if (carriableBlocks[x]) setCarriable(Block.getBlockById(x), true);
++        }
++    }
++    
++    /*===================================== Forge Start ==============================*/
++    private static IdentityHashMap<Block, Boolean> carriable;
++    public static void setCarriable(Block block, boolean canCarry)
++    {
++        if (carriable == null) carriable = new IdentityHashMap(4096);
++        carriable.put(block, canCarry);
++    }
++    public static boolean getCarriable(Block block)
++    {
++        Boolean ret = carriable.get(block);
++        return ret != null ? ret : false;
+     }
++    /*===================================== Forge End ==============================*/
++    
+ }
