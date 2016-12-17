@@ -1192,10 +1192,9 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 
 	@Override
 	public Vec3 getHMDPos_World() {	
-		Vec3 out = MCOpenVR.getCenterEyePosition().scale(worldScale);
+		Vec3 out = MCOpenVR.getCenterEyePosition().scale(worldScale).add(getWalkMultOffset());
 		out.rotateAroundY(worldRotationRadians);
-		Vec3 w = getWalkMultOffset();
-		return out.addVector(roomOrigin.xCoord + w.xCoord, roomOrigin.yCoord + w.yCoord, roomOrigin.zCoord + w.zCoord);
+		return out.addVector(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord);
 	}
 
 	@Override
@@ -1225,9 +1224,9 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 
 	@Deprecated
 	public Vec3 getControllerMainPos_World() {
-		Vec3 out = MCOpenVR.getAimSource(0).scale(worldScale);
+		Vec3 out = MCOpenVR.getAimSource(0).scale(worldScale).add(getWalkMultOffset());
 		out.rotateAroundY(worldRotationRadians);
-		return out.addVector(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord).add(getWalkMultOffset());
+		return out.addVector(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord);
 		}
 
 	@Override
@@ -1256,9 +1255,9 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 	
 	@Deprecated
 	public Vec3 getControllerOffhandPos_World() {
-		Vec3 out = MCOpenVR.getAimSource(1).scale(worldScale);
+		Vec3 out = MCOpenVR.getAimSource(1).scale(worldScale).add(getWalkMultOffset());
 		out.rotateAroundY(worldRotationRadians);
-		return out.addVector(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord).add(getWalkMultOffset());
+		return out.addVector(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord);
 		}
 
 	@Override
@@ -1305,10 +1304,9 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 	
 	@Override //always interpolated
 	public Vec3 getEyePos_World(renderPass eye) {
-		Vec3 out = MCOpenVR.getEyePosition(eye).scale(worldScale);
+		Vec3 out = MCOpenVR.getEyePosition(eye).scale(worldScale).add(getWalkMultOffset());
 		out.rotateAroundY(worldRotationRadians);
-		Vec3 w = getWalkMultOffset();
-		return out.addVector(roomOrigin.xCoord + w.xCoord, roomOrigin.yCoord + w.yCoord, roomOrigin.zCoord + w.zCoord);
+		return out.addVector(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord);
 	}
 	
 
