@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/EntityRenderer.java
 +++ b/net/minecraft/client/renderer/EntityRenderer.java
-@@ -1,27 +1,60 @@
+@@ -1,27 +1,62 @@
  package net.minecraft.client.renderer;
  
 -import com.google.gson.JsonSyntaxException;
@@ -22,10 +22,12 @@
 +import org.apache.logging.log4j.Logger;
 +import org.lwjgl.input.Keyboard;
 +import org.lwjgl.input.Mouse;
++import org.lwjgl.opengl.EXTBlendFuncSeparate;
 +import org.lwjgl.opengl.EXTFramebufferObject;
 +import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 +import org.lwjgl.opengl.GL11;
 +import org.lwjgl.opengl.GL12;
++import org.lwjgl.opengl.GL14;
 +import org.lwjgl.opengl.GL30;
 +import org.lwjgl.opengl.GLContext;
 +import org.lwjgl.util.glu.Project;
@@ -63,7 +65,7 @@
  import net.minecraft.client.renderer.culling.Frustrum;
  import net.minecraft.client.renderer.entity.RenderManager;
  import net.minecraft.client.renderer.texture.DynamicTexture;
-@@ -29,10 +62,12 @@
+@@ -29,10 +64,12 @@
  import net.minecraft.client.resources.I18n;
  import net.minecraft.client.resources.IResourceManager;
  import net.minecraft.client.resources.IResourceManagerReloadListener;
@@ -76,7 +78,7 @@
  import net.minecraft.enchantment.EnchantmentHelper;
  import net.minecraft.entity.Entity;
  import net.minecraft.entity.EntityLivingBase;
-@@ -40,6 +75,9 @@
+@@ -40,6 +77,9 @@
  import net.minecraft.entity.item.EntityItemFrame;
  import net.minecraft.entity.player.EntityPlayer;
  import net.minecraft.init.Blocks;
@@ -86,7 +88,7 @@
  import net.minecraft.potion.Potion;
  import net.minecraft.server.integrated.IntegratedServer;
  import net.minecraft.src.Config;
-@@ -61,2593 +99,4841 @@
+@@ -61,2593 +101,4841 @@
  import net.minecraft.world.World;
  import net.minecraft.world.WorldProvider;
  import net.minecraft.world.biome.BiomeGenBase;
@@ -2211,6 +2213,14 @@
 +			}
 +		}
 +		
++		// VIVE START - teleport movement
++		if(mc.currentScreen == null && mc.currentPass == renderPass.Left){
++			if (!mc.vrPlayer.getFreeMoveMode() && mc.gameSettings.keyBindForward.getIsKeyPressed())
++			{
++				mc.vrPlayer.updateTeleportDestinations(mc, mc.renderViewEntity);
++			}
++		}
++		// VIVE END - teleport movement
 +		
 +		if(!shadersMod || !shadersModShadowPass) 
 +			cacheRVEPos(); //hacks because beginRender and setcamera looks at rve.
@@ -4087,6 +4097,7 @@
 +		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 +		GL11.glDisable(GL11.GL_DEPTH_TEST);
 +		GL11.glDisable(GL11.GL_TEXTURE_2D);
++		GL11.glDisable(GL11.GL_LIGHTING);
 +
 +		GL11.glMatrixMode(GL11.GL_PROJECTION);
 +		GL11.glPushMatrix();
@@ -4114,6 +4125,7 @@
 +			GL11.glDisable(GL11.GL_BLEND);
 +			GL11.glEnable(GL11.GL_DEPTH_TEST);
 +			GL11.glEnable(GL11.GL_TEXTURE_2D);
++            GL11.glEnable(GL11.GL_LIGHTING);
 +	
 +			GL11.glMatrixMode(GL11.GL_PROJECTION);
 +			GL11.glPopMatrix();
@@ -4251,10 +4263,6 @@
 +				}
 +			}
 +			
-+	
-+			// VIVE START - teleport movement
-+			if (!mc.vrPlayer.getFreeMoveMode() && mc.gameSettings.keyBindForward.getIsKeyPressed()) { mc.vrPlayer.updateTeleportDestinations(this, mc, mc.renderViewEntity);}
-+			// VIVE END - teleport movement
 +			/** END MINECRIFT */    
 +		}
 +	}
@@ -4289,7 +4297,7 @@
 +			dir.yCoord = 0;
 +			dir =dir.normalize();
 +			if(mc.renderViewEntity != null && mc.theWorld != null){
-+				out = mc.renderViewEntity.getPosition(0).addVector(dir.xCoord*0.3 * mc.vrPlayer.worldScale, -0.4* mc.vrPlayer.worldScale,dir.zCoord*0.3* mc.vrPlayer.worldScale);
++				out = mc.roomScale.getHMDPos_World().addVector(dir.xCoord*0.3 * mc.vrPlayer.worldScale, -0.4* mc.vrPlayer.worldScale,dir.zCoord*0.3* mc.vrPlayer.worldScale);
 +			} else {
 +				out = mc.roomScale.getHMDPos_Room().addVector(dir.xCoord*0.3 , -0.4 ,dir.zCoord*0.3);
 +			}
@@ -5586,13 +5594,7 @@
 +					
 +					if (!this.mc.vrSettings.useCrosshairOcclusion)	GL11.glDisable(GL11.GL_DEPTH_TEST);
 +					GL11.glEnable(GL11.GL_BLEND);
-+					
-+					if (Reflector.forgeExists()) {
-+						GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
-+					}
-+					else {
-+						GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR);
-+					}
++					GL14.glBlendFuncSeparate(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR, GL11.GL_ONE, GL11.GL_ONE);
 +									
 +					if (mc.objectMouseOver == null) {
 +						GL11.glRotatef(45, 0, 0, 1);

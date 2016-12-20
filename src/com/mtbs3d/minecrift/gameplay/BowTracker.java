@@ -6,6 +6,7 @@ import com.mtbs3d.minecrift.api.IRoomscaleAdapter;
 import com.mtbs3d.minecrift.api.NetworkHelper;
 import com.mtbs3d.minecrift.api.NetworkHelper.PacketDiscriminators;
 import com.mtbs3d.minecrift.provider.MCOpenVR;
+import com.mtbs3d.minecrift.provider.OpenVRPlayer;
 
 import de.fruitfly.ovr.structs.Matrix4f;
 import de.fruitfly.ovr.structs.Vector3f;
@@ -69,8 +70,9 @@ public class BowTracker {
 	float tsNotch = 0;
 	
 	int hapcounter = 0;
+	int lasthapStep=0;
 	
-	public void doProcess(IRoomscaleAdapter provider, EntityPlayerSP player){
+	public void doProcess(OpenVRPlayer provider, EntityPlayerSP player){
 
 		if (!isActive(player)){			
 			isDrawing = false;
@@ -89,7 +91,7 @@ public class BowTracker {
 		lastpressed = pressed;
 		lastDraw = currentDraw;
 		lastcanDraw = canDraw;
-		maxDraw = Minecraft.getMinecraft().thePlayer.height * 0.25;
+		maxDraw = Minecraft.getMinecraft().thePlayer.height * 0.22;
 
 		Vec3 rightPos = provider.getControllerPos_World(0);
 		Vec3 leftPos = provider.getControllerPos_World(1);
@@ -97,13 +99,16 @@ public class BowTracker {
 		
 		aim = rightPos.subtract(leftPos).normalize();
 
-		Vector3f forward = new Vector3f(0,0,1);
+		Vec3 forward = Vec3.createVectorHelper(0, 1, 0);
 
-		Vec3 rightaim3 = provider.getControllerMainDir_World();
+		Vec3 stringPos=provider.getCustomHandVector(1,forward).scale(maxDraw*0.5).add(leftPos);
+		double notchDist=rightPos.distanceTo(stringPos);
+		
+		Vec3 rightaim3 = provider.getCustomHandVector(0, Vec3.createVectorHelper(0, 0, -1));
 		
 		Vector3f rightAim = new Vector3f((float)rightaim3.xCoord, (float) rightaim3.yCoord, (float) rightaim3.zCoord);
-		leftHandAim = provider.getControllerOffhandDir_World();
-	 	Vec3 l4v3 = provider.getCustomControllerVector(1, Vec3.createVectorHelper(0, -1, 0));
+		leftHandAim =provider.getCustomHandVector(1, Vec3.createVectorHelper(0, 0, -1));
+	 	Vec3 l4v3 = provider.getCustomHandVector(1, Vec3.createVectorHelper(0, -1, 0));
 		 
 		Vector3f leftforeward = new Vector3f((float)l4v3.xCoord, (float) l4v3.yCoord, (float) l4v3.zCoord);
 
@@ -115,8 +120,13 @@ public class BowTracker {
 		
 		boolean infiniteAmmo = player.capabilities.isCreativeMode || EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, bow) > 0;
 
-		if( controllersDist <= notchDistThreshold && controllersDot <= notchDotThreshold && (infiniteAmmo || player.inventory.hasItem(Items.arrow)))
+		if( notchDist <= notchDistThreshold && controllersDot <= notchDotThreshold && (infiniteAmmo || player.inventory.hasItem(Items.arrow)))
 		{
+			//can draw
+			if(!canDraw) {
+				startDrawTime = Minecraft.getSystemTime();
+			}
+			
 			//can draw
 			canDraw = true;
 			tsNotch = Minecraft.getSystemTime();
@@ -167,9 +177,26 @@ public class BowTracker {
 			if	(use >= bow.getMaxItemUseDuration()) use = bow.getMaxItemUseDuration() -1;
 			player.setItemInUseClient(bow);//client draw only
 			player.setItemInUseCountClient(use -1); //do this cause the above doesnt set the counts if same item.
+			double drawperc=getDrawPercent();
+			int hapstep=(int)(drawperc*4*4*3);
+			if ( hapstep % 2 == 0 && lasthapStep!= hapstep) {
+				provider.triggerHapticPulse(0, hap);
+				if(drawperc==1)
+					provider.triggerHapticPulse(1,hap);
+			}
+
+			if(isCharged() && hapcounter %4==0){
+				provider.triggerHapticPulse(1,200);
+			}
+			
+			//else if(drawperc==1 && hapcounter % 8 == 0){
+			//	provider.triggerHapticPulse(0,400);     //Not sure if i like this part or not
+			//}
+
+			lasthapStep = hapstep;
+			hapcounter++;
+			
 			hapcounter ++ ;
-			if (hapcounter % 4 == 0)
-				provider.triggerHapticPulse(0, hap);     
 
 
 		} else {
@@ -178,9 +205,11 @@ public class BowTracker {
 
 
 	}
-	
-	
-	
+	private long maxDrawMillis=1100;
+	public long startDrawTime;
+	public boolean isCharged(){
+		return Minecraft.getSystemTime() - startDrawTime >= maxDrawMillis;
+	}
 	
 	
 }

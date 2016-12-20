@@ -156,6 +156,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
     
 	public void checkandUpdateRotateScale(boolean onFrame){
 		Minecraft mc = Minecraft.getMinecraft();
+		if(mc.currentScreen!=null) return;
 		if(!onFrame) {
 			if(this.wfCount > 0){
 				if(this.wfCount < 40){
@@ -730,7 +731,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         }
     }
 
-    public void updateTeleportDestinations(EntityRenderer renderer, Minecraft mc, Entity player)
+    public void updateTeleportDestinations(Minecraft mc, Entity player)
     {
         mc.mcProfiler.startSection("updateTeleportDestinations");
 
@@ -861,8 +862,6 @@ public class OpenVRPlayer implements IRoomscaleAdapter
             			dest = Vec3.createVectorHelper(bx + 0.5f, by + 1f, bz + 0.5f);
             		}
 
-
-
             		if (start.distanceTo(dest) <= maxTeleportDist && (emptySpotReq || emptySpotCenter))
             		{
 
@@ -962,9 +961,11 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         }
         
         mc.mcProfiler.startSection("updateSwingAttack");
-
+        
+        Vec3 forward = Vec3.createVectorHelper(0,0,-1);
+        		
         Vec3 handPos = this.getControllerMainPos_World();
-        Vec3 handDirection = this.getControllerMainDir_World();
+        Vec3 handDirection = this.getCustomHandVector(0, forward);
         
         ItemStack is = player.inventory.getCurrentItem();
         Item item = null;
@@ -1192,10 +1193,9 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 
 	@Override
 	public Vec3 getHMDPos_World() {	
-		Vec3 out = MCOpenVR.getCenterEyePosition().scale(worldScale);
+		Vec3 out = MCOpenVR.getCenterEyePosition().scale(worldScale).add(getWalkMultOffset());
 		out.rotateAroundY(worldRotationRadians);
-		Vec3 w = getWalkMultOffset();
-		return out.addVector(roomOrigin.xCoord + w.xCoord, roomOrigin.yCoord + w.yCoord, roomOrigin.zCoord + w.zCoord);
+		return out.addVector(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord);
 	}
 
 	@Override
@@ -1225,9 +1225,9 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 
 	@Deprecated
 	public Vec3 getControllerMainPos_World() {
-		Vec3 out = MCOpenVR.getAimSource(0).scale(worldScale);
+		Vec3 out = MCOpenVR.getAimSource(0).scale(worldScale).add(getWalkMultOffset());
 		out.rotateAroundY(worldRotationRadians);
-		return out.addVector(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord).add(getWalkMultOffset());
+		return out.addVector(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord);
 		}
 
 	@Override
@@ -1256,9 +1256,9 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 	
 	@Deprecated
 	public Vec3 getControllerOffhandPos_World() {
-		Vec3 out = MCOpenVR.getAimSource(1).scale(worldScale);
+		Vec3 out = MCOpenVR.getAimSource(1).scale(worldScale).add(getWalkMultOffset());
 		out.rotateAroundY(worldRotationRadians);
-		return out.addVector(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord).add(getWalkMultOffset());
+		return out.addVector(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord);
 		}
 
 	@Override
@@ -1305,10 +1305,9 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 	
 	@Override //always interpolated
 	public Vec3 getEyePos_World(renderPass eye) {
-		Vec3 out = MCOpenVR.getEyePosition(eye).scale(worldScale);
+		Vec3 out = MCOpenVR.getEyePosition(eye).scale(worldScale).add(getWalkMultOffset());
 		out.rotateAroundY(worldRotationRadians);
-		Vec3 w = getWalkMultOffset();
-		return out.addVector(roomOrigin.xCoord + w.xCoord, roomOrigin.yCoord + w.yCoord, roomOrigin.zCoord + w.zCoord);
+		return out.addVector(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord);
 	}
 	
 
@@ -1335,6 +1334,12 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 		return out;
 	}
 
+	public Vec3 getCustomHandVector(int controller, Vec3 axis) {
+		Vector3f v3 = MCOpenVR.getHandRotation(controller).transform(new Vector3f((float)axis.xCoord, (float)axis.yCoord,(float) axis.zCoord));
+		Vec3 out =  Vec3.createVectorHelper(v3.x, v3.y, v3.z).rotateYaw(worldRotationRadians);
+		return out;
+	}
+	
 	@Override
 	public Vec3 getHMDPos_Room() {
 		return MCOpenVR.getCenterEyePosition().scale(worldScale).add(getWalkMultOffset());

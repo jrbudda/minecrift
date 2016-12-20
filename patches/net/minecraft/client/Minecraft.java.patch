@@ -153,7 +153,7 @@
  import net.minecraft.world.EnumDifficulty;
  import net.minecraft.world.WorldProviderEnd;
  import net.minecraft.world.WorldProviderHell;
-@@ -150,2988 +224,4838 @@
+@@ -150,2988 +224,4807 @@
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
@@ -1987,7 +1987,7 @@
 +	 * The minecriftVerString will be automatically updated by the build scripts, do not modify here.
 +	 * Modify minecriftversion.py in root minecrift dir.
 +	 */
-+    public final String minecriftVerString = "Vivecraft 1.7.10 Vivecraft-jrbudda33";
++    public final String minecriftVerString = "Vivecraft 1.7.10 Vivecraft-jrbudda34";
 +	/* end version */
 +	/** END MINECRIFT */
 +
@@ -3014,7 +3014,7 @@
 +			
 +			//I dunno where to put this.
 +			if(this.stereoProvider.isStereo()){
-+					bowTracker.doProcess(roomScale, thePlayer);
++					bowTracker.doProcess(vrPlayer, thePlayer);
 +			}
 +
 +	        //VIVECRAFT RENDERING MAIN
@@ -7522,37 +7522,6 @@
 +
 +	private void doPostProcessing(long frameIndex, float nano)
 +	{	
-+		// VIVE start - screen flash when hurt instead of view tilt
-+		float r = 0, g = 0, b = 0, a = 0;
-+		
-+		// VIVE start - screen flash when hurt instead of view tilt
-+		EntityPlayer player = thePlayer;
-+		if (player!=null) {
-+			if( player.getHealth() > 0.0f)		
-+			{
-+				float var3 = (float)player.hurtTime - nano;
-+				if (var3>0.0f)
-+				{
-+					var3 /= (float) player.maxHurtTime;
-+					var3 = MathHelper.sin(var3 * var3 * var3 * var3 * (float) Math.PI) * 0.5f;
-+					r = 1;
-+					a = var3;
-+				} 
-+			} 
-+
-+			if (player.isPlayerSleeping()){
-+				a = .97f;
-+			}
-+			
-+			if (MCOpenVR.isWalkingAbout){
-+				a = .97f;
-+			}
-+			if(r+g+b+a > 0)
-+				this.entityRenderer.renderFadeBlend(r, g, b, a);
-+		}
-+
-+		// VIVE end - screen flash when hurt instead of view tilt
-+
 +		if (showSplashScreen && splashFadeAlpha > 0)
 +		{
 +		//	final Color3f rgb = new Color3f(0f, 0f, 0f);

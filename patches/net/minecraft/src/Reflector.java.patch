@@ -73,7 +73,7 @@
      public static ReflectorClass ChunkWatchEvent_UnWatch = new ReflectorClass("net.minecraftforge.event.world.ChunkWatchEvent$UnWatch");
      public static ReflectorConstructor ChunkWatchEvent_UnWatch_Constructor = new ReflectorConstructor(ChunkWatchEvent_UnWatch, new Class[] {ChunkCoordIntPair.class, EntityPlayerMP.class});
 +    public static ReflectorClass EnderTeleportEvent = new ReflectorClass("net.minecraftforge.event.entity.living.EnderTeleportEvent");
-+    public static ReflectorConstructor EnderTeleportEvent_Constuctor = new ReflectorConstructor(EnderTeleportEvent, new Class[] {EntityEnderman.class, Double.TYPE, Double.TYPE, Double.TYPE, Float.TYPE});
++    public static ReflectorConstructor EnderTeleportEvent_Constuctor = new ReflectorConstructor(EnderTeleportEvent, new Class[] {EntityLivingBase.class, Double.TYPE, Double.TYPE, Double.TYPE, Float.TYPE});
 +    public static ReflectorField EnderTeleportEvent_targetX = new ReflectorField(EnderTeleportEvent, "targetX");
 +    public static ReflectorField EnderTeleportEvent_targetY = new ReflectorField(EnderTeleportEvent, "targetY");
 +    public static ReflectorField EnderTeleportEvent_targetZ = new ReflectorField(EnderTeleportEvent, "targetZ");

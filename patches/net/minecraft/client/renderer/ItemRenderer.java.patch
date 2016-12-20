@@ -264,7 +264,7 @@
  
          GL11.glPopMatrix();
      }
-@@ -240,372 +257,600 @@
+@@ -240,372 +257,614 @@
  
          p_78439_0_.draw();
      }
@@ -593,8 +593,8 @@
 +	    	float var22;
 +	    	Render var26;
 +	    	RenderPlayer var29;
-+	
 +	    	
++    	
 +	    	//Animation
 +	    	if(controller == 0){
 +		    	boolean swing = true;
@@ -625,25 +625,26 @@
 +	    		}
 +	    		
 +	    		if(swing){
-+	    			var13 = player.getSwingProgress(nano) ;
-+    				var14 = MathHelper.sin(var13 * (float)Math.PI);
-+    				var15 = MathHelper.sin(MathHelper.sqrt_float(var13) * (float)Math.PI);
-+    				// VIVE START - different attack anim
-+    				if (renderPos !=null)
-+    				{
-+    					var14 = -0.2F * MathHelper.sin(MathHelper.sqrt_float(var13) * (float)Math.PI);
-+    					var15 = -0.0F * MathHelper.sin(MathHelper.sqrt_float(var13) * (float)Math.PI);
-+    					GL11.glTranslatef(0,0, var14);
-+    				}
-+    				else //not vive
-+    				{
-+    					GL11.glTranslatef(-var15 * 0.4F, MathHelper.sin(MathHelper.sqrt_float(var13) * (float) Math.PI * 2.0F) * 0.2F, -var14 * 0.2F);
-+    				}
-+    				// VIVE END - different attack anim	
++	    			float swingprogress = player.getSwingProgress(nano) ;    			
++	    	    	if(swingprogress >0){
++	    	    	float f = MathHelper.sin(swingprogress * swingprogress * (float)Math.PI);
++	    	    	float f1 = 0.5f * MathHelper.sin(MathHelper.sqrt_float(swingprogress) * (float)Math.PI);
++	    	    	float 	f2= MathHelper.sin((float) (swingprogress *3*Math.PI));
++	    	    	if(swingprogress > 0.5) {
++	    	    		f2= MathHelper.sin((float) (swingprogress *Math.PI + Math.PI));
++	    	    	}
++	    	    	GL11.glTranslatef(0,0,-f1);
++	    	    	GL11.glRotatef((f2) * 45.0F  , 1.0F, 0.0F, 0.0F);	    			
++	    	    	}
++
 +	    		}
 +	    		
 +	    	}
 +	    	
++	    	if(!MCOpenVR.isVive){
++	    		GL11.glRotatef(39.4f, 1, 0, 0);
++	    	}
++    	
 +	    	if (renderitem8 != null) //most items
 +	    	{
 +	    		GL11.glPushMatrix();
@@ -698,7 +699,11 @@
 +		    					GL11.glScaled(1.4f, 1.4f, 1.4f);    					
 +		
 +		    					if(mc.bowTracker.isDrawing){ //here there be dragons
-+		
++
++		    				    	if(!MCOpenVR.isVive){
++		    				    		GL11.glRotatef(-39.4f, 1, 0, 0);
++		    				    	}
++		    						
 +									int c = 0;
 +									if (mc.vrSettings.vrReverseShootingEye) c = 1;
 +		    						
@@ -709,9 +714,9 @@
 +		
 +		    						//Matrix4f left = mc.lookaimController.getAimRotation(1);
 +		
-+		    						Vec3 lup = mc.roomScale.getCustomControllerVector(1,  Vec3.createVectorHelper(0, -1, 0));
++		    						Vec3 lup = mc.vrPlayer.getCustomHandVector(1,  Vec3.createVectorHelper(0, -1, 0));
 +		    						Vector3f current = new Vector3f((float)lup.xCoord, (float)lup.yCoord, (float)lup.zCoord);
-+		    						Vec3 lback = mc.roomScale.getCustomControllerVector(1,  Vec3.createVectorHelper(0, 0, -1));
++		    						Vec3 lback = mc.vrPlayer.getCustomHandVector(1,  Vec3.createVectorHelper(0, 0, -1));
 +		    						
 +		    						Vector3f currentfore =  new Vector3f((float)lback.xCoord, (float)lback.yCoord, (float)lback.zCoord);
 +		
@@ -749,16 +754,20 @@
 +		
 +		    				        GL11.glRotatef(yaw, 0.0F,1.0F, 0.0F);
 +		    				        GL11.glRotatef(-pitch, 1.0F, 0.0F, 0.0F);
-+		
 +		    						GL11.glRotatef(-roll, 0.0F, 0.0F, 1.0F);  
 +		    						GL11.glRotatef(90f, 1.0F, 0.0F, 0.0F);    
 +		    						GL11.glRotatef(-180.0F, 0.0F, 0.0F, 1.0F);	
++		    						
++	    							if(mc.bowTracker.isCharged()){
++	    								long t = Minecraft.getSystemTime() - mc.bowTracker.startDrawTime;
++	    								GL11.glTranslatef((float) (0.003*Math.sin(t)),0, 0);
++	    							}
++	    							GL11.glScalef(1,(float) (mc.bowTracker.getDrawPercent()*0.45+1),1);
 +		    					} 
 +		    					else if(mc.vrSettings.seated){
 +		    						GL11.glRotatef(90f, 1.0F, 0.0F, 0.0F);    
 +		    					}
-+		
-+		
++			
 +		    					GL11.glRotatef(-45F, 1.0F, 0.0F, 0.0F);
 +		    					GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
 +		    					GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);	
@@ -835,6 +844,7 @@
 +		
 +		    		GL11.glEnable(GL12.GL_RESCALE_NORMAL); //TODO: figure out what this does.
 +		
++	    			
 +		
 +		    		if (renderPos!=null)
 +		    		{
@@ -884,6 +894,10 @@
 +	
 +	    	}
 +	
++	    	if(!MCOpenVR.isVive){
++	    		GL11.glRotatef(-39.4f, 1, 0, 0);
++	    	}
++    	
 +   	
 +	    	if(mc.currentPass == Minecraft.renderPass.Third && !mc.vrSettings.mixedRealityRenderHands)
 +	    		shouldrenderhand = false;
@@ -900,11 +914,11 @@
 +		    		if (renderPos!=null)
 +		    		{
 +		    			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-+		    			GL11.glTranslatef(0.019f, 0f, .19f);
++		    			GL11.glTranslatef(-0.019f, 0f, .19f);
 +		    			GL11.glScalef(0.3f, 0.3F, 0.3F);
 +		    			GL11.glRotatef(-90F, 1.0F, 0.0F, 0.0F);
-+		    			GL11.glRotatef(0.0F, 0.0F, 1.0F, 0.0F);
-+		    			GL11.glColor4f(1.0F, 1f, 1f, 1f);    			
++		    			GL11.glColor4f(1.0F, 1f, 1f, 1f);
++		    			GL11.glRotatef(180, 0.0F, 1.0F, 0.0F);
 +		    			//		if (controller==0)	GL11.glTranslatef(0,var14,0);
 +		    			this.mc.getTextureManager().bindTexture(player.getLocationSkin());
 +		    		}
@@ -1068,7 +1082,7 @@
 +				a = .8f;
 +			}
 +			
-+			if(r+g+b+a > 0)
++			if(a > 0)
 +				mc.entityRenderer.renderFadeBlend(r, g, b, a);
 +			
 +		}
@@ -1202,7 +1216,7 @@
      }
  
      /**
-@@ -621,14 +866,17 @@
+@@ -621,14 +880,17 @@
          GL11.glEnable(GL11.GL_BLEND);
          OpenGlHelper.glBlendFunc(770, 771, 1, 0);
          GL11.glPushMatrix();

@@ -56,7 +56,7 @@
                      {
                          this.setCarriedBlock(var4);
                          this.setCarryingData(this.worldObj.getBlockMetadata(var6, var2, var3));
-@@ -299,12 +312,30 @@
+@@ -299,12 +312,32 @@
       */
      protected boolean teleportTo(double p_70825_1_, double p_70825_3_, double p_70825_5_)
      {
@@ -75,6 +75,8 @@
 -        this.posX = p_70825_1_;
 -        this.posY = p_70825_3_;
 -        this.posZ = p_70825_5_;
++        
++        
 +        if (Reflector.forgeExists())
 +        {
 +            this.posX = (Double)Reflector.getFieldValue(event, Reflector.EnderTeleportEvent_targetX);
@@ -90,7 +92,7 @@
          boolean var13 = false;
          int var14 = MathHelper.floor_double(this.posX);
          int var15 = MathHelper.floor_double(this.posY);
-@@ -476,7 +507,7 @@
+@@ -476,7 +509,7 @@
                      }
                  }
  
@@ -99,7 +101,7 @@
              }
              else
              {
-@@ -511,5 +542,24 @@
+@@ -511,5 +544,24 @@
          carriableBlocks[Block.getIdFromBlock(Blocks.pumpkin)] = true;
          carriableBlocks[Block.getIdFromBlock(Blocks.melon_block)] = true;
          carriableBlocks[Block.getIdFromBlock(Blocks.mycelium)] = true;
