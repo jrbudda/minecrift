@@ -264,7 +264,7 @@
  
          GL11.glPopMatrix();
      }
-@@ -240,372 +257,614 @@
+@@ -240,372 +257,615 @@
  
          p_78439_0_.draw();
      }
@@ -819,19 +819,20 @@
 +		    					else
 +		    					{
 +	
-+	
++
 +		    					}
-+		    				} else {
++		    				} 
++		    				else {
 +		    					//MOST ITEMS
 +		    					//adjust for tools		
-+		    					
++
 +		    					float add =0; // mc.vrPlayer.weapongSwingLen - 0.3f;
-+		    					
++
 +		    					GL11.glTranslatef(0.01f, .28f, -.08f - add);			
 +		    					GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);			
 +		    					GL11.glRotatef(-45F, 1.0F, 0.0F, 0.0F);
 +		    					GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-+	
++
 +		    				}
 +		    			}	
 +		    		}
@@ -1216,7 +1217,7 @@
      }
  
      /**
-@@ -621,14 +880,17 @@
+@@ -621,14 +881,17 @@
          GL11.glEnable(GL11.GL_BLEND);
          OpenGlHelper.glBlendFunc(770, 771, 1, 0);
          GL11.glPushMatrix();

@@ -21,7 +21,7 @@
  import org.lwjgl.opengl.GL11;
  import org.lwjgl.opengl.GL12;
  
-@@ -50,125 +54,136 @@
+@@ -50,125 +54,137 @@
       */
      public void renderItem(EntityLivingBase par1EntityLivingBase, ItemStack par2ItemStack, int par3)
      {
@@ -145,11 +145,11 @@
 -            GL11.glDisable(GL11.GL_BLEND);
 -        }
 +         GL11.glPushMatrix();
-+	        TextureManager var4 = this.mc.getTextureManager();
-+	        Item var5 = par2ItemStack.getItem();
-+	        Block var6 = Block.getBlockFromItem(var5);
++	        TextureManager textureManager = this.mc.getTextureManager();
++	        Item item = par2ItemStack.getItem();
++	        Block block = Block.getBlockFromItem(item);
 +	
-+	        if (par2ItemStack != null && var6 != null && var6.getRenderBlockPass() != 0)
++	        if (par2ItemStack != null && block != null && block.getRenderBlockPass() != 0)
 +	        {
 +	            GL11.glEnable(GL11.GL_BLEND);
 +	            GL11.glEnable(GL11.GL_CULL_FACE);
@@ -167,8 +167,8 @@
 +	        }
 +	
 +	        if (customRenderer != null)
-+	        {
-+	          var4.bindTexture(var4.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
++	        { //forge renderer
++	          textureManager.bindTexture(textureManager.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
 +	      //      Reflector.callVoid(Reflector.ForgeHooksClient_renderEquippedItem, new Object[] {type, customRenderer, this.renderBlocksIr, par1EntityLivingBase, par2ItemStack});
 +	          //basic forge transformations it applies to everythinbg
 +	          if(!(par2ItemStack.getItem() instanceof ItemBlock)){
@@ -178,24 +178,25 @@
 +	          
 +	            Reflector.callVoid(customRenderer, Reflector.IItemRenderer_renderItem, new Object[] {type, par2ItemStack,new Object[] { this.renderBlocksIr, par1EntityLivingBase}});
 + 
-+	        }
-+	        else if (par2ItemStack.getItemSpriteNumber() == 0 && var5 instanceof ItemBlock && RenderBlocks.renderItemIn3d(var6.getRenderType()))
-+	        {
-+	            var4.bindTexture(var4.getResourceLocation(0));
++	        }        
++	        else if (par2ItemStack.getItemSpriteNumber() == 0 && item instanceof ItemBlock &&
++	        		RenderBlocks.renderItemIn3d(block.getRenderType()))
++	        { //block in 3d
++	            textureManager.bindTexture(textureManager.getResourceLocation(0));
 +	
-+	            if (par2ItemStack != null && var6 != null && var6.getRenderBlockPass() != 0)
++	            if (par2ItemStack != null && block != null && block.getRenderBlockPass() != 0)
 +	            {
 +	                GL11.glDepthMask(false);
-+	                this.renderBlocksIr.renderBlockAsItem(var6, par2ItemStack.getMetadata(), 1.0F);
++	                this.renderBlocksIr.renderBlockAsItem(block, par2ItemStack.getMetadata(), 1.0F);
 +	                GL11.glDepthMask(true);
 +	            }
 +	            else
 +	            {
-+	                this.renderBlocksIr.renderBlockAsItem(var6, par2ItemStack.getMetadata(), 1.0F);
++	                this.renderBlocksIr.renderBlockAsItem(block, par2ItemStack.getMetadata(), 1.0F);
 +	            }
 +	        }
 +	        else
-+	        {
++	        {// not a block
 +	            IIcon var7 = par1EntityLivingBase.getItemIcon(par2ItemStack, par3);
 +	
 +	            if (var7 == null)
@@ -203,7 +204,7 @@
 +	                GL11.glPopMatrix();
 +	                return;
 +	            }
-+	            var4.bindTexture(var4.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
++	            textureManager.bindTexture(textureManager.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
 +	            TextureUtil.func_152777_a(false, false, 1.0F);
 +	            Tessellator var8 = Tessellator.instance;
 +	            float var9 = var7.getMinU();
@@ -238,7 +239,7 @@
 +	            {
 +	                GL11.glDepthFunc(GL11.GL_EQUAL);
 +	                GL11.glDisable(GL11.GL_LIGHTING);
-+	                var4.bindTexture(RES_ITEM_GLINT);
++	                textureManager.bindTexture(RES_ITEM_GLINT);
 +	                GL11.glEnable(GL11.GL_BLEND);
 +	                OpenGlHelper.glBlendFunc(768, 1, 1, 0);
 +	                float var16 = 0.76F;
@@ -266,11 +267,11 @@
 +	            }
 +	
 +	            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-+	            var4.bindTexture(var4.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
++	            textureManager.bindTexture(textureManager.getResourceLocation(par2ItemStack.getItemSpriteNumber()));
 +	            TextureUtil.func_147945_b();
 +	        }
 +	
-+	        if (par2ItemStack != null && var6 != null && var6.getRenderBlockPass() != 0)
++	        if (par2ItemStack != null && block != null && block.getRenderBlockPass() != 0)
 +	        {
 +	            GL11.glDisable(GL11.GL_BLEND);
 +	        }

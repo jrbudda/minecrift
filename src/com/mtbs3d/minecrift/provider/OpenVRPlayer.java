@@ -36,6 +36,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
 import net.minecraft.network.play.client.C17PacketCustomPayload;
+import net.minecraft.src.Reflector;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
@@ -948,6 +949,8 @@ public class OpenVRPlayer implements IRoomscaleAdapter
     
     public boolean shouldIlookatMyHand, IAmLookingAtMyHand;
     
+    public boolean holdingSword = false;
+    
     public void updateSwingAttack()
     {
         Minecraft mc = Minecraft.getMinecraft();
@@ -977,14 +980,33 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         if(is!=null )item = is.getItem();
         
         boolean tool = false;
-        
-        if (item instanceof ItemSword){
-        		entityReachAdd = 2.5f;
-        		weaponLength = 0.3f;
-        		tool = true;
-        } else if (item instanceof ItemTool ||
+        boolean sword = false;
+
+        if(item instanceof ItemSword){
+        	sword = true;
+        	tool = true;    	
+        }
+        else if (item instanceof ItemTool ||
         		item instanceof ItemHoe
         		){
+        	tool = true;
+        }
+        else if(Reflector.forgeExists()){
+        	String c = item.getClass().getSuperclass().getName().toLowerCase();
+        	//System.out.println(c);
+        	if (c.contains("weapon") || c.contains("sword")) {
+        		sword = true;
+        		tool = true;
+        	} else 	if 	(c.contains("tool")){
+        		tool = true;
+        	}
+        }    
+
+        if (sword){
+             	entityReachAdd = 2.5f;
+        		weaponLength = 0.3f;
+        		tool = true;
+        } else if (tool){
         	entityReachAdd = 1.8f;
         	weaponLength = 0.3f;
     		tool = true;
@@ -996,6 +1018,8 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         	entityReachAdd = 0.3f;
         }
 
+        holdingSword = tool;
+        
         weaponLength *= this.worldScale;
         
         weapongSwingLen = weaponLength;

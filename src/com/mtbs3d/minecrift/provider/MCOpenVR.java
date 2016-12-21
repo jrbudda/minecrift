@@ -853,12 +853,13 @@ public class MCOpenVR
 			lastpressedShift = (lastControllerState[LEFT_CONTROLLER].ulButtonPressed & k_button_HandTrigger) > 0;			
 			pressedshift = (controllerStateReference[LEFT_CONTROLLER].ulButtonPressed & k_button_HandTrigger) > 0;
 			//right controller
-			lastpressedleftclick = (lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTrigger) > 0;
-			lastpressedrightclick = (lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonGrip) > 0 ;
-			lastpressedmiddleclick= (lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_button_A) > 0 ;
+			lastpressedleftclick = (lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTrigger) > 0;		
+			lastpressedmiddleclick = (lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_buttonGrip) > 0 ;		
+			lastpressedrightclick= (lastControllerState[RIGHT_CONTROLLER].ulButtonPressed & k_button_A) > 0 ;
+			
 			pressedleftclick = (controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonTrigger) > 0;
-			pressedrightclick = (controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonGrip) > 0;
-			pressedmiddleclick = (controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_button_A) > 0;	
+			pressedmiddleclick = (controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_buttonGrip) > 0;	
+			pressedrightclick = (controllerStateReference[RIGHT_CONTROLLER].ulButtonPressed & k_button_A) > 0;		
 		}
 
 		if (controllerDeviceIndex[LEFT_CONTROLLER] != -1) {
@@ -2306,21 +2307,20 @@ public class MCOpenVR
 			}	
 
 		} else 	{
-			// left touchpad controls inventory
-			if (controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x > 0.5 &&
-					lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x < 0.5 
+			if (controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x > 0.5 &&
+					lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x < 0.5 
 					){
 				mc.thePlayer.inventory.changeCurrentItem(-1);
 				short duration = 250;
-				vrsystem.TriggerHapticPulse.apply(controllerDeviceIndex[1], 0, duration);
+				vrsystem.TriggerHapticPulse.apply(controllerDeviceIndex[0], 0, duration);
 			}	
 
-			if (controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x < -0.5 &&
-					lastControllerState[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x > -0.5 
+			if (controllerStateReference[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x < -0.5 &&
+					lastControllerState[RIGHT_CONTROLLER].rAxis[k_EAxis_TouchPad].x > -0.5 
 					){
 				mc.thePlayer.inventory.changeCurrentItem(1);
 				short duration = 250;
-				vrsystem.TriggerHapticPulse.apply(controllerDeviceIndex[1], 0, duration);
+				vrsystem.TriggerHapticPulse.apply(controllerDeviceIndex[0], 0, duration);
 			}			
 		}
 	}
