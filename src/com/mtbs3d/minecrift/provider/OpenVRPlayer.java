@@ -991,7 +991,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         		){
         	tool = true;
         }
-        else if(Reflector.forgeExists()){
+        else if(item !=null && Reflector.forgeExists()){
         	String c = item.getClass().getSuperclass().getName().toLowerCase();
         	//System.out.println(c);
         	if (c.contains("weapon") || c.contains("sword")) {

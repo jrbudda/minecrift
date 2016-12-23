@@ -1864,9 +1864,7 @@ public class MCOpenVR
 			boolean pressedStickLeft  = controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x  < -0.5 ;
 			boolean pressedStickDown = controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y < -0.5 ;		
 			boolean pressedStickUp  = controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y  > 0.5 ;
-
-
-			
+		
 			rtbX = controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].x;
 			rtbY = controllerStateReference[LEFT_CONTROLLER].rAxis[k_EAxis_TouchPad].y;
 
@@ -1987,7 +1985,7 @@ public class MCOpenVR
 				mc.vrSettings.buttonMappings[ViveButtons.OCULUS_LEFT_STICK_TOUCH.ordinal()].unpress();
 			}
 
-			if(pressedY  && !pressedY) { //handle menu directly
+			if(pressedY && !lastpressedY) { //handle menu directly
 				
 				if(pressedLHandTrigger){				
 					setKeyboardOverlayShowing(!keyboardShowing, null);			
