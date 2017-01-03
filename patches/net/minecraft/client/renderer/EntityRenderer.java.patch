@@ -4297,7 +4297,7 @@
 +			dir.yCoord = 0;
 +			dir =dir.normalize();
 +			if(mc.renderViewEntity != null && mc.theWorld != null){
-+				out = mc.roomScale.getHMDPos_World().addVector(dir.xCoord*0.3 * mc.vrPlayer.worldScale, -0.4* mc.vrPlayer.worldScale,dir.zCoord*0.3* mc.vrPlayer.worldScale);
++				out = getEyeRenderPos(renderPass.Center).addVector(dir.xCoord*0.3 * mc.vrPlayer.worldScale, -0.4* mc.vrPlayer.worldScale,dir.zCoord*0.3* mc.vrPlayer.worldScale);
 +			} else {
 +				out = mc.roomScale.getHMDPos_Room().addVector(dir.xCoord*0.3 , -0.4 ,dir.zCoord*0.3);
 +			}
