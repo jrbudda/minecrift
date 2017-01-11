@@ -73,6 +73,9 @@ public class VRSettings
     public static final int FREEMOVE_HMD= 2;
     public static final int FREEMOVE_RUNINPLACE= 3;
     
+    public static final int MAINMENU_JRBUDDA = 0;
+    public static final int MAINMENU_TECHJAR = 1;
+    
     public static final int NO_SHADER = -1;
 
     public int version = UNKNOWN_VERSION;
@@ -119,6 +122,7 @@ public class VRSettings
     public boolean vrShowBlueCircleBuddy = true;
     public float vrWorldScale = 1.0f;
     public float vrWorldRotation = 0f;
+    public float vrWorldRotationCached = 0f;
     public float vrWorldRotationIncrement = 45f;
     public String[] vrQuickCommands;
     public float vrFixedCamposX = 0;
@@ -144,6 +148,7 @@ public class VRSettings
     public boolean realisticRowEnabled=true;
     public float walkMultiplier=1;
     public int vrFreeMoveMode = this.FREEMOVE_CONTROLLER;
+    public int menuRoom = 1;
 
     public double headToHmdLength=0.10f;
 
@@ -268,6 +273,11 @@ public class VRSettings
                     if (optionTokens[0].equals("insideBlockSolidColor"))
                     {
                         this.insideBlockSolidColor = optionTokens[1].equals("true");
+                    }
+
+                    if (optionTokens[0].equals("mainMenuRoom"))
+                    {
+                        this.menuRoom = Integer.parseInt(optionTokens[1]);
                     }
 
                     if (optionTokens[0].equals("hudScale"))
@@ -675,6 +685,13 @@ public class VRSettings
                 return this.mixedRealityRenderHands ? var4 + "YES" : var4 + "NO";
             case INSIDE_BLOCK_SOLID_COLOR:
             	return this.insideBlockSolidColor ? var4 + "SOLID COLOR" : var4 + "TEXTURE";
+ 	        case MAIN_MENU_ROOM:
+	            if (this.menuRoom == MAINMENU_JRBUDDA) {
+	            	return var4 + "OLD";
+	            } else if (this.menuRoom == MAINMENU_TECHJAR) {
+	            	return var4 + "NEW";
+	            }
+	            return "???";
             case WALK_UP_BLOCKS:
                 return this.walkUpBlocks ? var4 + "YES" : var4 + "NO";
  	        case HUD_SCALE:
@@ -920,6 +937,10 @@ public class VRSettings
             case INSIDE_BLOCK_SOLID_COLOR:
             	this.insideBlockSolidColor = !this.insideBlockSolidColor;
             	break;
+            case MAIN_MENU_ROOM:
+                this.menuRoom++;
+                if (this.menuRoom >= 2) this.menuRoom = 0;
+                break;
             case WALK_UP_BLOCKS:
                 this.walkUpBlocks = !this.walkUpBlocks;
                 break;
@@ -1164,6 +1185,7 @@ public class VRSettings
             var5.println("mixedRealityKeyColor:" + this.mixedRealityKeyColor.getRed() + "," + this.mixedRealityKeyColor.getGreen() + "," + this.mixedRealityKeyColor.getBlue());
             var5.println("mixedRealityRenderHands:" + this.mixedRealityRenderHands);
             var5.println("insideBlockSolidColor:" + this.insideBlockSolidColor);
+            var5.println("mainMenuRoom:" + this.menuRoom);
             var5.println("walkUpBlocks:" + this.walkUpBlocks);
             var5.println("hudScale:" + this.hudScale);
             var5.println("renderScaleFactor:" + this.renderScaleFactor);
@@ -1315,6 +1337,7 @@ public class VRSettings
         HUD_LOCK_TO("HUD Orientation Lock", false, true),
         HUD_OPACITY("HUD Opacity", true, false),
         RENDER_MENU_BACKGROUND("Menu Background", false, true),
+        MAIN_MENU_ROOM("Main Menu Room", false, false),
         HUD_HIDE("Hide HUD (F1)", false, true),
         HUD_OCCLUSION("HUD Occlusion", false, true),
         CROSSHAIR_OCCLUSION("Crosshair Occlusion", false, true),

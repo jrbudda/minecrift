@@ -58,13 +58,12 @@ def process_json( addon, version ):
         return json.dumps( json_obj, indent=1 )
 
 def create_install(mcp_dir):
-    print("Creating Installer...")
+    print "Creating Installer..."
     reobf = os.path.join(mcp_dir,'reobf','minecraft')
-    
+    assets = os.path.join(base_dir,"assets")
     # VIVE - removed from inner loop. blk.class is EntityPlayerSP, not anything to do with sound?
     #if cur_file=='blk.class': #skip SoundManager
-		#continue
-    
+    #continue
     in_mem_zip = StringIO.StringIO()
     with zipfile.ZipFile( in_mem_zip,'w', zipfile.ZIP_DEFLATED) as zipout:
         for abs_path, _, filelist in os.walk(reobf, followlinks=True):
@@ -72,11 +71,19 @@ def create_install(mcp_dir):
             for cur_file in fnmatch.filter(filelist, '*.class'):
                 #if cur_file in {'MinecriftClassTransformer.class','MinecriftForgeTweaker.class','MinecriftClassTransformer$Stage.class','MinecriftClassTransformer$1.class','MinecriftClassTransformer$2.class','MinecriftClassTransformer$3.class','MinecriftClassTransformer$4.class'}:
                 if cur_file in {'abt.class','abu.class','abv.class', 'abw.class', 'abx.class', 'aby.class', 'abz.class', 'aca.class', 'acb.class', 'acc.class', 'acd.class', 'ace.class', 'acf.class'}: #skip CreativeTabs
-                 continue
-                in_file= os.path.join(abs_path,cur_file) 
+                    continue
+                in_file= os.path.join(abs_path,cur_file)
                 arcname =  arc_path + cur_file
                 zipout.write(in_file, arcname)
-
+        print "Checking Assets..."
+        for a, b, c in os.walk(assets):
+            print a
+            arc_path = os.path.relpath(a,base_dir).replace('\\','/').replace('.','')+'/'
+            for cur_file in c:
+                print "Adding asset %s..." % cur_file
+                in_file= os.path.join(a,cur_file) 
+                arcname =  arc_path + cur_file
+                zipout.write(in_file, arcname)
     os.chdir( base_dir )
 
     
@@ -127,7 +134,7 @@ def create_install(mcp_dir):
         install_out.writestr( "version.json", process_json("", version))
         install_out.writestr( "version-forge.json", process_json("-forge", version))
         install_out.writestr( "version-shadersmod.json", process_json("-shadersmod", version))
-        install_out.writestr( "version-forge-shadersmod.json", process_json("-forge-shadersmod", version))		
+        install_out.writestr( "version-forge-shadersmod.json", process_json("-forge-shadersmod", version))	
         
         # Add release notes
         install_out.write("CHANGES.md", "release_notes.txt")

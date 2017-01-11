@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/EntityRenderer.java
 +++ b/net/minecraft/client/renderer/EntityRenderer.java
-@@ -1,27 +1,62 @@
+@@ -1,27 +1,64 @@
  package net.minecraft.client.renderer;
  
 -import com.google.gson.JsonSyntaxException;
@@ -20,6 +20,7 @@
 +
 +import org.apache.logging.log4j.LogManager;
 +import org.apache.logging.log4j.Logger;
++import org.lwjgl.BufferUtils;
 +import org.lwjgl.input.Keyboard;
 +import org.lwjgl.input.Mouse;
 +import org.lwjgl.opengl.EXTBlendFuncSeparate;
@@ -28,6 +29,7 @@
 +import org.lwjgl.opengl.GL11;
 +import org.lwjgl.opengl.GL12;
 +import org.lwjgl.opengl.GL14;
++import org.lwjgl.opengl.GL15;
 +import org.lwjgl.opengl.GL30;
 +import org.lwjgl.opengl.GLContext;
 +import org.lwjgl.util.glu.Project;
@@ -65,7 +67,7 @@
  import net.minecraft.client.renderer.culling.Frustrum;
  import net.minecraft.client.renderer.entity.RenderManager;
  import net.minecraft.client.renderer.texture.DynamicTexture;
-@@ -29,10 +64,12 @@
+@@ -29,10 +66,12 @@
  import net.minecraft.client.resources.I18n;
  import net.minecraft.client.resources.IResourceManager;
  import net.minecraft.client.resources.IResourceManagerReloadListener;
@@ -78,7 +80,7 @@
  import net.minecraft.enchantment.EnchantmentHelper;
  import net.minecraft.entity.Entity;
  import net.minecraft.entity.EntityLivingBase;
-@@ -40,6 +77,9 @@
+@@ -40,6 +79,9 @@
  import net.minecraft.entity.item.EntityItemFrame;
  import net.minecraft.entity.player.EntityPlayer;
  import net.minecraft.init.Blocks;
@@ -88,7 +90,15 @@
  import net.minecraft.potion.Potion;
  import net.minecraft.server.integrated.IntegratedServer;
  import net.minecraft.src.Config;
-@@ -61,2593 +101,4841 @@
+@@ -52,6 +94,7 @@
+ import net.minecraft.src.WrUpdates;
+ import net.minecraft.util.AxisAlignedBB;
+ import net.minecraft.util.ChatComponentText;
++import net.minecraft.util.IIcon;
+ import net.minecraft.util.MathHelper;
+ import net.minecraft.util.MouseFilter;
+ import net.minecraft.util.MovingObjectPosition;
+@@ -61,2593 +104,5046 @@
  import net.minecraft.world.World;
  import net.minecraft.world.WorldProvider;
  import net.minecraft.world.biome.BiomeGenBase;
@@ -101,6 +111,7 @@
 -import org.lwjgl.opengl.GLContext;
 -import org.lwjgl.util.glu.GLU;
 -import org.lwjgl.util.glu.Project;
++import net.minecraft.world.biome.BiomeGenPlains;
  
  public class EntityRenderer implements IResourceManagerReloadListener
  {
@@ -896,7 +907,7 @@
 +	public float crossY;
 +	public float crossZ;
 +
-+	private boolean eyeCollision = false;
++	public boolean eyeCollision = false;
 +	Block eyeCollisionBlock;
 +	Vec3 eyeCollisionBlockPosLoc;
 +	public float headCollisionThresholdDistance = 0.05f;
@@ -908,6 +919,7 @@
 +	public int callCount = 0;
 +	public boolean warningsEnabled = false;
 +	public Vec3 crossVec;
++	private int menuRoomVBO;
 +	private FloatBuffer matrixBuffer = GLAllocation.createDirectFloatBuffer(16);
 +	public org.lwjgl.util.vector.Matrix4f thirdPassProjectionMatrix = new org.lwjgl.util.vector.Matrix4f();
 +	/** END MINECRIFT */
@@ -1631,17 +1643,17 @@
 +					Vec3 o = getEyeRenderPos(renderPass.Center );
 +					if (mc.currentPass == renderPass.Third) o =getEyeRenderPos(renderPass.Third);
 +					
-+					Vec3 pos = o.subtract(feets).addVector(0, 0.02, 0);
++					Vec3 pos = o.subtract(feets).addVector(0, 0.01, 0);
 +					Vec3 pos2 = o.subtract(mc.roomScale.getHMDPos_World());
 +					setupPolyRendering(true);
 +					//renderCircle(pos2, 0.1f * mc.vrSettings.vrWorldScale, 32, 255, 255, 0, 255, 1);
 +						if(eyeCollision ){
 +							int was = GL11.glGetInteger(GL11.GL_DEPTH_FUNC);
 +							GL11.glDepthFunc(GL11.GL_ALWAYS);
-+							renderCircle(pos, 0.05f * mc.vrPlayer.worldScale, 32, 0, 255, 255, 128, 1);
++							renderCircle(pos, 0.05f * mc.vrPlayer.worldScale, 32, 0, 255, 255, 32, 1);
 +							GL11.glDepthFunc(was);
 +						}  else {
-+							renderCircle(pos, .05f * mc.vrPlayer.worldScale, 32, 0, 255, 255, 48, 1);            		
++							renderCircle(pos, .05f * mc.vrPlayer.worldScale, 32, 0, 255, 255, 32, 1);            		
 +						}
 +						
 +					setupPolyRendering(false);
@@ -4466,6 +4478,27 @@
 +			// otherwise, looking at inventory screen. use pose calculated when screen was opened
 +			//where is this set up... should be here....
 +			
++			if (mc.vrSettings.seated && (mc.theWorld == null || mc.currentScreen instanceof GuiWinGame)) {
++				Vec3 posAvg = Vec3.createVectorHelper(0, 0, 0);
++				for (Vec3 vec : mc.hmdPosSamples) {
++					posAvg = Vec3.createVectorHelper(posAvg.xCoord + vec.xCoord, posAvg.yCoord + vec.yCoord, posAvg.zCoord + vec.zCoord);
++				}
++				posAvg = Vec3.createVectorHelper(posAvg.xCoord / mc.hmdPosSamples.size(), posAvg.yCoord / mc.hmdPosSamples.size(), posAvg.zCoord / mc.hmdPosSamples.size());
++				
++				float yawAvg = 0;
++				for (float f : mc.hmdYawSamples) {
++					yawAvg += f;
++				}
++				yawAvg /= mc.hmdYawSamples.size();
++				yawAvg = (float)Math.toRadians(yawAvg + 90);
++				
++				Vec3 dir = Vec3.createVectorHelper(Math.cos(yawAvg), 0, Math.sin(yawAvg));
++				float dist = 2.5F;
++				Vec3 pos = posAvg.add(Vec3.createVectorHelper(dir.xCoord * dist, dir.yCoord * dist, dir.zCoord * dist));
++				guipos = new Vector3f((float)pos.xCoord, (float)pos.yCoord, (float)pos.zCoord);
++				guirot = Matrix4f.rotationY(-(yawAvg + (float)Math.PI / 2)); // don't ask
++			}
++			
 +			// counter head rotation
 +			if (currentPass != renderPass.Third) {
 +					GL11.glMultMatrix(mc.roomScale.getHMDMatrix_World());
@@ -4492,6 +4525,25 @@
 +			mc.mcProfiler.endSection();
 +	
 +	} 
++	
++	private void applyMenuRoomModelView(renderPass currentPass)
++	{
++		Vec3 eye =mc.entityRenderer.getEyeRenderPos(currentPass);
++		if (mc.theWorld==null) {
++			eye = mc.roomScale.getEyePos_Room(currentPass);
++		}
++		
++		// counter head rotation
++		if (currentPass != renderPass.Third) {
++				GL11.glMultMatrix(mc.roomScale.getHMDMatrix_World());
++		} else {
++			GL11.glRotatef(mc.vrSettings.vrFixedCamrotPitch, 1.0F, 0.0F, 0.0F);
++			GL11.glRotatef(180+mc.vrSettings.vrFixedCamrotYaw - mc.vrSettings.vrWorldRotation, 0.0F, 1.0F, 0.0F);
++			GL11.glRotatef(mc.vrSettings.vrFixedCamrotRoll, 0.0F, 0.0F, 1.0F);
++		}
++
++		GL11.glTranslatef((float)(interPolatedRoomOrigin.xCoord - eye.xCoord), (float)(interPolatedRoomOrigin.yCoord - eye.yCoord), (float)(interPolatedRoomOrigin.zCoord - eye.zCoord));
++	}
 +	
 +	/** Renders the pre-generated 2-d framebuffer into the world at the appropriate location..
 +	 * @param par1
@@ -4528,12 +4580,19 @@
 +				GL11.glLoadIdentity();
 +				// VIVE START - custom GUI position
 +				GL11.glPushMatrix();
-+					applyGUIModelView(this.mc.currentPass);
-+									
++						applyMenuRoomModelView(this.mc.currentPass);
++						
 +						///JRBUDDA MAIN MENU ROOM            
 +						if(inMenuRoom){		
-+							renderJrbuddasAwesomeMainMenuRoom();			
++							if (mc.vrSettings.menuRoom == VRSettings.MAINMENU_JRBUDDA) {
++								renderJrbuddasAwesomeMainMenuRoom();
++							} else if (mc.vrSettings.menuRoom == VRSettings.MAINMENU_TECHJAR) {
++								renderTechjarsAwesomeMainMenuRoom();
++							}
 +						}
++						
++						GL11.glLoadIdentity();
++						applyGUIModelView(this.mc.currentPass);
 +
 +						//END JRBUDDA'S AWESOME MAIN MENU ROOM       
 +						this.mc.guiFramebuffer.bindFramebufferTexture();
@@ -4561,7 +4620,7 @@
 +							GL11.glDisable(GL11.GL_ALPHA_TEST);
 +						}
 +
-+						if (this.mc.vrSettings.hudOcclusion == false){
++						if (!this.mc.vrSettings.hudOcclusion || inMenuRoom) {
 +							// Never use depth test for in game menu - so you can always see it!
 +							GL11.glDisable(GL11.GL_DEPTH_TEST);			
 +						} else GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -5260,60 +5319,216 @@
 +		GL11.glEnable(GL11.GL_LIGHTING);
 +		GL11.glEnable(GL11.GL_LIGHT0);
 +		GL11.glEnable(GL11.GL_CULL_FACE);
++		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
++        GL11.glColorMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_AMBIENT_AND_DIFFUSE);
 +	
 +		Minecraft.getMinecraft().renderEngine.bindTexture(Gui.optionsBackground);
 +		
-+	//	float yo = -camRelY;
-+		float s = 3f;
-+		int repeat = 30; 
-+		int w = 5;
++		//float yo = -camRelY;
++		int repeat = 4; // texture wraps per meter
++		float height = 2.5f;
++		float oversize = 1f;
 +		
-+		GL11.glPushMatrix();
-+			GL11.glScalef(2f, 2f, 2f);
-+			GL11.glTranslatef(0f, 0, 1.3f);
-+				GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, setFogColorBuffer(0f,0f,-0.2f,1));           
-+				GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, setFogColorBuffer(1,1,1,1));
-+				GL11.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, setFogColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
++		float[] area = MCOpenVR.getPlayAreaSize();
++		if (area != null) {
++			float width = area[0] + oversize;
++			float length = area[1] + oversize;
++			GL11.glPushMatrix();
++				GL11.glTranslatef(-width / 2, 0, -length / 2);
++				GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, setFogColorBuffer(width / 2, 1.8f, length / 2, 1));           
++				GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, setFogColorBuffer(1.0F, 1.0F, 1.0F, 1.0F));
++				GL11.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, setFogColorBuffer(0.2F, 0.2F, 0.2F, 1.0F));
++				GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, setFogColorBuffer(1.0F, 1.0F, 1.0F, 1.0F));
++				GL11.glLight(GL11.GL_LIGHT0, GL11.GL_CONSTANT_ATTENUATION, setFogColorBuffer(1.0F, 0, 0, 0));
++				GL11.glLight(GL11.GL_LIGHT0, GL11.GL_LINEAR_ATTENUATION, setFogColorBuffer(0.0F, 0, 0, 0));
++				GL11.glLight(GL11.GL_LIGHT0, GL11.GL_QUADRATIC_ATTENUATION, setFogColorBuffer(0.0F, 0, 0, 0));
 +				GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, setFogColorBuffer(0, 0, 0, 1.0F));
 +				GL11.glShadeModel(GL11.GL_SMOOTH);
-+	
-+				for (int i = 0; i <= 6; i++) {
-+					GL11.glPushMatrix();
-+						float t = -1.4f;
-+	
-+						if (i == 1) GL11.glRotatef(90f, 0,1, 0);
-+						if (i == 2) GL11.glRotatef(-90f, 0,1, 0);
-+						if (i == 3) GL11.glRotatef(180f, 0,1, 0);
-+						if (i == 4) GL11.glRotatef(-180f, 0,1, 0);
-+						if (i == 5){
-+							t= -.6f;
-+							GL11.glRotatef(90, 1,0, 0);
-+						}
-+						if (i == 6) {
-+							t= (float) -1.3f/2f;
-+							GL11.glRotatef(-90, 1,0, 0);
-+						}
-+	
-+						GL11.glTranslatef(0f, 0, t);			        	
-+						GL11.glBegin(GL11.GL_QUADS);	  	
-+							GL11.glTexCoord2f(0.0f, 0.0f);
-+							GL11.glVertex3f(-(s / 2f), -(s * 1) / 2f, 0.0f);  // Bottom Left Of The Texture and Quad
-+							GL11.glTexCoord2f(repeat, 0.0f);
-+							GL11.glVertex3f(s / 2f, -(s * 1) / 2f, 0.0f);  // Bottom Right Of The Texture and Quad
-+							GL11.glTexCoord2f(repeat, repeat);
-+							GL11.glVertex3f(s / 2f, (s * 1) / 2f, 0.0f);  // Top Right Of The Texture and Quad
-+							GL11.glTexCoord2f(0.0f, repeat);
-+							GL11.glVertex3f(-(s / 2f), (s * 1) / 2f, 0.0f);  // Top Left  Of The Texture and Quad
-+						GL11.glEnd();       
-+					GL11.glPopMatrix();   	   
-+				}         
-+	
-+				GL11.glTranslatef(0f, 0, -1.3f);
-+	
-+				
-+				GL11.glPopMatrix();   
++
++				GL11.glBegin(GL11.GL_QUADS);
++					GL11.glNormal3f(0, 1, 0);
++					GL11.glTexCoord2f(0, 0);
++					GL11.glVertex3f(0, 0, 0);
++					GL11.glTexCoord2f(0, repeat * length);
++					GL11.glVertex3f(0, 0, length);
++					GL11.glTexCoord2f(repeat * width, repeat * length);
++					GL11.glVertex3f(width, 0, length);
++					GL11.glTexCoord2f(repeat * width, 0);
++					GL11.glVertex3f(width, 0, 0);
++				GL11.glEnd();
++				GL11.glBegin(GL11.GL_QUADS);
++					GL11.glNormal3f(0, -1, 0);
++					GL11.glTexCoord2f(0, 0);
++					GL11.glVertex3f(0, height, 0);
++					GL11.glTexCoord2f(repeat * width, 0);
++					GL11.glVertex3f(width, height, 0);
++					GL11.glTexCoord2f(repeat * width, repeat * length);
++					GL11.glVertex3f(width, height, length);
++					GL11.glTexCoord2f(0, repeat * length);
++					GL11.glVertex3f(0, height, length);
++				GL11.glEnd();
++				GL11.glBegin(GL11.GL_QUADS);
++					GL11.glNormal3f(1, 0, 0);
++					GL11.glTexCoord2f(0, 0);
++					GL11.glVertex3f(0, 0, 0);
++					GL11.glTexCoord2f(0, repeat * height);
++					GL11.glVertex3f(0, height, 0);
++					GL11.glTexCoord2f(repeat * length, repeat * height);
++					GL11.glVertex3f(0, height, length);
++					GL11.glTexCoord2f(repeat * length, 0);
++					GL11.glVertex3f(0, 0, length);
++				GL11.glEnd();
++				GL11.glBegin(GL11.GL_QUADS);
++					GL11.glNormal3f(-1, 0, 0);
++					GL11.glTexCoord2f(0, 0);
++					GL11.glVertex3f(width, 0, 0);
++					GL11.glTexCoord2f(repeat * length, 0);
++					GL11.glVertex3f(width, 0, length);
++					GL11.glTexCoord2f(repeat * length, repeat * height);
++					GL11.glVertex3f(width, height, length);
++					GL11.glTexCoord2f(0, repeat * height);
++					GL11.glVertex3f(width, height, 0);
++				GL11.glEnd();
++				GL11.glBegin(GL11.GL_QUADS);
++					GL11.glNormal3f(0, 0, 1);
++					GL11.glTexCoord2f(0, 0);
++					GL11.glVertex3f(0, 0, 0);
++					GL11.glTexCoord2f(repeat * width, 0);
++					GL11.glVertex3f(width, 0, 0);
++					GL11.glTexCoord2f(repeat * width, repeat * height);
++					GL11.glVertex3f(width, height, 0);
++					GL11.glTexCoord2f(0, repeat * height);
++					GL11.glVertex3f(0, height, 0);
++				GL11.glEnd();
++				GL11.glBegin(GL11.GL_QUADS);
++					GL11.glNormal3f(0, 0, -1);
++					GL11.glTexCoord2f(0, 0);
++					GL11.glVertex3f(0, 0, length);
++					GL11.glTexCoord2f(0, repeat * height);
++					GL11.glVertex3f(0, height, length);
++					GL11.glTexCoord2f(repeat * width, repeat * height);
++					GL11.glVertex3f(width, height, length);
++					GL11.glTexCoord2f(repeat * width, 0);
++					GL11.glVertex3f(width, 0, length);
++				GL11.glEnd();
++			GL11.glPopMatrix();
++		}
 +	
 +		RenderHelper.disableStandardItemLighting();
++	}
++	
++	private void renderTechjarsAwesomeMainMenuRoom() {
++		GL11.glClearColor(0.718f, 0.824f, 1f, 1f); // #b7d2ff
++		//GL11.glClearColor(0f, 0.016f, 0.047f, 1f); // #00040c
++		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
++		GL11.glDisable(GL11.GL_BLEND);
++		GL11.glColor4f(1f, 1f, 1f, 1f);
++		
++		GL11.glEnable(GL11.GL_DEPTH_TEST);	
++		GL11.glEnable(GL11.GL_TEXTURE_2D);
++		GL11.glEnable(GL11.GL_LIGHTING);
++		GL11.glEnable(GL11.GL_LIGHT0);
++		GL11.glEnable(GL11.GL_CULL_FACE);
++		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
++		
++        GL11.glColorMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_AMBIENT_AND_DIFFUSE);
++	
++		IIcon icon = Blocks.grass.getBlockTextureFromSide(1);
++		Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
++		
++		GL11.glPushMatrix();
++		
++		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, setFogColorBuffer(0, 1, 0, 0));           
++		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, setFogColorBuffer(0.1F,  0.1F,  0.1F, 0F));
++		//GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, setFogColorBuffer(0.05F, 0.05F, 0.2F, 1.0F));
++		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, setFogColorBuffer(0.9F, 0.9F, 0.9F, 1.0F));
++		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, setFogColorBuffer(1.0F, 1.0F, 1.0F, 1.0F));
++		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_CONSTANT_ATTENUATION, setFogColorBuffer(1.0F, 0, 0, 0));
++		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_LINEAR_ATTENUATION, setFogColorBuffer(0.0F, 0, 0, 0));
++		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_QUADRATIC_ATTENUATION, setFogColorBuffer(0.0F, 0, 0, 0));
++		GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, setFogColorBuffer(0, 0, 0, 1.0F));
++		GL11.glShadeModel(GL11.GL_SMOOTH);
++
++		final int size = 128;
++		final int color = BiomeGenBase.plains.getBiomeGrassColor(0, 0, 0);
++		if (menuRoomVBO == 0) {
++			ByteBuffer buf = BufferUtils.createByteBuffer(size * size * 4 * 4 * 35);
++			for (int x = 0; x < size * 2; x++) {
++				for (int z = 0; z < size * 2; z++) {
++					buf.putFloat(x - size); buf.putFloat(0); buf.putFloat(z - size); // vertex
++					buf.putFloat(0); buf.putFloat(1); buf.putFloat(0); // normal
++					buf.putFloat(icon.getMinU()); buf.putFloat(icon.getMinV()); // texcoord
++					buf.put((byte)((color >> 16) & 0xFF)); buf.put((byte)((color >> 8) & 0xFF)); buf.put((byte)(color & 0xFF));
++					buf.putFloat(x - size); buf.putFloat(0); buf.putFloat(z + 1 - size);
++					buf.putFloat(0); buf.putFloat(1); buf.putFloat(0);
++					buf.putFloat(icon.getMinU()); buf.putFloat(icon.getMaxV());
++					buf.put((byte)((color >> 16) & 0xFF)); buf.put((byte)((color >> 8) & 0xFF)); buf.put((byte)(color & 0xFF));
++					buf.putFloat(x + 1 - size); buf.putFloat(0); buf.putFloat(z + 1 - size);
++					buf.putFloat(0); buf.putFloat(1); buf.putFloat(0);
++					buf.putFloat(icon.getMaxU()); buf.putFloat(icon.getMaxV());
++					buf.put((byte)((color >> 16) & 0xFF)); buf.put((byte)((color >> 8) & 0xFF)); buf.put((byte)(color & 0xFF));
++					buf.putFloat(x + 1 - size); buf.putFloat(0); buf.putFloat(z - size);
++					buf.putFloat(0); buf.putFloat(1); buf.putFloat(0);
++					buf.putFloat(icon.getMaxU()); buf.putFloat(icon.getMinV());
++					buf.put((byte)((color >> 16) & 0xFF)); buf.put((byte)((color >> 8) & 0xFF)); buf.put((byte)(color & 0xFF));
++				}
++			}
++			buf.rewind();
++			menuRoomVBO = GL15.glGenBuffers();
++			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, menuRoomVBO);
++			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buf, GL15.GL_STATIC_DRAW);
++		}
++
++		//GL11.glColor4f(0.357f, 0.529f, 0.192f, 1f);
++		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
++		GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
++		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
++		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
++		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, menuRoomVBO);
++		GL11.glVertexPointer(3, GL11.GL_FLOAT, 35, 0);
++		GL11.glNormalPointer(GL11.GL_FLOAT, 35, 12);
++		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 35, 24);
++		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 35, 32);
++		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
++		GL11.glDrawArrays(GL11.GL_QUADS, 0, size * size * 4 * 4);
++		GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
++		GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
++		GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
++		GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
++		
++		/*GL11.glBegin(GL11.GL_QUADS);
++			GL11.glNormal3f(0, 1, 0);
++			GL11.glTexCoord2f(-size, -size);
++			GL11.glVertex3f(-size, 0, -size);
++			GL11.glTexCoord2f(-size, size);
++			GL11.glVertex3f(-size, 0, size);
++			GL11.glTexCoord2f(size, size);
++			GL11.glVertex3f(size, 0, size);
++			GL11.glTexCoord2f(size, -size);
++			GL11.glVertex3f(size, 0, -size);
++		GL11.glEnd();*/
++
++		float[] area = MCOpenVR.getPlayAreaSize();
++		if (area != null) {
++			float width = (float)Math.ceil(area[0]);
++			float length = (float)Math.ceil(area[1]);
++
++			Minecraft.getMinecraft().renderEngine.bindTexture(Gui.optionsBackground);
++			GL11.glTranslatef(-width / 2, 0, -length / 2);
++			GL11.glBegin(GL11.GL_QUADS);
++				GL11.glNormal3f(0, 1, 0);
++				GL11.glTexCoord2f(0, 0);
++				GL11.glVertex3f(0, 0.001f, 0);
++				GL11.glTexCoord2f(0, length);
++				GL11.glVertex3f(0, 0.001f, length);
++				GL11.glTexCoord2f(width, length);
++				GL11.glVertex3f(width, 0.001f, length);
++				GL11.glTexCoord2f(width, 0);
++				GL11.glVertex3f(width, 0.001f, 0);
++			GL11.glEnd();
++		}
++		
++		GL11.glPopMatrix();
 +	}
 +
 +	private void renderTeleportLine(OpenVRPlayer vrPlayer){

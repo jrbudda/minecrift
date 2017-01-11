@@ -66,9 +66,12 @@ public class OpenVRStereoRenderer implements IStereoProvider
 				hiddenMeshes[i].pVertexData.getPointer().read(0, hiddenMesheVertecies[i], 0, hiddenMesheVertecies[i].length);
 	
 				for (int ix = 0;ix < hiddenMesheVertecies[i].length;ix+=2) {
-					hiddenMesheVertecies[i][ix] = hiddenMesheVertecies[i][ix] * info.LeftFovTextureResolution.w * renderScaleFactor;
-					hiddenMesheVertecies[i][ix + 1] = hiddenMesheVertecies[i][ix +1] * info.LeftFovTextureResolution.h * renderScaleFactor;
+					hiddenMesheVertecies[i][ix] = hiddenMesheVertecies[i][ix] * info.LeftFovTextureResolution.w;
+					hiddenMesheVertecies[i][ix + 1] = hiddenMesheVertecies[i][ix +1] * info.LeftFovTextureResolution.h;
 				}
+				System.out.println("Stencil mesh loaded for eye " + i);
+			} else {
+				System.out.println("No stencil mesh found for eye " + i);
 			}
 		}
 
