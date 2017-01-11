@@ -1,0 +1,32 @@
+--- a/net/minecraft/client/renderer/entity/Render.java
++++ b/net/minecraft/client/renderer/entity/Render.java
+@@ -340,7 +340,7 @@
+     /**
+      * Renders an entity's name above its head
+      */
+-    protected void renderLivingLabel(Entity p_147906_1_, String p_147906_2_, double p_147906_3_, double p_147906_5_, double p_147906_7_, int p_147906_9_)
++    protected void renderLivingLabel(Entity p_147906_1_, String p_147906_2_, double x, double y, double z, int p_147906_9_)
+     {
+         double var10 = p_147906_1_.getDistanceSqToEntity(this.renderManager.livingPlayer);
+ 
+@@ -350,10 +350,17 @@
+             float var13 = 1.6F;
+             float var14 = 0.016666668F * var13;
+             GL11.glPushMatrix();
+-            GL11.glTranslatef((float)p_147906_3_ + 0.0F, (float)p_147906_5_ + p_147906_1_.height + 0.5F, (float)p_147906_7_);
++            GL11.glTranslatef((float)x + 0.0F, (float)y + p_147906_1_.height + 0.5F, (float)z);
+             GL11.glNormal3f(0.0F, 1.0F, 0.0F);
+-            GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+-            GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
++            
++            //VIVECRAFT this isnt right even in vanilla
++    		y=y+p_147906_1_.height+0.5f;
++    		float f = (float)Math.toDegrees(Math.atan2(-x, z));     
++    		float f1 = -(float)Math.toDegrees(Math.asin(y/Math.sqrt(x*x+y*y+z*z))); 
++            GL11.glRotatef(-f, 0.0F, 1.0F, 0.0F);
++            GL11.glRotatef(f1, 1.0F, 0.0F, 0.0F);
++            //
++            
+             GL11.glScalef(-var14, -var14, var14);
+             GL11.glDisable(GL11.GL_LIGHTING);
+             GL11.glDepthMask(false);

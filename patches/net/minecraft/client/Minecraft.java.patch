@@ -154,7 +154,7 @@
  import net.minecraft.world.EnumDifficulty;
  import net.minecraft.world.WorldProviderEnd;
  import net.minecraft.world.WorldProviderHell;
-@@ -150,2988 +225,4870 @@
+@@ -150,2988 +225,4869 @@
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
@@ -5041,7 +5041,7 @@
 +						
 +						Framebuffer source = this.framebufferEye0;
 +						if(currentPass2 == renderPass.Left) source = framebufferEye1;
-+						
++						if(thirdPass) source = framebuffer;
 +						source.framebufferRender((displayWidth / 2) * i, displayWidth / ports, displayHeight, 0);
 +
 +						return true;
@@ -5398,8 +5398,7 @@
 +			GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
 +			GL11.glDepthMask(true); // Do write to depth buffer
 +			GL11.glEnable(GL11.GL_CULL_FACE);
-+			GL11.glStencilMask(0x0); // Dont Write to stencil buffer
-+			
++			GL11.glStencilMask(0x0); // Dont Write to stencil buffer			
 +		}
 +		/// END STENCIL TESTING
 +	}

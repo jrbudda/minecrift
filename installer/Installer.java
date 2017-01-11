@@ -315,10 +315,9 @@ public class Installer extends JPanel  implements PropertyChangeListener
                     } catch (Exception e) { }
                 }
             }
-            if (success && md5 != null) {
-                String OnDiskMd5 = GetMd5(fo);
-                if (OnDiskMd5 == null || !OnDiskMd5.equalsIgnoreCase(md5)) {
-                    System.out.println("Bad md5 for " + fo.getName() + "!");
+            if (success) {
+                if (!checkMD5(fo, md5)){
+                    System.out.println("Bad md5 for " + fo.getName() + "!" + " actual: " + GetMd5(fo));
                     fo.delete();
                     success = false;
                 }
@@ -327,6 +326,12 @@ public class Installer extends JPanel  implements PropertyChangeListener
             return success;
         }
 
+		private boolean checkMD5(File a, String b){
+			if (a.exists() == false) return false;
+			if(b == null) return true;
+			return GetMd5(a).equalsIgnoreCase(b);
+		}
+		
         private String GetMd5(File fo)
         {
             if (!fo.exists())
@@ -554,49 +559,69 @@ public class Installer extends JPanel  implements PropertyChangeListener
         }
 
         private boolean SetupMinecraftAsLibrary() {
-        /*    File lib_dir = new File(targetDir,"libraries/net/minecraft/Minecraft/"+MINECRAFT_VERSION );
-            lib_dir.mkdirs();
-            File lib_file = new File(lib_dir,"Minecraft-"+MINECRAFT_VERSION+".jar");
-            File mc_jar = null;
-            if( lib_file.exists() && lib_file.length() > 4500000 )return true; //TODO: should md5sum it here, I suppose
+		String s = "";
             try {
-                // Download the minecraft jar (we don't wont to require that it has previously been downloaded in Minecraft)
+				File mc_jar = null;
+				String minecriftVersionName = "vivecraft-" + version + mod;
+				s+=		minecriftVersionName;
+				File tar = new File(targetDir, "versions" + File.separator + minecriftVersionName + File.separator +  minecriftVersionName + ".jar");
+				s+=MC_MD5 + " " + GetMd5(tar);
+				if(checkMD5(tar, MC_MD5)) return true;
+				
+				if(mc_jar == null){
+					File vanilla = new File(targetDir, "versions" + File.separator + MINECRAFT_VERSION + File.separator + MINECRAFT_VERSION+".jar");
+					s+=MC_MD5 + " " + GetMd5(vanilla);
+					if(checkMD5(vanilla, MC_MD5)) mc_jar = vanilla;
+				}
 
-                mc_jar = new File(tempDir + "/" + MINECRAFT_VERSION + ".jar");
-                if (!mc_jar.exists()) {
-                    if (!downloadFile(mc_url, mc_jar, MC_MD5)) {
-                        finalMessage += " Error: Failed to download " + MINECRAFT_VERSION + ".jar from " + mc_url;
-                        return false;
-                    }
-                }
-                ZipInputStream input_jar = new ZipInputStream(new FileInputStream(mc_jar));
-                ZipOutputStream lib_jar= new ZipOutputStream(new FileOutputStream(lib_file));
 
-                ZipEntry ze = null;
-                byte data[] = new byte[1024];
-                while ((ze = input_jar.getNextEntry()) != null) {
-                    if(!ze.isDirectory() && !ze.getName().contains("META-INF"))
-                    {
-                        lib_jar.putNextEntry(new ZipEntry(ze.getName()));
-                        int d;
-                        while( (d = input_jar.read(data)) != -1 )
-                        {
-                            lib_jar.write(data, 0, d);
+				if(mc_jar == null){
+					// Download the minecraft jar (we don't wont to require that it has previously been downloaded in Minecraft)
+					mc_jar = new File(tempDir + File.separator + MINECRAFT_VERSION + ".jar");
+					if (!mc_jar.exists() || !checkMD5(mc_jar, MC_MD5)) {
 
-                        }
-                        lib_jar.closeEntry();
-                        input_jar.closeEntry();
-                    }
-                }
-                input_jar.close();
-                lib_jar.close();
-                return true;
+						if (!downloadFile(mc_url, mc_jar, MC_MD5)) {
+							finalMessage += " Error: Failed to download " + MINECRAFT_VERSION + ".jar from " + mc_url;
+							return false;
+						}
+					}
+				}
+					
+				if(mc_jar == null) return false;
+
+
+
+
+
+			InputStream src = new FileInputStream(mc_jar);
+			return copyInputStreamToFile(src, tar);
+					
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             } catch (Exception e) {
                 finalMessage += " Error: "+e.getLocalizedMessage();
+				return false;
             }
-            return false; 
-			*/
-			return true;
+
+
+
         }
 
         private boolean ExtractVersion() {
@@ -666,10 +691,11 @@ public class Installer extends JPanel  implements PropertyChangeListener
 
                         //Create empty version jar file
                         //All code actually lives in libraries/
-                        ZipOutputStream null_jar = new ZipOutputStream(new FileOutputStream(new File (ver_dir, jar_id+".jar")));
-                        null_jar.putNextEntry(new ZipEntry("Classes actually in libraries directory"));
-                        null_jar.closeEntry();
-                        null_jar.close();
+
+                        //ZipOutputStream null_jar = new ZipOutputStream(new FileOutputStream(new File (ver_dir, jar_id+".jar")));
+                        //null_jar.putNextEntry(new ZipEntry("Classes actually in libraries directory"));
+                        //null_jar.closeEntry();
+                        //null_jar.close();
                         return ver_json_file.exists() && ver_file.exists();
                     } catch (Exception e) {
                         finalMessage += " Error: "+e.getLocalizedMessage();
@@ -713,20 +739,50 @@ public class Installer extends JPanel  implements PropertyChangeListener
         
         // VIVE START - install openVR dlls
         private boolean InstallOpenVR() {
-			File win32_dir = new File (targetDir, "win32" );
-			File win64_dir = new File (targetDir, "win64" );
+
+		
+			String osname = System.getProperty("os.name").toLowerCase();
+			String osarch= System.getProperty("os.arch").toLowerCase();
+
+			String osFolder = "win32";		
+			String resource = "win32/openvr_api.dll";
+				
+			if (osname.contains("windows")){	
+
+				installFile(osFolder, resource);
+					osFolder = "win64";
+					resource = "win64/openvr_api.dll";
+					installFile(osFolder, resource);
+			}
+			else if( osname.contains("linux")){
+				osFolder = "linux32";
+				resource = "linux32/libopenvr_api.so";
+					installFile(osFolder, resource);
+					osFolder = "linux64";
+					resource = "linux64/libopenvr_api.so";
+					installFile(osFolder, resource);
+			}
+			else if( osname.contains("mac")){
+				osFolder = "osx32";
+				resource = "osx32/libopenvr_api.dylib";			
+				installFile(osFolder, resource);
+			}	
+		return true;
+        }
+
+		private boolean installFile(String osFolder, String resource){
+			File win32_dir = new File (targetDir, osFolder);
 			win32_dir.mkdirs();
-			win64_dir.mkdirs();
-			
-			InputStream openvrdll = Installer.class.getResourceAsStream("win64/openvr_api.dll");
-			File dll_out = new File (targetDir, "win64/openvr_api.dll");
+
+
+			InputStream openvrdll = Installer.class.getResourceAsStream(resource);
+			File dll_out = new File (targetDir, resource);
 			if (!copyInputStreamToFile(openvrdll, dll_out))
 				return false;
 				
-			openvrdll = Installer.class.getResourceAsStream("win32/openvr_api.dll");
-			dll_out = new File (targetDir, "win32/openvr_api.dll");
-			return copyInputStreamToFile(openvrdll, dll_out);
-        }
+			return true;		
+		}
+
         // VIVE END - install openVR dll
 
         private void sleep(int millis)
@@ -960,14 +1016,16 @@ public class Installer extends JPanel  implements PropertyChangeListener
             }
             
             monitor.setProgress(50);
-            monitor.setNote("Setting up Vivecraft as a library...");
+            monitor.setNote("Checking for base game...");
 			
-            finalMessage = "Failed: Couldn't setup Vivecraft "+MC_VERSION+" as library. Have you run "+MINECRAFT_VERSION+" at least once yet?";
+
             if(!SetupMinecraftAsLibrary())
             {
-                monitor.close();
-                return null;
+            JOptionPane.showMessageDialog(null,
+                                         "Could not locate or download base game. The Mincraft Launcher will attempt to download it.",
+                                         "Warning!",JOptionPane.WARNING_MESSAGE);
             }
+			
             // VIVE START - install openVR
             monitor.setProgress(52);
             monitor.setNote("Installing OpenVR...");
@@ -1072,6 +1130,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
                                          "Please ensure you have closed the Minecraft launcher before proceeding.\n" +
                                          "Also, if installing with Forge please ensure you have installed Forge " + FORGE_VERSION + " first.",
                                          "Important!",
+
                                          JOptionPane.OK_CANCEL_OPTION,
                                          JOptionPane.WARNING_MESSAGE, null, null, null);
             
