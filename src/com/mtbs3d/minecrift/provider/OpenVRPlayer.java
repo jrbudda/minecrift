@@ -1087,68 +1087,72 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         		}
         		
               		
-        	if(!inAnEntity){
-        		Block block = mc.theWorld.getBlock(bx, by, bz);
-        		Material material = block.getMaterial();
+        		if(!inAnEntity){
+        			Block block = mc.theWorld.getBlock(bx, by, bz);
+        			Material material = block.getMaterial();
 
-        		// every time end of weapon enters a solid for the first time, trace from our previous air position
-        		// and damage the block it collides with... 
+        			// every time end of weapon enters a solid for the first time, trace from our previous air position
+        			// and damage the block it collides with... 
 
-        		MovingObjectPosition col = mc.theWorld.rayTraceBlocks(lastWeaponEndAir, weaponEnd, true, false, true);
-        		if (shouldIlookatMyHand || (col != null && col.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK))
-        		{
-        	  		this.shouldIlookatMyHand = false;
-        			if (!(block.getMaterial() == material.air))
+        			MovingObjectPosition col = mc.theWorld.rayTraceBlocks(lastWeaponEndAir, weaponEnd, true, false, true);
+        			if (shouldIlookatMyHand || (col != null && col.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK))
         			{
-        				if (block.getMaterial().isLiquid()) {
-        					if(item == Items.bucket) {       						
-        						//mc.playerController.onPlayerRightClick(player, player.worldObj,is, col.blockX, col.blockY, col.blockZ, col.sideHit,col.hitVec);
-        						this.shouldIlookatMyHand = true;
-        						if (IAmLookingAtMyHand){
-        							if(mc.playerController.sendUseItem(player, player.worldObj, is)){
-        								mc.entityRenderer.itemRenderer.resetEquippedProgress2();
+        				this.shouldIlookatMyHand = false;
+        				if (!(block.getMaterial() == material.air))
+        				{
+        					if (block.getMaterial().isLiquid()) {
+        						if(item == Items.bucket) {       						
+        							//mc.playerController.onPlayerRightClick(player, player.worldObj,is, col.blockX, col.blockY, col.blockZ, col.sideHit,col.hitVec);
+        							this.shouldIlookatMyHand = true;
+        							if (IAmLookingAtMyHand){
+        								if(mc.playerController.sendUseItem(player, player.worldObj, is)){
+        									mc.entityRenderer.itemRenderer.resetEquippedProgress2();
+        								}
         							}
         						}
-        					}
-        				} else {
-        					if(canact && (!mc.vrSettings.realisticClimbEnabled || block != Blocks.ladder)) {
-        						int p = 3;
-        						p += (speed - speedthresh) / 2;
-        						
-        						for (int i = 0; i < p; i++)
-        						{
-        							//set delay to 0
-        							clearBlockHitDelay();			
+        					} else {
+        						if(canact && (!mc.vrSettings.realisticClimbEnabled || block != Blocks.ladder)) {
+        							int p = 3;
+        							if(item instanceof ItemHoe){
+        								Minecraft.getMinecraft().playerController.onPlayerRightClick(player, player.worldObj, is, bx, by, bz, col.sideHit, col.hitVec);
+        								
+        							}else{
+        								p += (speed - speedthresh) / 2;
 
-        							//all this comes from plaeyrControllerMP clickMouse and friends.
+        								for (int i = 0; i < p; i++)
+        								{
+        									//set delay to 0
+        									clearBlockHitDelay();			
 
-        							//all this does is sets the blocking you're currently hitting, has no effect in survival mode after that.
-        							//but if in creaive mode will clickCreative on the block
-        							mc.playerController.clickBlock(col.blockX, col.blockY, col.blockZ, col.sideHit);
+        									//all this comes from plaeyrControllerMP clickMouse and friends.
 
-        							if(!getIsHittingBlock()) //seems to be the only way to tell it broke.
-        								break;
+        									//all this does is sets the blocking you're currently hitting, has no effect in survival mode after that.
+        									//but if in creaive mode will clickCreative on the block
+        									mc.playerController.clickBlock(col.blockX, col.blockY, col.blockZ, col.sideHit);
 
-        							//apply destruction for survival only
-        							mc.playerController.onPlayerDamageBlock(col.blockX, col.blockY, col.blockZ, col.sideHit);
+        									if(!getIsHittingBlock()) //seems to be the only way to tell it broke.
+        										break;
 
-        							if(!getIsHittingBlock()) //seems to be the only way to tell it broke.
-        								break;
+        									//apply destruction for survival only
+        									mc.playerController.onPlayerDamageBlock(col.blockX, col.blockY, col.blockZ, col.sideHit);
 
-        							//something effects
-        							mc.effectRenderer.addBlockHitEffects(col.blockX, col.blockY, col.blockZ, col.sideHit);
+        									if(!getIsHittingBlock()) //seems to be the only way to tell it broke.
+        										break;
 
+        									//something effects
+        									mc.effectRenderer.addBlockHitEffects(col.blockX, col.blockY, col.blockZ, col.sideHit);
+
+        								}
+        							}
+        							this.triggerHapticPulse(0, 1000);
+        							//   System.out.println("Hit block speed =" + speed + " mot " + mot + " thresh " + speedthresh) ;            				
+        							lastWeaponSolid = true;
         						}
-
-        						this.triggerHapticPulse(0, 1000);
-        						//   System.out.println("Hit block speed =" + speed + " mot " + mot + " thresh " + speedthresh) ;            				
-        						lastWeaponSolid = true;
+        						insolidBlock = true;
         					}
-        					insolidBlock = true;
         				}
         			}
-        	}
-        }
+        		}
                	
         if ((!inAnEntity && !insolidBlock ) || lastWeaponEndAir.lengthVector() ==0)
         {

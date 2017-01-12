@@ -1,0 +1,35 @@
+--- a/net/minecraft/client/renderer/entity/RenderLiving.java
++++ b/net/minecraft/client/renderer/entity/RenderLiving.java
+@@ -1,11 +1,14 @@
+ package net.minecraft.client.renderer.entity;
+ 
++import net.minecraft.client.Minecraft;
+ import net.minecraft.client.model.ModelBase;
+ import net.minecraft.client.renderer.Tessellator;
+ import net.minecraft.entity.Entity;
+ import net.minecraft.entity.EntityHanging;
+ import net.minecraft.entity.EntityLiving;
+ import net.minecraft.entity.EntityLivingBase;
++import net.minecraft.util.Vec3;
++
+ import org.lwjgl.opengl.GL11;
+ 
+ public abstract class RenderLiving extends RendererLivingEntity
+@@ -68,6 +71,17 @@
+             double var26 = this.func_110828_a(var10.prevPosY + (double)var10.getEyeHeight() * 0.7D, var10.posY + (double)var10.getEyeHeight() * 0.7D, (double)p_110827_9_) - var20 * 0.5D - 0.25D;
+             double var28 = this.func_110828_a(var10.prevPosZ, var10.posZ, (double)p_110827_9_) - var18 * 0.7D + var16 * 0.5D * var22;
+             double var30 = this.func_110828_a((double)p_110827_1_.prevRenderYawOffset, (double)p_110827_1_.renderYawOffset, (double)p_110827_9_) * 0.01745329238474369D + (Math.PI / 2D);
++            
++            // VIVE START 
++            if (var10 == Minecraft.getMinecraft().thePlayer)
++            {
++                    Vec3 aimSource = Minecraft.getMinecraft().entityRenderer.getControllerRenderPos(0);
++                    var24 = aimSource.xCoord;
++                    var26 = aimSource.yCoord; 
++                    var28 = aimSource.zCoord;             		         
++            }
++            // VIVE END           
++            
+             var16 = Math.cos(var30) * (double)p_110827_1_.width * 0.4D;
+             var18 = Math.sin(var30) * (double)p_110827_1_.width * 0.4D;
+             double var32 = this.func_110828_a(p_110827_1_.prevPosX, p_110827_1_.posX, (double)p_110827_9_) + var16;

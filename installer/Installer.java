@@ -317,7 +317,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
             }
             if (success) {
                 if (!checkMD5(fo, md5)){
-                    System.out.println("Bad md5 for " + fo.getName() + "!" + " actual: " + GetMd5(fo));
+                    JOptionPane.showMessageDialog(null, "Bad md5 for " + fo.getName() + "!" + " actual: " + GetMd5(fo).toLowerCase(),"Error downloading", JOptionPane.ERROR_MESSAGE);
                     fo.delete();
                     success = false;
                 }
@@ -565,12 +565,12 @@ public class Installer extends JPanel  implements PropertyChangeListener
 				String minecriftVersionName = "vivecraft-" + version + mod;
 				s+=		minecriftVersionName;
 				File tar = new File(targetDir, "versions" + File.separator + minecriftVersionName + File.separator +  minecriftVersionName + ".jar");
-				s+=MC_MD5 + " " + GetMd5(tar);
+				s+= " " + MC_MD5 + " " + GetMd5(tar);
 				if(checkMD5(tar, MC_MD5)) return true;
 				
 				if(mc_jar == null){
 					File vanilla = new File(targetDir, "versions" + File.separator + MINECRAFT_VERSION + File.separator + MINECRAFT_VERSION+".jar");
-					s+=MC_MD5 + " " + GetMd5(vanilla);
+					s+= " " + MC_MD5 + " " + GetMd5(vanilla);
 					if(checkMD5(vanilla, MC_MD5)) mc_jar = vanilla;
 				}
 
@@ -588,10 +588,6 @@ public class Installer extends JPanel  implements PropertyChangeListener
 				}
 					
 				if(mc_jar == null) return false;
-
-
-
-
 
 			InputStream src = new FileInputStream(mc_jar);
 			return copyInputStreamToFile(src, tar);
@@ -1016,15 +1012,6 @@ public class Installer extends JPanel  implements PropertyChangeListener
             }
             
             monitor.setProgress(50);
-            monitor.setNote("Checking for base game...");
-			
-
-            if(!SetupMinecraftAsLibrary())
-            {
-            JOptionPane.showMessageDialog(null,
-                                         "Could not locate or download base game. The Mincraft Launcher will attempt to download it.",
-                                         "Warning!",JOptionPane.WARNING_MESSAGE);
-            }
 			
             // VIVE START - install openVR
             monitor.setProgress(52);
@@ -1049,13 +1036,22 @@ public class Installer extends JPanel  implements PropertyChangeListener
                 installedForge = installForge(forgeInstaller);
             }
             monitor.setProgress(75);
-            monitor.setNote("Extracting correct Minecrift version...");
-            finalMessage = "Failed: Couldn't extract Minecrift. Try redownloading this installer.";
+            monitor.setNote("Extracting correct Vivecraft version...");
+            finalMessage = "Failed: Couldn't extract Vivecraft. Try redownloading this installer.";
             if(!ExtractVersion())
             {
                 monitor.close();
                 return null;
             }
+			
+			monitor.setNote("Checking for base game...");
+			if(!SetupMinecraftAsLibrary())
+            {
+            JOptionPane.showMessageDialog(null,
+                                         "Could not locate or download base game. The Mincraft Launcher will attempt to download it.",
+                                         "Warning!",JOptionPane.WARNING_MESSAGE);
+            }
+			
             if(useHrtf.isSelected())
             {
                 monitor.setProgress(85);

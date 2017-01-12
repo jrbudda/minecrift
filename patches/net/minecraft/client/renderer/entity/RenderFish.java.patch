@@ -16,7 +16,7 @@
 +            // VIVE START - use controller for fishing rod start point
 +            if (p_76986_1_.angler == Minecraft.getMinecraft().thePlayer)
 +            {
-+                Vec3 aimSource = Minecraft.getMinecraft().roomScale.getControllerPos_World(0);
++                Vec3 aimSource = Minecraft.getMinecraft().entityRenderer.getControllerRenderPos(0);
 +                Vec3 aimRotation = Minecraft.getMinecraft().roomScale.getControllerMainDir_World();
 +                var23= aimSource.xCoord + aimRotation.xCoord * 0.28f;
 +                var25= aimSource.yCoord - aimRotation.yCoord * 0.28f;

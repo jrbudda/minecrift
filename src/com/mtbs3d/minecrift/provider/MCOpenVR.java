@@ -1717,7 +1717,7 @@ public class MCOpenVR
 			}
 			
 			if(pressedRAppMenu  && !lastpressedRAppMenu) { 
-				if(mc.gameSettings.keyBindSneak.getIsKeyPressed() && mc.vrSettings.displayMirrorMode == mc.vrSettings.MIRROR_MIXED_REALITY){				
+				if(mc.gameSettings.keyBindPickBlock.getIsKeyPressed() && mc.vrSettings.displayMirrorMode == mc.vrSettings.MIRROR_MIXED_REALITY){				
 					VRHotkeys.snapMRCam(mc);	
 				}
 			}
@@ -2018,7 +2018,7 @@ public class MCOpenVR
 			}
 			
 			if(pressedA  && !lastpressedA) { //handle menu directly
-				if(mc.gameSettings.keyBindSneak.getIsKeyPressed() && mc.vrSettings.displayMirrorMode == mc.vrSettings.MIRROR_MIXED_REALITY){				
+				if(mc.gameSettings.keyBindPickBlock.getIsKeyPressed() && mc.vrSettings.displayMirrorMode == mc.vrSettings.MIRROR_MIXED_REALITY){				
 					VRHotkeys.snapMRCam(mc);	
 				}
 			}
@@ -2167,7 +2167,6 @@ public class MCOpenVR
 
 		while (vrsystem.PollNextEvent.apply(event, event.size() ) > 0)
 		{
-
 			switch (event.eventType) {
 			case EVREventType.EVREventType_VREvent_KeyboardClosed:
 				//'huzzah'
@@ -2863,7 +2862,8 @@ public class MCOpenVR
 			controllerRotation[0].M[2][2] = temp.m22;
 		}
 		
-		// Calculate aim angles from controller orientation
+		// Calculate aim angles from controller orientationevent
+		
 		// Minecraft entities don't have a roll, so just base it on a direction
 		controllerDirection = controllerRotation[0].transform(forward);
 		aimPitch = (float)Math.toDegrees(Math.asin(controllerDirection.y/controllerDirection.length()));
