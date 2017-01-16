@@ -154,7 +154,7 @@
  import net.minecraft.world.EnumDifficulty;
  import net.minecraft.world.WorldProviderEnd;
  import net.minecraft.world.WorldProviderHell;
-@@ -150,2988 +225,4869 @@
+@@ -150,2988 +225,4883 @@
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
@@ -1225,7 +1225,8 @@
 +	public static final String RENDER_SETUP_FAILURE_MESSAGE = "Failed to initialise stereo rendering plugin: ";
 +	public static final int ERROR_DISPLAY_TIME_SECS = 10;
 +	
-+	private float watereffect, portaleffect;
++	public float watereffect, portaleffect, pumpkineffect;
++
 +	
 +	public renderPass currentPass;
 +	
@@ -1244,7 +1245,7 @@
 +	 * The minecriftVerString will be automatically updated by the build scripts, do not modify here.
 +	 * Modify minecriftversion.py in root minecrift dir.
 +	 */
-+    public final String minecriftVerString = "Vivecraft 1.7.10 jrbudda-35";
++    public final String minecriftVerString = "Vivecraft 1.7.10 jrbudda-35r3";
 +	private boolean trigger;
 +	/* end version */
 +	/** END MINECRIFT */
@@ -2266,6 +2267,11 @@
 +
 +			this.mcProfiler.startSection("hmdSampling");
 +
++			if (hmdPosSamples.size() == hmdAvgLength)
++				hmdPosSamples.removeFirst();
++			if (hmdYawSamples.size() == hmdAvgLength)
++				hmdYawSamples.removeFirst();
++			
 +			float yaw = roomScale.getHMDYaw_World();
 +			if (yaw < 0) yaw += 360;
 +			hmdYawTotal += angleDiff(yaw, hmdYawLast);
@@ -2494,10 +2500,16 @@
 +				}
 +
 +				ARBShaderObjects.glUseProgramObjectARB(VRShaders._FOVReduction_shaderProgramId);
-+				ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_RadiusUniform, fov);
 +				ARBShaderObjects.glUniform1iARB(VRShaders._FOVReduction_TextureUniform, 0);
-+				ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_BorderUniform, 0.06f);
-+
++				
++				if(pumpkineffect > 0){
++					ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_RadiusUniform, 0.25f);
++					ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_BorderUniform, 0.0f);
++				} else{
++					ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_RadiusUniform, fov);
++					ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_BorderUniform, 0.06f);
++				}
++				
 +				// VIVE start - screen flash when hurt instead of view tilt
 +				float r = 0, k = 0;
 +				// VIVE start - screen flash when hurt instead of view tilt
@@ -2553,6 +2565,8 @@
 +				ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_time,time);
 +				ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_waterAmplitude, watereffect);
 +				ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_portalAmplitutde, portaleffect);		
++				ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_pumpkinAmplitutde, pumpkineffect);		
++				ARBShaderObjects.glUniform1iARB(VRShaders._Overlay_eye, currentPass == currentPass.Left ? 1 : -1);	
 +				
 +				source.framebufferRender(framebufferEye0.framebufferWidth, framebufferEye0.framebufferHeight);
 +
@@ -5039,8 +5053,8 @@
 +											
 +						this.framebufferMc.unbindFramebuffer();	//draw directly to window
 +						
-+						Framebuffer source = this.framebufferEye0;
-+						if(currentPass2 == renderPass.Left) source = framebufferEye1;
++						Framebuffer source = this.framebufferEye1;
++						if(currentPass2 == renderPass.Left) source = framebufferEye0;
 +						if(thirdPass) source = framebuffer;
 +						source.framebufferRender((displayWidth / 2) * i, displayWidth / ports, displayHeight, 0);
 +

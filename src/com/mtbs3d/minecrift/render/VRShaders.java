@@ -42,8 +42,10 @@ public class VRShaders {
 	public static int _Overlay_HealthAlpha = -1;
 	public static int _Overlay_waterAmplitude= -1;
 	public static int _Overlay_portalAmplitutde= -1;
+	public static int _Overlay_pumpkinAmplitutde= -1;
 	public static int _Overlay_time= -1;
 	public static int _Overlay_BlackAlpha = -1;
+	public static int _Overlay_eye= -1;
 	
 	
 	private VRShaders() {
@@ -125,6 +127,8 @@ public class VRShaders {
 		_Overlay_HealthAlpha = ARBShaderObjects.glGetUniformLocationARB(_FOVReduction_shaderProgramId, "redalpha");
 		_Overlay_waterAmplitude= ARBShaderObjects.glGetUniformLocationARB(_FOVReduction_shaderProgramId, "water");
 		_Overlay_portalAmplitutde= ARBShaderObjects.glGetUniformLocationARB(_FOVReduction_shaderProgramId, "portal");
+		_Overlay_pumpkinAmplitutde= ARBShaderObjects.glGetUniformLocationARB(_FOVReduction_shaderProgramId, "pumpkin");
+		_Overlay_eye= ARBShaderObjects.glGetUniformLocationARB(_FOVReduction_shaderProgramId, "eye");
 		_Overlay_time= ARBShaderObjects.glGetUniformLocationARB(_FOVReduction_shaderProgramId, "portaltime");
 		_Overlay_BlackAlpha = ARBShaderObjects.glGetUniformLocationARB(_FOVReduction_shaderProgramId, "blackalpha");
 		

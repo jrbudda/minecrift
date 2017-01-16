@@ -144,12 +144,18 @@
          }
          else
          {
-@@ -103,59 +144,93 @@
+@@ -100,62 +141,98 @@
+         }
  
+         ItemStack var9 = this.mc.thePlayer.inventory.armorItemInSlot(3);
+-
++        
++        mc.pumpkineffect = 0;
          if (this.mc.gameSettings.thirdPersonView == 0 && var9 != null && var9.getItem() == Item.getItemFromBlock(Blocks.pumpkin))
          {
 -            this.renderPumpkinBlur(var6, var7);
-+            this.renderPumpkinBlur(width, height);
++        	mc.pumpkineffect = 1f;
++           // this.renderPumpkinBlur(width, height);
          }
  
 -        if (!this.mc.thePlayer.isPotionActive(Potion.confusion))
@@ -269,7 +275,7 @@
              GL11.glDisable(GL11.GL_BLEND);
          }
  
-@@ -175,7 +250,7 @@
+@@ -175,7 +252,7 @@
              }
  
              var12 = (int)(220.0F * var33) << 24 | 1052704;
@@ -278,7 +284,7 @@
              GL11.glEnable(GL11.GL_ALPHA_TEST);
              GL11.glEnable(GL11.GL_DEPTH_TEST);
              this.mc.mcProfiler.endSection();
-@@ -183,7 +258,7 @@
+@@ -183,7 +260,7 @@
  
          var32 = 16777215;
          GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -287,7 +293,7 @@
          int var14;
          int var15;
          int var16;
-@@ -198,7 +273,7 @@
+@@ -198,7 +275,7 @@
              var34 = this.mc.thePlayer.getHorseJumpPower();
              var38 = 182;
              var14 = (int)(var34 * (float)(var38 + 1));
@@ -296,7 +302,7 @@
              this.drawTexturedModalRect(var11, var15, 0, 84, var38, 5);
  
              if (var14 > 0)
-@@ -218,7 +293,7 @@
+@@ -218,7 +295,7 @@
              {
                  var38 = 182;
                  var14 = (int)(this.mc.thePlayer.experience * (float)(var38 + 1));
@@ -305,7 +311,7 @@
                  this.drawTexturedModalRect(var11, var15, 0, 64, var38, 5);
  
                  if (var14 > 0)
-@@ -235,8 +310,8 @@
+@@ -235,8 +312,8 @@
                  boolean var39 = false;
                  var14 = var39 ? 16777215 : 8453920;
                  String var43 = "" + this.mc.thePlayer.experienceLevel;
@@ -316,7 +322,7 @@
                  boolean var18 = false;
                  var8.drawString(var43, var16 + 1, var17, 0);
                  var8.drawString(var43, var16 - 1, var17, 0);
-@@ -256,8 +331,8 @@
+@@ -256,8 +333,8 @@
              if (this.remainingHighlightTicks > 0 && this.highlightingItemStack != null)
              {
                  var35 = this.highlightingItemStack.getDisplayName();
@@ -327,7 +333,7 @@
  
                  if (!this.mc.playerController.shouldDrawHUD())
                  {
-@@ -300,7 +375,7 @@
+@@ -300,7 +377,7 @@
              }
  
              var13 = var8.getStringWidth(var35);
@@ -336,7 +342,7 @@
              this.mc.mcProfiler.endSection();
          }
  
-@@ -312,26 +387,44 @@
+@@ -312,26 +389,44 @@
          {
              this.mc.mcProfiler.startSection("debug");
              GL11.glPushMatrix();
@@ -391,7 +397,7 @@
              int var25 = MathHelper.floor_double((double)(this.mc.thePlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
              this.drawString(var8, "f: " + var25 + " (" + Direction.directions[var25] + ") / " + MathHelper.wrapAngleTo180_float(this.mc.thePlayer.rotationYaw), 2, 88, 14737632);
  
-@@ -347,11 +440,29 @@
+@@ -347,11 +442,29 @@
              {
                  this.drawString(var8, String.format("shader: %s", new Object[] {this.mc.entityRenderer.getShaderGroup().getShaderGroupName()}), 2, 112, 14737632);
              }
@@ -422,7 +428,7 @@
          if (this.recordPlayingUpFor > 0)
          {
              this.mc.mcProfiler.startSection("overlayMessage");
-@@ -366,7 +477,7 @@
+@@ -366,7 +479,7 @@
              if (var13 > 8)
              {
                  GL11.glPushMatrix();
@@ -431,7 +437,7 @@
                  GL11.glEnable(GL11.GL_BLEND);
                  OpenGlHelper.glBlendFunc(770, 771, 1, 0);
                  var14 = 16777215;
-@@ -388,14 +499,14 @@
+@@ -388,14 +501,14 @@
  
          if (var37 != null)
          {
@@ -448,7 +454,7 @@
          this.mc.mcProfiler.startSection("chat");
          this.persistantChatGUI.drawChat(this.updateCounter);
          this.mc.mcProfiler.endSection();
-@@ -422,7 +533,7 @@
+@@ -422,7 +535,7 @@
                  var46 = 150;
              }
  
@@ -457,7 +463,7 @@
              byte var47 = 10;
              drawRect(var19 - 1, var47 - 1, var19 + var46 * var17, var47 + 9 * var16, Integer.MIN_VALUE);
  
-@@ -501,9 +612,10 @@
+@@ -501,9 +614,10 @@
      {
          this.streamIndicator.render((int)(p_152126_1_ - 10.0F), 10);
      }
@@ -471,7 +477,7 @@
          Scoreboard var5 = p_96136_1_.getScoreboard();
          Collection var6 = var5.getSortedScores(p_96136_1_);
  
-@@ -549,9 +661,10 @@
+@@ -549,9 +663,10 @@
              }
          }
      }
@@ -485,7 +491,7 @@
          boolean var3 = this.mc.thePlayer.hurtResistantTime / 3 % 2 == 1;
  
          if (this.mc.thePlayer.hurtResistantTime < 10)
-@@ -559,52 +672,52 @@
+@@ -559,52 +674,52 @@
              var3 = false;
          }
  
@@ -562,7 +568,7 @@
                  {
                      this.drawTexturedModalRect(var23, var18, 16, 9, 9, 9);
                  }
-@@ -616,7 +729,7 @@
+@@ -616,7 +731,7 @@
          int var26;
          int var27;
  
@@ -571,7 +577,7 @@
          {
              var23 = 16;
  
-@@ -636,16 +749,16 @@
+@@ -636,16 +751,16 @@
                  var24 = 1;
              }
  
@@ -592,7 +598,7 @@
              {
                  var27 -= 2;
              }
-@@ -661,12 +774,12 @@
+@@ -661,12 +776,12 @@
  
              if (var3)
              {
@@ -607,7 +613,7 @@
                  {
                      this.drawTexturedModalRect(var26, var27, var23 + 63, 9 * var28, 9, 9);
                  }
-@@ -674,7 +787,7 @@
+@@ -674,7 +789,7 @@
  
              if (var19 > 0.0F)
              {
@@ -616,7 +622,7 @@
                  {
                      this.drawTexturedModalRect(var26, var27, var23 + 153, 9 * var28, 9, 9);
                  }
-@@ -687,22 +800,22 @@
+@@ -687,22 +802,22 @@
              }
              else
              {
@@ -643,7 +649,7 @@
          {
              this.mc.mcProfiler.endStartSection("food");
  
-@@ -718,7 +831,7 @@
+@@ -718,7 +833,7 @@
                      var38 = 13;
                  }
  
@@ -652,7 +658,7 @@
                  {
                      var36 = var13 + (this.rand.nextInt(3) - 1);
                  }
-@@ -733,32 +846,32 @@
+@@ -733,32 +848,32 @@
  
                  if (var6)
                  {
@@ -691,7 +697,7 @@
              var36 = (int)Math.ceil((double)var35.getHealth());
              float var37 = var35.getMaxHealth();
              var26 = (int)(var37 + 0.5F) / 2;
-@@ -830,7 +943,9 @@
+@@ -830,7 +945,9 @@
      /**
       * Renders dragon's (boss) health on the HUD
       */
@@ -702,7 +708,7 @@
      {
          if (BossStatus.bossName != null && BossStatus.statusBarTime > 0)
          {
-@@ -856,9 +971,15 @@
+@@ -856,9 +973,15 @@
              this.mc.getTextureManager().bindTexture(icons);
          }
      }
@@ -720,7 +726,7 @@
          GL11.glDisable(GL11.GL_DEPTH_TEST);
          GL11.glDepthMask(false);
          OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-@@ -881,8 +1002,15 @@
+@@ -881,8 +1004,15 @@
      /**
       * Renders the vignette. Args: vignetteBrightness, width, height
       */
@@ -737,7 +743,7 @@
          p_73829_1_ = 1.0F - p_73829_1_;
  
          if (p_73829_1_ < 0.0F)
-@@ -913,44 +1041,22 @@
+@@ -913,44 +1043,22 @@
          GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
          OpenGlHelper.glBlendFunc(770, 771, 1, 0);
      }
@@ -792,7 +798,7 @@
      {
          ItemStack var5 = this.mc.thePlayer.inventory.mainInventory[p_73832_1_];
  
-@@ -1039,4 +1145,23 @@
+@@ -1039,4 +1147,23 @@
      {
          return this.updateCounter;
      }

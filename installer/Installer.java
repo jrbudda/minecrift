@@ -590,26 +590,8 @@ public class Installer extends JPanel  implements PropertyChangeListener
 				if(mc_jar == null) return false;
 
 			InputStream src = new FileInputStream(mc_jar);
+			tar.getParentFile().mkdirs();
 			return copyInputStreamToFile(src, tar);
-					
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             } catch (Exception e) {
                 finalMessage += " Error: "+e.getLocalizedMessage();

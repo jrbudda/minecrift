@@ -2167,6 +2167,7 @@ public class MCOpenVR
 
 		while (vrsystem.PollNextEvent.apply(event, event.size() ) > 0)
 		{
+
 			switch (event.eventType) {
 			case EVREventType.EVREventType_VREvent_KeyboardClosed:
 				//'huzzah'
@@ -2401,6 +2402,7 @@ public class MCOpenVR
 	public static float[] getPlayAreaSize() {
 		FloatBuffer bufX = FloatBuffer.allocate(1);
 		FloatBuffer bufZ = FloatBuffer.allocate(1);
+		if(vrChaperone.GetPlayAreaSize == null)return new float[]{bufX.get(0), bufZ.get(0)};
 		byte valid = vrChaperone.GetPlayAreaSize.apply(bufX, bufZ);
 		if (valid == 1) return new float[]{bufX.get(0), bufZ.get(0)};
 		return null;
@@ -2862,8 +2864,7 @@ public class MCOpenVR
 			controllerRotation[0].M[2][2] = temp.m22;
 		}
 		
-		// Calculate aim angles from controller orientationevent
-		
+		// Calculate aim angles from controller orientation
 		// Minecraft entities don't have a roll, so just base it on a direction
 		controllerDirection = controllerRotation[0].transform(forward);
 		aimPitch = (float)Math.toDegrees(Math.asin(controllerDirection.y/controllerDirection.length()));

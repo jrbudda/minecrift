@@ -98,7 +98,7 @@
  import net.minecraft.util.MathHelper;
  import net.minecraft.util.MouseFilter;
  import net.minecraft.util.MovingObjectPosition;
-@@ -61,2593 +104,5046 @@
+@@ -61,2593 +104,5048 @@
  import net.minecraft.world.World;
  import net.minecraft.world.WorldProvider;
  import net.minecraft.world.biome.BiomeGenBase;
@@ -4497,6 +4497,8 @@
 +				Vec3 pos = posAvg.add(Vec3.createVectorHelper(dir.xCoord * dist, dir.yCoord * dist, dir.zCoord * dist));
 +				guipos = new Vector3f((float)pos.xCoord, (float)pos.yCoord, (float)pos.zCoord);
 +				guirot = Matrix4f.rotationY(-(yawAvg + (float)Math.PI / 2)); // don't ask
++				MCOpenVR.guiPos_World = guipos;
++				MCOpenVR.guiRotationPose = guirot;
 +			}
 +			
 +			// counter head rotation

@@ -57,7 +57,7 @@ public class OpenVRStereoRenderer implements IStereoProvider
 
 
 		for (int i = 0; i < 2; i++) {
-			hiddenMeshes[i] = MCOpenVR.vrsystem.GetHiddenAreaMesh.apply(i);
+			hiddenMeshes[i] = MCOpenVR.vrsystem.GetHiddenAreaMesh.apply(i, 0);
 			hiddenMeshes[i].read();
 			int tc = hiddenMeshes[i].unTriangleCount;
 			if(tc >0){

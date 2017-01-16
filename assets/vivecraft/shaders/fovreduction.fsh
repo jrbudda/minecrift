@@ -6,13 +6,17 @@ uniform float border;
 
 uniform float water;
 uniform float portal;
+uniform float pumpkin;
 
 uniform float portaltime;
 uniform float redalpha;
 uniform float blackalpha;
 
 const vec4 black = vec4(0, 0, 0, 1.0);
+const vec4 orange = vec4(.25, .125, 0, 1.0);
 const float pi = 3.14159265;
+
+uniform int eye = 0;
 
 void main(){
 
@@ -20,7 +24,7 @@ void main(){
     
 	if(portal > 0){ //swirly whirly
 		float ts = gl_TexCoord[0].s;
-		vec2 mod_texcoord = gl_TexCoord[0].st + vec2(water*.005*cos(portaltime + 20*ts*pi), water*.005*sin(portaltime + 30*ts*pi));
+		vec2 mod_texcoord = gl_TexCoord[0].st + vec2(portal*.005*cos(portaltime + 20*ts*pi), portal*.005*sin(portaltime + 30*ts*pi));
 		bkg_color = texture2D(tex0, mod_texcoord);
 	}
 
@@ -40,12 +44,16 @@ void main(){
 	}
 
 	if(circle_radius < 0.8){ //arfy barfy
-		vec2 circle_center = vec2(0.5, 0.5);
+		vec2 circle_center = vec2(0.5 + eye*0.1, 0.5);
 		vec2 uv = gl_TexCoord[0].xy; 
 		uv -= circle_center; 
 		float dist =  sqrt(dot(uv, uv)); 
 		float t = 1.0 + smoothstep(circle_radius, circle_radius+10, dist) - smoothstep(circle_radius-border, circle_radius, dist);
-		bkg_color  = mix(black, bkg_color,t);
+		if(pumpkin>0){
+			bkg_color  = mix(orange, bkg_color,t);
+		} else{
+			bkg_color  = mix(black, bkg_color,t);
+		}
 	}	
 	
 	gl_FragColor = bkg_color;
