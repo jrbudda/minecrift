@@ -154,7 +154,7 @@
  import net.minecraft.world.EnumDifficulty;
  import net.minecraft.world.WorldProviderEnd;
  import net.minecraft.world.WorldProviderHell;
-@@ -150,2988 +225,4883 @@
+@@ -150,2988 +225,4887 @@
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
@@ -1245,7 +1245,7 @@
 +	 * The minecriftVerString will be automatically updated by the build scripts, do not modify here.
 +	 * Modify minecriftversion.py in root minecrift dir.
 +	 */
-+    public final String minecriftVerString = "Vivecraft 1.7.10 jrbudda-35r3";
++    public final String minecriftVerString = "Vivecraft 1.7.10 jrbudda-36pre";
 +	private boolean trigger;
 +	/* end version */
 +	/** END MINECRIFT */
@@ -3224,6 +3224,10 @@
 +
 +		this.mcProfiler.endSection();
 +
++		//VIVECRAFT
++		vrPlayer.preTick();
++		//
++		
 +		if (this.rightClickDelayTimer > 0)
 +		{
 +			--this.rightClickDelayTimer;
@@ -5308,7 +5312,7 @@
 +					// Lanczos downsample FBOs
 +					fsaaFirstPassResultFBO = new Framebuffer("FSAA Pass1 FBO",EyeTextureSize.w, displayFBHeight,false, false,false, 0, -1);
 +					//TODO: ugh, support multiple color attachments in Framebuffer....
-+					fsaaLastPassResultFBO = new Framebuffer("FSAA Pass2 FBO",displayFBWidth, displayFBHeight,false, false,false, 0, -1);
++					fsaaLastPassResultFBO = new Framebuffer("FSAA Pass2 FBO",EyeTextureSize.w, EyeTextureSize.h,false, false,false, 0, -1);
 +			
 +					print(this.fsaaFirstPassResultFBO.toString());
 +

@@ -220,13 +220,13 @@ public class MCOpenVR
 	
 	public String getVersion() { return "Version TODO"; }
 
-	static KeyBinding hotbarNext = new KeyBinding("Hotbar Next", 201, "key.categories.gameplay");
-	static KeyBinding hotbarPrev = new KeyBinding("Hotbar Prev", 209, "key.categories.gameplay");
-	static KeyBinding rotateLeft = new KeyBinding("Rotate Left", 203, "key.categories.movement");
-	static KeyBinding rotateRight = new KeyBinding("Rotate Right", 205, "key.categories.movement");
-	static KeyBinding walkabout = new KeyBinding("Walkabout", 207, "key.categories.movement");
-	static KeyBinding rotateFree = new KeyBinding("Rotate Free", 199, "key.categories.movement");
-	static KeyBinding quickTorch = new KeyBinding("Quick Torch", 210, "key.categories.gameplay");
+	static KeyBinding hotbarNext = new KeyBinding("Hotbar Next", 201, "Vivecraft");
+	static KeyBinding hotbarPrev = new KeyBinding("Hotbar Prev", 209, "Vivecraft");
+	static KeyBinding rotateLeft = new KeyBinding("Rotate Left", 203, "Vivecraft");
+	static KeyBinding rotateRight = new KeyBinding("Rotate Right", 205, "Vivecraft");
+	static KeyBinding walkabout = new KeyBinding("Walkabout", 207, "Vivecraft");
+	static KeyBinding rotateFree = new KeyBinding("Rotate Free", 199, "Vivecraft");
+	static KeyBinding quickTorch = new KeyBinding("Quick Torch", 210, "Vivecraft");
 
 	public MCOpenVR()
 	{
@@ -606,38 +606,38 @@ public class MCOpenVR
 	public static void poll(long frameIndex)
 	{
 		Minecraft.getMinecraft().mcProfiler.startSection("input");
-		
-	if(!mc.vrSettings.seated){
-		pollInputEvents();
+		boolean sleeping = (mc.theWorld !=null && mc.thePlayer != null && mc.thePlayer.isPlayerSleeping());
+		if(!mc.vrSettings.seated){
+			pollInputEvents();
 
-		updateControllerButtonState();
-		updateTouchpadSampleBuffer();
-		updateSmoothedVelocity();
+			updateControllerButtonState();
+			updateTouchpadSampleBuffer();
+			updateSmoothedVelocity();
 
-		if(mc.theWorld != null){
-			boolean sleeping = (mc.thePlayer != null && mc.thePlayer.isPlayerSleeping());
-			if(MCOpenVR.isVive){
-				processControllerButtons(sleeping, mc.currentScreen != null);
-				processTouchpadSampleBuffer();
-			}else {
-				processControllerButtonsOculus(sleeping, mc.currentScreen != null);
-				processTouchpadSampleBufferOculus();
+			if(mc.theWorld != null){
+				if(MCOpenVR.isVive){
+					processControllerButtons(sleeping, mc.currentScreen != null);
+					processTouchpadSampleBuffer();
+				}else {
+					processControllerButtonsOculus(sleeping, mc.currentScreen != null);
+					processTouchpadSampleBufferOculus();
+				}
 			}
-			processVRFunctions(sleeping, mc.currentScreen != null);
+
+			// GUI controls
+			Minecraft.getMinecraft().mcProfiler.endStartSection("gui");
+			if( mc.currentScreen != null )
+			{
+				processGui();
+			}
+
+			if(mc.currentScreen == null && mc.vrSettings.vrTouchHotbar && mc.vrSettings.vrHudLockMode != mc.vrSettings.HUD_LOCK_HEAD && hudPopup){
+				processHotbar();
+			}
 		}
 
-		// GUI controls
-		Minecraft.getMinecraft().mcProfiler.endStartSection("gui");
-		if( mc.currentScreen != null )
-		{
-			processGui();
-		}
+		processVRFunctions(sleeping, mc.currentScreen != null);
 
-		if(mc.currentScreen == null && mc.vrSettings.vrTouchHotbar && mc.vrSettings.vrHudLockMode != mc.vrSettings.HUD_LOCK_HEAD && hudPopup){
-			processHotbar();
-		}
-	}
-	
 		Minecraft.getMinecraft().mcProfiler.endStartSection("updatePose");
 		updatePose();
 		Minecraft.getMinecraft().mcProfiler.endSection();
@@ -843,9 +843,6 @@ public class MCOpenVR
 			mc.controllerPosY = controllerPos.y;
 			mc.controllerPosZ = controllerPos.z;
 		}
-
-		mc.currentScreen.mouseOffsetX = -1;
-		mc.currentScreen.mouseOffsetY = -1;
 
 		boolean lastpressedShift,pressedshift,lastpressedleftclick,
 		lastpressedrightclick,lastpressedmiddleclick,pressedleftclick,pressedrightclick,pressedmiddleclick;
@@ -2044,13 +2041,6 @@ public class MCOpenVR
 				moveModeSwitchcount = 0;
 			}
 			
-			//no jump key if cant.Not a good place for this check.
-			if(mc.gameSettings.keyBindJump.isPressed()) {
-				if(!mc.vrPlayer.getFreeMoveMode() && !mc.vrSettings.simulateFalling) {
-					mc.gameSettings.keyBindJump.unpressKey();
-				}
-			}
-
 			if(rotateLeft.isPressed()){
 				mc.vrSettings.vrWorldRotation+=mc.vrSettings.vrWorldRotationIncrement;
 				mc.vrSettings.vrWorldRotation = mc.vrSettings.vrWorldRotation % 360;
@@ -2082,7 +2072,7 @@ public class MCOpenVR
 					else {
 						mc.vrSettings.vrWorldRotation = walkaboutYawStart - yaw;
 						mc.vrSettings.vrWorldRotation %= 360; // Prevent stupidly large values (can they even happen here?)
-						mc.vrPlayer.checkandUpdateRotateScale(true);
+					//	mc.vrPlayer.checkandUpdateRotateScale(true);
 					}
 				} else {
 					isWalkingAbout = false;
@@ -2109,7 +2099,7 @@ public class MCOpenVR
 					}
 					else {
 						mc.vrSettings.vrWorldRotation = walkaboutYawStart + yaw;
-						mc.vrPlayer.checkandUpdateRotateScale(true);
+					//	mc.vrPlayer.checkandUpdateRotateScale(true);
 					}
 				} else {
 					isFreeRotate = false;
@@ -2828,7 +2818,7 @@ public class MCOpenVR
 					mc.vrSettings.vrWorldRotation += rotSpeed * rotMul * mc.getFrameDelta();
 					mc.vrSettings.vrWorldRotation %= 360; // Prevent stupidly large values
 					hmdForwardYaw = (float)Math.toDegrees(Math.atan2(headDirection.x, headDirection.z));    
-					mc.vrPlayer.checkandUpdateRotateScale(true);
+				//	mc.vrPlayer.checkandUpdateRotateScale(true);
 					Mouse.setCursorPosition(leftedge,Mouse.getY());
 					h=-rotStart;
 				}
@@ -2836,7 +2826,7 @@ public class MCOpenVR
 					mc.vrSettings.vrWorldRotation -= rotSpeed * rotMul * mc.getFrameDelta();
 					mc.vrSettings.vrWorldRotation %= 360; // Prevent stupidly large values
 					hmdForwardYaw = (float)Math.toDegrees(Math.atan2(headDirection.x, headDirection.z));    
-					mc.vrPlayer.checkandUpdateRotateScale(true);
+				//	mc.vrPlayer.checkandUpdateRotateScale(true);
 					Mouse.setCursorPosition(rightedge,Mouse.getY());
 					h=rotStart;
 				}

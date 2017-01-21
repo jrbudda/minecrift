@@ -98,7 +98,7 @@
  import net.minecraft.util.MathHelper;
  import net.minecraft.util.MouseFilter;
  import net.minecraft.util.MovingObjectPosition;
-@@ -61,2593 +104,5048 @@
+@@ -61,2593 +104,5051 @@
  import net.minecraft.world.World;
  import net.minecraft.world.WorldProvider;
  import net.minecraft.world.biome.BiomeGenBase;
@@ -1329,6 +1329,7 @@
 +	 */
 +	private void orientCamera(float par1)
 +	{
++		this.mc.gameSettings.thirdPersonView = 0;
 +		EntityLivingBase var2 = this.mc.renderViewEntity;
 +//		float var3 = var2.yOffset - 1.62F;
 +		double var4 = var2.posX;
@@ -2168,6 +2169,8 @@
 +//		{
 +		this.prevFrameTime = Minecraft.getSystemTime();
 +//		}
++		
++		mc.vrPlayer.checkandUpdateRotateScale(true, par1);
 +
 +
 +		/** END MINECRIFT */
@@ -4762,8 +4765,8 @@
 +				if (this.mc.currentScreen != null /*&& !this.blankGUIUntilWorldValid*/)
 +				{
 +
-+					final int mouseX1 = mouseX = this.mc.currentScreen.getMouseX();
-+					final int mouseY1 = mouseY = this.mc.currentScreen.getMouseY();
++					final int mouseX1 = mouseX = this.mc.currentScreen.getMouseXPos();
++					final int mouseY1 = mouseY = this.mc.currentScreen.getMouseYPos();
 +
 +					try
 +					{
@@ -4789,9 +4792,9 @@
 +							//	Draw GUI crosshair
 +							if (mc.stereoProvider.isStereo()){					
 +								if(MCOpenVR.controllerMouseValid){
-+									mc.ingameGUI.drawMouseMenuQuad(this.mc.currentScreen.getMouseX(),this.mc.currentScreen.getMouseY());				
++									mc.ingameGUI.drawMouseMenuQuad(this.mc.currentScreen.getMouseXPos(),this.mc.currentScreen.getMouseYPos());				
 +								}
-+							} else  mc.ingameGUI.drawMouseMenuQuad(this.mc.currentScreen.getMouseX(),this.mc.currentScreen.getMouseY());
++							} else  mc.ingameGUI.drawMouseMenuQuad(this.mc.currentScreen.getMouseXPos(),this.mc.currentScreen.getMouseYPos());
 +						}
 +					}
 +					catch (Throwable throwable)

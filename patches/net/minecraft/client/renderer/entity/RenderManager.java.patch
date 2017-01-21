@@ -37,3 +37,14 @@
          }
  
          if (p_147938_6_.thirdPersonView == 2)
+@@ -254,6 +262,10 @@
+ 
+     public boolean renderEntityStatic(Entity p_147936_1_, float p_147936_2_, boolean p_147936_3_)
+     {
++    	
++    	//pixelmon no 1st person model
++    	if(p_147936_1_ == Minecraft.getMinecraft().thePlayer) return true;
++    	
+         if (p_147936_1_.ticksExisted == 0)
+         {
+             p_147936_1_.lastTickPosX = p_147936_1_.posX;

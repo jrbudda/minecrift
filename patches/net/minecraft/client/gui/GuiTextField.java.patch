@@ -49,12 +49,19 @@
      }
  
      /**
-@@ -673,6 +683,11 @@
+@@ -673,6 +683,18 @@
          }
  
          this.isFocused = p_146195_1_;
 +        
 +        // VIVE START - show keyboard
++        
++        //Pixelmon hax
++        for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
++            if(ste.getClassName().contains("GuiChattableCamera")) return;
++        }
++        //
++        
 +       if(p_146195_1_) MCOpenVR.setKeyboardOverlayShowing(p_146195_1_, this);
 +        // VIVE END - show keyboard
 +        

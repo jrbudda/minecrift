@@ -429,7 +429,7 @@
          this.worldObj.playSound(this.posX, this.posY - (double)this.yOffset, this.posZ, name, volume, pitch, false);
      }
  
-@@ -662,4 +853,283 @@
+@@ -662,4 +853,290 @@
      }
  
      protected void sendHorseJump() {}
@@ -616,7 +616,7 @@
 +    {
 +        super.setPositionAndRotation(x, y, z, yaw, pitch);
 +		
-+        OpenVRPlayer.get().snapRoomOriginToPlayerEntity(this, true, false);
++        OpenVRPlayer.get().snapRoomOriginToPlayerEntity(this, true, false, 1);
 +      
 +		if(initFromServer == false){
 +            initFromServer = true;    
@@ -643,7 +643,7 @@
 +    	
 +    	if(!initFromServer) return;
 +    	else { //still init.
-+            mc.vrPlayer.snapRoomOriginToPlayerEntity(this, true, false);
++            mc.vrPlayer.snapRoomOriginToPlayerEntity(this, true, false, 1);
 +            
 +//    		OpenVRPlayer.get().setRoomOrigin(
 +//    				posX + ox, 
@@ -655,28 +655,35 @@
 +    // VIVE START - update room origin when player entity is moved
 +    public void setPosition(double x, double y, double z)
 +    { //this is also called when riding to move this around.
++    	
++    	super.setPosition(x, y, z);
++    	
 +    	if(this.isRiding()){
++		
 +    		Vec3 roomOrigin = OpenVRPlayer.get().getRoomOriginPos_World();
-+    		double ox = roomOrigin.xCoord - posX;
-+    		double oz = roomOrigin.zCoord - posZ;
-+    		super.setPosition(x, y, z);
++    		Vec3 me = OpenVRPlayer.get().getHMDPos_World();
++    		double ox = roomOrigin.xCoord - me.xCoord;
++    		double oy = roomOrigin.yCoord - me.yCoord;
++    		double oz = roomOrigin.zCoord - me.zCoord;
++    		
 +    		OpenVRPlayer.get().setRoomOrigin(
-+    				posX + ox, 
-+    				this.ridingEntity.boundingBox.minY, 
-+    				posZ  + oz, false, false);
-+
-+    	} else
-+    		super.setPosition(x, y, z);
++    				this.ridingEntity.posX + ox, 
++    				this.ridingEntity.posY + (this.ridingEntity instanceof EntityHorse ? this.ridingEntity.getMountedYOffset() : 0 ),
++    				this.ridingEntity.posZ + oz, false, false); 
++    		
++    	} 
++    		
 +
 +    }
 +    
 +    @Override
 +    public void moveEntity(double x, double y, double z)
 +    {
++    	if(this.isRiding())return;
 +    	boolean client = this instanceof EntityPlayerSP;
 +    	boolean freemove = OpenVRPlayer.get().getFreeMoveMode();
 +    	boolean doY = freemove || (Minecraft.getMinecraft().vrSettings.simulateFalling && !this.isOnLadder()) && !this.isSneaking();
-+    	
++    	if(mc.climbTracker.isActive(this)) doY = true;
 +    	Vec3 roomOrigin = OpenVRPlayer.get().getRoomOriginPos_World();
 + //   	Vec3 camloc = Minecraft.getMinecraft().roomScale.getHMDPos_World();
 +

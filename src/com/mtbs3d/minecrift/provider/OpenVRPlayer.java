@@ -22,6 +22,7 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -105,11 +106,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 		    		//interPolatedRoomOrigin = Vec3.createVectorHelper(x, y, z);
 		    		lastroomOrigin = Vec3.createVectorHelper(x, y, z);
 		    		Minecraft.getMinecraft().entityRenderer.interPolatedRoomOrigin = Vec3.createVectorHelper(x, y, z);
-
 		    	} else {
-		        	this.lastroomOrigin.xCoord = roomOrigin.xCoord ;
-		        	this.lastroomOrigin.yCoord = roomOrigin.yCoord ;
-		        	this.lastroomOrigin.zCoord = roomOrigin.zCoord ;
 		    	}
 	    }
 	    
@@ -120,34 +117,67 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         Minecraft.getMinecraft().entityRenderer.irpUpdatedThisFrame = onframe;
     }
     
-    //set room 
-    public void snapRoomOriginToPlayerEntity(EntityPlayerSP player, boolean reset, boolean onFrame)
+    
+    public Vec3 getPosition(Entity entity, float p_70666_1_)
     {
-        if (Thread.currentThread().getName().equals("Server thread"))
-            return;
-
-        if(player.posX == 0 && player.posY == 0 &&player.posZ == 0) return;
-        
-        Minecraft mc = Minecraft.getMinecraft();
-        
-        Vec3 campos = mc.roomScale.getHMDPos_Room();
-        
-        campos.rotateAroundY(worldRotationRadians);
-                
-        double x,y,z;
-
-        if(onFrame){
-        	x = mc.entityRenderer.interpolatedPlayerPos.xCoord - campos.xCoord;
-        	y = mc.entityRenderer.interpolatedPlayerPos.yCoord - player.yOffset;
-          	z = mc.entityRenderer.interpolatedPlayerPos.zCoord - campos.zCoord;
-        } else {
-             x = player.posX - campos.xCoord;
-             y = player.boundingBox.minY;
-             z = player.posZ - campos.zCoord;
+        if (p_70666_1_ == 1.0F)
+        {
+            return Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ);
         }
-        
-        setRoomOrigin(x, y, z, reset, onFrame);
-        this.roomScaleMovementDelay = 3;       
+        else
+        {
+            double var2 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)p_70666_1_;
+            double var4 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)p_70666_1_;
+            double var6 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)p_70666_1_;
+            return Vec3.createVectorHelper(var2, var4, var6);
+        }
+    }
+    
+    //set room 
+    public void snapRoomOriginToPlayerEntity(EntityPlayerSP player, boolean reset, boolean onFrame, float nano)
+    {
+    	if (Thread.currentThread().getName().equals("Server thread"))
+    		return;
+
+    	if(player.posX == 0 && player.posY == 0 &&player.posZ == 0) return;
+
+    	Minecraft mc = Minecraft.getMinecraft();
+
+    	Vec3 campos = mc.roomScale.getHMDPos_Room();
+
+    	campos.rotateAroundY(worldRotationRadians);
+
+    	double x,y,z;
+
+    	if(onFrame){
+    		x = mc.entityRenderer.interpolatedPlayerPos.xCoord - campos.xCoord;
+
+    		if(player.isRiding()){
+    			if (player.ridingEntity instanceof EntityHorse)
+    				y = getPosition(player.ridingEntity, nano).yCoord + player.ridingEntity.getMountedYOffset();
+    			else
+    				y = getPosition(player.ridingEntity, nano).yCoord; 
+    		} else
+    			y = mc.entityRenderer.interpolatedPlayerPos.yCoord- player.yOffset;
+
+    		z = mc.entityRenderer.interpolatedPlayerPos.zCoord - campos.zCoord;
+    	} else {
+    		x = player.posX - campos.xCoord;
+
+    		if(player.isRiding()){
+    			if (player.ridingEntity instanceof EntityHorse)
+    				y = player.ridingEntity.posY + player.ridingEntity.getMountedYOffset();
+    			else
+    				y = player.ridingEntity.posY;
+    		} 
+    		else
+    			y = player.posY - player.yOffset + 5;
+
+    		z = player.posZ - campos.zCoord;
+    	}
+
+    	setRoomOrigin(x, y, z, reset, onFrame);
+    	this.roomScaleMovementDelay = 3;       
     }
     
     public  double topofhead = 1.62;
@@ -155,7 +185,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
     private float lastworldRotation= 0f;
 	private float lastWorldScale;
     
-	public void checkandUpdateRotateScale(boolean onFrame){
+	public void checkandUpdateRotateScale(boolean onFrame, float nano){
 		Minecraft mc = Minecraft.getMinecraft();
 		if(mc.currentScreen!=null) return;
 		if(!onFrame) {
@@ -176,12 +206,16 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 	    
 	    if (worldRotationRadians!= lastworldRotation || worldScale != lastWorldScale) {
 	    	if(mc.thePlayer!=null) 
-	    		snapRoomOriginToPlayerEntity(mc.thePlayer, true, onFrame);
+	    		snapRoomOriginToPlayerEntity(mc.thePlayer, true, onFrame, nano);
 	    }
-	    lastworldRotation = worldRotationRadians;
 	    if(!onFrame)    lastWorldScale = worldScale;		
 	}
 	
+	public void preTick(){
+		lastworldRotation = worldRotationRadians;
+		lastroomOrigin = Vec3.createVectorHelper(roomOrigin.xCoord, roomOrigin.yCoord, roomOrigin.zCoord);
+	}
+
     public void onLivingUpdate(EntityPlayerSP player, Minecraft mc, Random rand)
     {
     	if(!player.initFromServer) return;
@@ -195,7 +229,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 	    
 		mc.autoFood.doProcess(mc,player);
         
-        this.checkandUpdateRotateScale(false);
+        this.checkandUpdateRotateScale(false, 1);
 
 	    mc.swimTracker.doProcess(mc,player);
 
@@ -700,7 +734,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
             newPos.yCoord = pos.yCoord + velocity.yCoord;
             newPos.zCoord = pos.zCoord + velocity.zCoord;
 
-            MovingObjectPosition collision = mc.theWorld.rayTraceBlocks(pos, newPos, !mc.thePlayer.isInWater(), true, false);
+            MovingObjectPosition collision = tpRaytrace(player.worldObj, pos, newPos, !mc.thePlayer.isInWater(), true, false);
 			
             if (collision != null && collision.typeOfHit != MovingObjectPosition.MovingObjectType.MISS)
             {
@@ -732,6 +766,222 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         }
     }
 
+    public MovingObjectPosition tpRaytrace(World w, Vec3 p_147447_1_, Vec3 p_147447_2_, boolean p_147447_3_, boolean p_147447_4_, boolean p_147447_5_)
+    {
+        if (!Double.isNaN(p_147447_1_.xCoord) && !Double.isNaN(p_147447_1_.yCoord) && !Double.isNaN(p_147447_1_.zCoord))
+        {
+            if (!Double.isNaN(p_147447_2_.xCoord) && !Double.isNaN(p_147447_2_.yCoord) && !Double.isNaN(p_147447_2_.zCoord))
+            {
+                int var6 = MathHelper.floor_double(p_147447_2_.xCoord);
+                int var7 = MathHelper.floor_double(p_147447_2_.yCoord);
+                int var8 = MathHelper.floor_double(p_147447_2_.zCoord);
+                int var9 = MathHelper.floor_double(p_147447_1_.xCoord);
+                int var10 = MathHelper.floor_double(p_147447_1_.yCoord);
+                int var11 = MathHelper.floor_double(p_147447_1_.zCoord);
+                Block var12 = w.getBlock(var9, var10, var11);
+                int var13 = w.getBlockMetadata(var9, var10, var11);
+
+                if (var12 == Blocks.waterlily || (!p_147447_4_ || var12.getCollisionBoundingBoxFromPool(w, var9, var10, var11) != null) && var12.canStopRayTrace(var13, p_147447_3_))
+                {
+                    MovingObjectPosition var14 = var12.collisionRayTrace(w, var9, var10, var11, p_147447_1_, p_147447_2_);
+
+                    if (var14 != null)
+                    {
+                        return var14;
+                    }
+                }
+
+                MovingObjectPosition var40 = null;
+                var13 = 200;
+
+                while (var13-- >= 0)
+                {
+                    if (Double.isNaN(p_147447_1_.xCoord) || Double.isNaN(p_147447_1_.yCoord) || Double.isNaN(p_147447_1_.zCoord))
+                    {
+                        return null;
+                    }
+
+                    if (var9 == var6 && var10 == var7 && var11 == var8)
+                    {
+                        return p_147447_5_ ? var40 : null;
+                    }
+
+                    boolean var41 = true;
+                    boolean var15 = true;
+                    boolean var16 = true;
+                    double var17 = 999.0D;
+                    double var19 = 999.0D;
+                    double var21 = 999.0D;
+
+                    if (var6 > var9)
+                    {
+                        var17 = (double)var9 + 1.0D;
+                    }
+                    else if (var6 < var9)
+                    {
+                        var17 = (double)var9 + 0.0D;
+                    }
+                    else
+                    {
+                        var41 = false;
+                    }
+
+                    if (var7 > var10)
+                    {
+                        var19 = (double)var10 + 1.0D;
+                    }
+                    else if (var7 < var10)
+                    {
+                        var19 = (double)var10 + 0.0D;
+                    }
+                    else
+                    {
+                        var15 = false;
+                    }
+
+                    if (var8 > var11)
+                    {
+                        var21 = (double)var11 + 1.0D;
+                    }
+                    else if (var8 < var11)
+                    {
+                        var21 = (double)var11 + 0.0D;
+                    }
+                    else
+                    {
+                        var16 = false;
+                    }
+
+                    double var23 = 999.0D;
+                    double var25 = 999.0D;
+                    double var27 = 999.0D;
+                    double var29 = p_147447_2_.xCoord - p_147447_1_.xCoord;
+                    double var31 = p_147447_2_.yCoord - p_147447_1_.yCoord;
+                    double var33 = p_147447_2_.zCoord - p_147447_1_.zCoord;
+
+                    if (var41)
+                    {
+                        var23 = (var17 - p_147447_1_.xCoord) / var29;
+                    }
+
+                    if (var15)
+                    {
+                        var25 = (var19 - p_147447_1_.yCoord) / var31;
+                    }
+
+                    if (var16)
+                    {
+                        var27 = (var21 - p_147447_1_.zCoord) / var33;
+                    }
+
+                    boolean var35 = false;
+                    byte var42;
+
+                    if (var23 < var25 && var23 < var27)
+                    {
+                        if (var6 > var9)
+                        {
+                            var42 = 4;
+                        }
+                        else
+                        {
+                            var42 = 5;
+                        }
+
+                        p_147447_1_.xCoord = var17;
+                        p_147447_1_.yCoord += var31 * var23;
+                        p_147447_1_.zCoord += var33 * var23;
+                    }
+                    else if (var25 < var27)
+                    {
+                        if (var7 > var10)
+                        {
+                            var42 = 0;
+                        }
+                        else
+                        {
+                            var42 = 1;
+                        }
+
+                        p_147447_1_.xCoord += var29 * var25;
+                        p_147447_1_.yCoord = var19;
+                        p_147447_1_.zCoord += var33 * var25;
+                    }
+                    else
+                    {
+                        if (var8 > var11)
+                        {
+                            var42 = 2;
+                        }
+                        else
+                        {
+                            var42 = 3;
+                        }
+
+                        p_147447_1_.xCoord += var29 * var27;
+                        p_147447_1_.yCoord += var31 * var27;
+                        p_147447_1_.zCoord = var21;
+                    }
+
+                    Vec3 var36 = Vec3.createVectorHelper(p_147447_1_.xCoord, p_147447_1_.yCoord, p_147447_1_.zCoord);
+                    var9 = (int)(var36.xCoord = (double)MathHelper.floor_double(p_147447_1_.xCoord));
+
+                    if (var42 == 5)
+                    {
+                        --var9;
+                        ++var36.xCoord;
+                    }
+
+                    var10 = (int)(var36.yCoord = (double)MathHelper.floor_double(p_147447_1_.yCoord));
+
+                    if (var42 == 1)
+                    {
+                        --var10;
+                        ++var36.yCoord;
+                    }
+
+                    var11 = (int)(var36.zCoord = (double)MathHelper.floor_double(p_147447_1_.zCoord));
+
+                    if (var42 == 3)
+                    {
+                        --var11;
+                        ++var36.zCoord;
+                    }
+
+                    Block var37 = w.getBlock(var9, var10, var11);
+                    int var38 = w.getBlockMetadata(var9, var10, var11);
+
+                    if (!p_147447_4_ || var37.getCollisionBoundingBoxFromPool(w, var9, var10, var11) != null)
+                    {
+                        if (var37.canStopRayTrace(var38, p_147447_3_))
+                        {
+                            MovingObjectPosition var39 = var37.collisionRayTrace(w, var9, var10, var11, p_147447_1_, p_147447_2_);
+
+                            if (var39 != null)
+                            {
+                                return var39;
+                            }
+                        }
+                        else
+                        {
+                            var40 = new MovingObjectPosition(var9, var10, var11, var42, p_147447_1_, false);
+                        }
+                    }
+                }
+
+                return p_147447_5_ ? var40 : null;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
     public void updateTeleportDestinations(Minecraft mc, Entity player)
     {
         mc.mcProfiler.startSection("updateTeleportDestinations");
@@ -962,6 +1212,8 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         if(mc.vrSettings.vrFreeMoveMode == mc.vrSettings.FREEMOVE_RUNINPLACE && player.moveForward > 0){
         	return; //dont hit things while RIPing.
         }
+        
+        if(mc.vrSettings.seated)return ;
         
         mc.mcProfiler.startSection("updateSwingAttack");
         

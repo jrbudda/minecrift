@@ -29,12 +29,12 @@
  
 -        this.jump = this.gameSettings.keyBindJump.getIsKeyPressed();
 -        this.sneak = this.gameSettings.keyBindSneak.getIsKeyPressed();
-+        
-+        boolean ok = Minecraft.getMinecraft().currentScreen==null;
++        Minecraft mc = Minecraft.getMinecraft();
++        boolean ok = Minecraft.getMinecraft().currentScreen==null && (mc.vrPlayer.getFreeMoveMode() || mc.vrSettings.simulateFalling);
 +        
 +        //VIVECRAFT DO ok.
 +        this.jump = this.gameSettings.keyBindJump.getIsKeyPressed() && ok;
-+        this.sneak = this.gameSettings.keyBindSneak.getIsKeyPressed() && ok;
++        this.sneak = this.gameSettings.keyBindSneak.getIsKeyPressed() && Minecraft.getMinecraft().currentScreen==null;
  
          if (this.sneak)
          {
