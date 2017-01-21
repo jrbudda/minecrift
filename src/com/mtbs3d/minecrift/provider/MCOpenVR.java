@@ -2390,9 +2390,9 @@ public class MCOpenVR
 	 * @return Play area size or null if not valid
 	 */
 	public static float[] getPlayAreaSize() {
+		if(vrChaperone == null || vrChaperone.GetPlayAreaSize == null) return null;
 		FloatBuffer bufX = FloatBuffer.allocate(1);
 		FloatBuffer bufZ = FloatBuffer.allocate(1);
-		if(vrChaperone.GetPlayAreaSize == null)return new float[]{bufX.get(0), bufZ.get(0)};
 		byte valid = vrChaperone.GetPlayAreaSize.apply(bufX, bufZ);
 		if (valid == 1) return new float[]{bufX.get(0), bufZ.get(0)};
 		return null;
