@@ -12,44 +12,25 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class VR_IVRChaperoneSetup_FnTable extends Structure {
-	/** C type : CommitWorkingCopy_callback* */
 	public VR_IVRChaperoneSetup_FnTable.CommitWorkingCopy_callback CommitWorkingCopy;
-	/** C type : RevertWorkingCopy_callback* */
 	public VR_IVRChaperoneSetup_FnTable.RevertWorkingCopy_callback RevertWorkingCopy;
-	/** C type : GetWorkingPlayAreaSize_callback* */
 	public VR_IVRChaperoneSetup_FnTable.GetWorkingPlayAreaSize_callback GetWorkingPlayAreaSize;
-	/** C type : GetWorkingPlayAreaRect_callback* */
 	public VR_IVRChaperoneSetup_FnTable.GetWorkingPlayAreaRect_callback GetWorkingPlayAreaRect;
-	/** C type : GetWorkingCollisionBoundsInfo_callback* */
 	public VR_IVRChaperoneSetup_FnTable.GetWorkingCollisionBoundsInfo_callback GetWorkingCollisionBoundsInfo;
-	/** C type : GetLiveCollisionBoundsInfo_callback* */
 	public VR_IVRChaperoneSetup_FnTable.GetLiveCollisionBoundsInfo_callback GetLiveCollisionBoundsInfo;
-	/** C type : GetWorkingSeatedZeroPoseToRawTrackingPose_callback* */
 	public VR_IVRChaperoneSetup_FnTable.GetWorkingSeatedZeroPoseToRawTrackingPose_callback GetWorkingSeatedZeroPoseToRawTrackingPose;
-	/** C type : GetWorkingStandingZeroPoseToRawTrackingPose_callback* */
 	public VR_IVRChaperoneSetup_FnTable.GetWorkingStandingZeroPoseToRawTrackingPose_callback GetWorkingStandingZeroPoseToRawTrackingPose;
-	/** C type : SetWorkingPlayAreaSize_callback* */
 	public VR_IVRChaperoneSetup_FnTable.SetWorkingPlayAreaSize_callback SetWorkingPlayAreaSize;
-	/** C type : SetWorkingCollisionBoundsInfo_callback* */
 	public VR_IVRChaperoneSetup_FnTable.SetWorkingCollisionBoundsInfo_callback SetWorkingCollisionBoundsInfo;
-	/** C type : SetWorkingSeatedZeroPoseToRawTrackingPose_callback* */
 	public VR_IVRChaperoneSetup_FnTable.SetWorkingSeatedZeroPoseToRawTrackingPose_callback SetWorkingSeatedZeroPoseToRawTrackingPose;
-	/** C type : SetWorkingStandingZeroPoseToRawTrackingPose_callback* */
 	public VR_IVRChaperoneSetup_FnTable.SetWorkingStandingZeroPoseToRawTrackingPose_callback SetWorkingStandingZeroPoseToRawTrackingPose;
-	/** C type : ReloadFromDisk_callback* */
 	public VR_IVRChaperoneSetup_FnTable.ReloadFromDisk_callback ReloadFromDisk;
-	/** C type : GetLiveSeatedZeroPoseToRawTrackingPose_callback* */
 	public VR_IVRChaperoneSetup_FnTable.GetLiveSeatedZeroPoseToRawTrackingPose_callback GetLiveSeatedZeroPoseToRawTrackingPose;
-	/** C type : SetWorkingCollisionBoundsTagsInfo_callback* */
 	public VR_IVRChaperoneSetup_FnTable.SetWorkingCollisionBoundsTagsInfo_callback SetWorkingCollisionBoundsTagsInfo;
-	/** C type : GetLiveCollisionBoundsTagsInfo_callback* */
 	public VR_IVRChaperoneSetup_FnTable.GetLiveCollisionBoundsTagsInfo_callback GetLiveCollisionBoundsTagsInfo;
-	/** C type : SetWorkingPhysicalBoundsInfo_callback* */
 	public VR_IVRChaperoneSetup_FnTable.SetWorkingPhysicalBoundsInfo_callback SetWorkingPhysicalBoundsInfo;
-	/** C type : GetLivePhysicalBoundsInfo_callback* */
 	public VR_IVRChaperoneSetup_FnTable.GetLivePhysicalBoundsInfo_callback GetLivePhysicalBoundsInfo;
 	public VR_IVRChaperoneSetup_FnTable.ExportLiveToBuffer_callback ExportLiveToBuffer;
-	/** C type : ImportFromBufferToWorking_callback* */
 	public VR_IVRChaperoneSetup_FnTable.ImportFromBufferToWorking_callback ImportFromBufferToWorking;
 	public interface CommitWorkingCopy_callback extends Callback {
 		byte apply(int configFile);

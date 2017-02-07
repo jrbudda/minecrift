@@ -8,28 +8,27 @@ import java.util.List;
  * a tool written by <a href="http://ochafik.com/">Olivier Chafik</a> that <a href="http://code.google.com/p/jnaerator/wiki/CreditsAndLicense">uses a few opensource projects.</a>.<br>
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
-public class HmdMatrix44_t extends Structure {
-	/** float[4][4] */
-	public float[] m = new float[((4) * (4))];
-	public HmdMatrix44_t() {
+public class VREvent_EditingCameraSurface_t extends Structure {
+	public long overlayHandle;
+	public int nVisualMode;
+	public VREvent_EditingCameraSurface_t() {
 		super();
 	}
 	protected List<? > getFieldOrder() {
-		return Arrays.asList("m");
+		return Arrays.asList("overlayHandle", "nVisualMode");
 	}
-	public HmdMatrix44_t(float m[]) {
+	public VREvent_EditingCameraSurface_t(long overlayHandle, int nVisualMode) {
 		super();
-		if ((m.length != this.m.length)) 
-			throw new IllegalArgumentException("Wrong array size !");
-		this.m = m;
+		this.overlayHandle = overlayHandle;
+		this.nVisualMode = nVisualMode;
 	}
-	public HmdMatrix44_t(Pointer peer) {
+	public VREvent_EditingCameraSurface_t(Pointer peer) {
 		super(peer);
 	}
-	public static class ByReference extends HmdMatrix44_t implements Structure.ByReference {
+	public static class ByReference extends VREvent_EditingCameraSurface_t implements Structure.ByReference {
 		
 	};
-	public static class ByValue extends HmdMatrix44_t implements Structure.ByValue {
+	public static class ByValue extends VREvent_EditingCameraSurface_t implements Structure.ByValue {
 		
 	};
 }

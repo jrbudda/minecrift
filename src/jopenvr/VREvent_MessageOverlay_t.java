@@ -8,28 +8,25 @@ import java.util.List;
  * a tool written by <a href="http://ochafik.com/">Olivier Chafik</a> that <a href="http://code.google.com/p/jnaerator/wiki/CreditsAndLicense">uses a few opensource projects.</a>.<br>
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
-public class HmdMatrix44_t extends Structure {
-	/** float[4][4] */
-	public float[] m = new float[((4) * (4))];
-	public HmdMatrix44_t() {
+public class VREvent_MessageOverlay_t extends Structure {
+	public int unVRMessageOverlayResponse;
+	public VREvent_MessageOverlay_t() {
 		super();
 	}
 	protected List<? > getFieldOrder() {
-		return Arrays.asList("m");
+		return Arrays.asList("unVRMessageOverlayResponse");
 	}
-	public HmdMatrix44_t(float m[]) {
+	public VREvent_MessageOverlay_t(int unVRMessageOverlayResponse) {
 		super();
-		if ((m.length != this.m.length)) 
-			throw new IllegalArgumentException("Wrong array size !");
-		this.m = m;
+		this.unVRMessageOverlayResponse = unVRMessageOverlayResponse;
 	}
-	public HmdMatrix44_t(Pointer peer) {
+	public VREvent_MessageOverlay_t(Pointer peer) {
 		super(peer);
 	}
-	public static class ByReference extends HmdMatrix44_t implements Structure.ByReference {
+	public static class ByReference extends VREvent_MessageOverlay_t implements Structure.ByReference {
 		
 	};
-	public static class ByValue extends HmdMatrix44_t implements Structure.ByValue {
+	public static class ByValue extends VREvent_MessageOverlay_t implements Structure.ByValue {
 		
 	};
 }

@@ -9,20 +9,11 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class DistortionCoordinates_t extends Structure {
-	/**
-	 * float[2]<br>
-	 * C type : float[2]
-	 */
+	/** float[2] */
 	public float[] rfRed = new float[2];
-	/**
-	 * float[2]<br>
-	 * C type : float[2]
-	 */
+	/** float[2] */
 	public float[] rfGreen = new float[2];
-	/**
-	 * float[2]<br>
-	 * C type : float[2]
-	 */
+	/** float[2] */
 	public float[] rfBlue = new float[2];
 	public DistortionCoordinates_t() {
 		super();
@@ -30,14 +21,6 @@ public class DistortionCoordinates_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("rfRed", "rfGreen", "rfBlue");
 	}
-	/**
-	 * @param rfRed float[2]<br>
-	 * C type : float[2]<br>
-	 * @param rfGreen float[2]<br>
-	 * C type : float[2]<br>
-	 * @param rfBlue float[2]<br>
-	 * C type : float[2]
-	 */
 	public DistortionCoordinates_t(float rfRed[], float rfGreen[], float rfBlue[]) {
 		super();
 		if ((rfRed.length != this.rfRed.length)) 

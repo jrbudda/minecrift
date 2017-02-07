@@ -9,9 +9,7 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class HmdRect2_t extends Structure {
-	/** C type : HmdVector2_t */
 	public HmdVector2_t vTopLeft;
-	/** C type : HmdVector2_t */
 	public HmdVector2_t vBottomRight;
 	public HmdRect2_t() {
 		super();
@@ -19,10 +17,6 @@ public class HmdRect2_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("vTopLeft", "vBottomRight");
 	}
-	/**
-	 * @param vTopLeft C type : HmdVector2_t<br>
-	 * @param vBottomRight C type : HmdVector2_t
-	 */
 	public HmdRect2_t(HmdVector2_t vTopLeft, HmdVector2_t vBottomRight) {
 		super();
 		this.vTopLeft = vTopLeft;

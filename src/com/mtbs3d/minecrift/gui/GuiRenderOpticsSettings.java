@@ -1,7 +1,3 @@
-/**
- * Copyright 2013 Mark Browning, StellaArtois
- * Licensed under the LGPL 3.0 or later (See LICENSE.md for details)
- */
 package com.mtbs3d.minecrift.gui;
 
 import com.mtbs3d.minecrift.api.ErrorHelper;
@@ -26,29 +22,32 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
     protected boolean reinit = false;
 
     static VRSettings.VrOptions[] monoDisplayOptions = new VRSettings.VrOptions[] {
-            //VRSettings.VrOptions.USE_ORTHO_GUI,
             VRSettings.VrOptions.MONO_FOV,
             VRSettings.VrOptions.DUMMY,
             VRSettings.VrOptions.FSAA,
     };
 
     static VRSettings.VrOptions[] openVRDisplayOptions = new VRSettings.VrOptions[] {
-            //VRSettings.VrOptions.HMD_NAME_PLACEHOLDER,
-            //VRSettings.VrOptions.DUMMY,
             VRSettings.VrOptions.RENDER_SCALEFACTOR,
             VRSettings.VrOptions.MIRROR_DISPLAY,     
             VRSettings.VrOptions.FSAA,
-            VRSettings.VrOptions.MIXED_REALITY_KEY_COLOR,
             VRSettings.VrOptions.STENCIL_ON,
+            VRSettings.VrOptions.DUMMY,
+
+    };
+    
+    static VRSettings.VrOptions[] MROptions = new VRSettings.VrOptions[] {
+            VRSettings.VrOptions.MIXED_REALITY_UNITY_LIKE,
             VRSettings.VrOptions.MIXED_REALITY_RENDER_HANDS,
-            VRSettings.VrOptions.INSIDE_BLOCK_SOLID_COLOR,
+            VRSettings.VrOptions.MIXED_REALITY_KEY_COLOR,
+            VRSettings.VrOptions.MIXED_REALITY_FOV,
+            VRSettings.VrOptions.MIXED_REALITY_UNDISTORTED,
             VRSettings.VrOptions.MONO_FOV,
-            /*VRSettings.VrOptions.WORLD_SCALE,
-            VRSettings.VrOptions.TIMEWARP,
-            VRSettings.VrOptions.TIMEWARP_JIT_DELAY,
-            VRSettings.VrOptions.VIGNETTE,
-            VRSettings.VrOptions.HIGH_QUALITY_DISTORTION,
-            VRSettings.VrOptions.OTHER_RENDER_SETTINGS,*/
+            VRSettings.VrOptions.MIXED_REALITY_ALPHA_MASK,
+    };
+    
+    static VRSettings.VrOptions[] UDOptions = new VRSettings.VrOptions[] {
+            VRSettings.VrOptions.MONO_FOV,
     };
 
     GameSettings settings;
@@ -70,33 +69,57 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
      */
     public void initGui()
     {
-        String productName = "";
+    	String productName = "";
 
-        // this.screenTitle = var1.translateKey("options.videoTitle");
-        this.buttonList.clear();
-        this.buttonList.add(new GuiButtonEx(ID_GENERIC_DEFAULTS, this.width / 2 - 155 ,  this.height -25 ,150,20, "Reset To Defaults"));
-        this.buttonList.add(new GuiButtonEx(ID_GENERIC_DONE, this.width / 2 - 155  + 160, this.height -25,150,20, "Done"));
-        VRSettings.VrOptions[] var10 = null;
-        
-        if( Minecraft.getMinecraft().stereoProvider.isStereo() )
+    	// this.screenTitle = var1.translateKey("options.videoTitle");
+    	this.buttonList.clear();
+    	this.buttonList.add(new GuiButtonEx(ID_GENERIC_DEFAULTS, this.width / 2 - 155 ,  this.height -25 ,150,20, "Reset To Defaults"));
+    	this.buttonList.add(new GuiButtonEx(ID_GENERIC_DONE, this.width / 2 - 155  + 160, this.height -25,150,20, "Done"));
+
+    	addButtons(openVRDisplayOptions,0);
+    	if(mc.vrSettings.displayMirrorMode == vrSettings.MIRROR_MIXED_REALITY){
+    		GuiSmallButtonEx mr = new GuiSmallButtonEx(0, this.width / 2 - 68, this.height / 6 + 65, "Mixed Reality Options");
+    		mr.enabled = false;
+    		this.buttonList.add(mr);
+    		VRSettings.VrOptions[] buttons = new VRSettings.VrOptions[MROptions.length];
+    		System.arraycopy(MROptions, 0, buttons, 0, MROptions.length);
+    		for (int i = 0; i < buttons.length; i++) {
+    			VRSettings.VrOptions option = buttons[i];
+    			if (option == VRSettings.VrOptions.MONO_FOV && (!mc.vrSettings.mixedRealityMRPlusUndistorted || !mc.vrSettings.mixedRealityUnityLike))
+    				buttons[i] = VRSettings.VrOptions.DUMMY;
+    			if (option == VRSettings.VrOptions.MIXED_REALITY_ALPHA_MASK && !mc.vrSettings.mixedRealityUnityLike)
+    				buttons[i] = VRSettings.VrOptions.DUMMY;
+    			if (option == VRSettings.VrOptions.MIXED_REALITY_UNDISTORTED && !mc.vrSettings.mixedRealityUnityLike)
+    				buttons[i] = VRSettings.VrOptions.DUMMY;
+    			if (option == VRSettings.VrOptions.MIXED_REALITY_KEY_COLOR && mc.vrSettings.mixedRealityAlphaMask && mc.vrSettings.mixedRealityUnityLike)
+    				buttons[i] = VRSettings.VrOptions.DUMMY;
+    		}
+    		addButtons(buttons, 75);
+
+    	}else if(mc.vrSettings.displayMirrorMode == vrSettings.MIRROR_FIRST_PERSON){
+    		GuiSmallButtonEx mr = new GuiSmallButtonEx(0, this.width / 2 - 68, this.height / 6 + 65, "Undistorted Mirror Options");
+    		mr.enabled = false;
+    		this.buttonList.add(mr);
+    		addButtons(UDOptions,75);
+    	}
+    }
+
+    
+    public void addButtons(VRSettings.VrOptions[] buttons, int starty){
+        for (int var12 = 2; var12 < buttons.length + 2; ++var12)
         {
-            productName = "OpenVR";
-            var10 = openVRDisplayOptions;
-        }
-        else
-            var10 = monoDisplayOptions;
-
-        int var11 = var10.length;
-
-        for (int var12 = 2; var12 < var11 + 2; ++var12)
-        {
-            VRSettings.VrOptions var8 = var10[var12 - 2];
+            VRSettings.VrOptions var8 = buttons[var12 - 2];
             int width = this.width / 2 - 155 + var12 % 2 * 160;
-            int height = this.height / 6 + 21 * (var12 / 2) - 10;
+            int height = this.height / 6 + 21 * (var12 / 2) - 10 + starty;
 
             if (var8 == VRSettings.VrOptions.DUMMY)
                 continue;
 
+            if (var8 == VRSettings.VrOptions.DUMMY_SMALL) {
+            	starty += 5;
+                continue;
+            }
+            
             if (var8.getEnumFloat())
             {
                 float minValue = 0.0f;
@@ -109,7 +132,7 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
                     maxValue = 4.0f;
                     increment = 0.1f;
                 }
-                else if (var8 == VRSettings.VrOptions.MONO_FOV)
+                else if (var8 == VRSettings.VrOptions.MONO_FOV || var8 == VRSettings.VrOptions.MIXED_REALITY_FOV)
                 {
                     minValue = 1f;
                     maxValue = 179f;
@@ -124,9 +147,6 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
             {
                 if (false)
                 {
-                    GuiSmallButtonEx button = new GuiSmallButtonEx(9999, width, height, var8, productName);
-                    button.enabled = false;
-                    this.buttonList.add(button);
                 }
                 else
                 {
@@ -138,7 +158,7 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
             }
         }
     }
-
+    
     /**
      * Fired when a control is clicked. This is the equivalent of ActionListener.actionPerformed(ActionEvent e).
      */
@@ -146,7 +166,6 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
     {
         VRSettings.VrOptions num = VRSettings.VrOptions.getEnumOptions(par1GuiButton.id);
         Minecraft minecraft = Minecraft.getMinecraft();
-
         if (par1GuiButton.enabled)
         {
             if (par1GuiButton.id == ID_GENERIC_DONE)
@@ -158,12 +177,16 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
             {
 
                 minecraft.vrSettings.renderScaleFactor = 1.0f;
-                minecraft.vrSettings.displayMirrorMode = VRSettings.MIRROR_ON_ONE_THIRD_FRAME_RATE;
+                minecraft.vrSettings.displayMirrorMode = VRSettings.MIRROR_ON_FULL_FRAME_RATE_SINGLE_VIEW;
                 minecraft.vrSettings.mixedRealityKeyColor = new Color();
                 minecraft.vrSettings.mixedRealityRenderHands = false;
                 minecraft.vrSettings.insideBlockSolidColor = false;
+                minecraft.vrSettings.mixedRealityUnityLike = true;
+                minecraft.vrSettings.mixedRealityMRPlusUndistorted = true;
+                minecraft.vrSettings.mixedRealityAlphaMask = false;
+                minecraft.vrSettings.mixedRealityFov = 40;
                 minecraft.gameSettings.fovSetting = 70f;
-                minecraft.vrSettings.useFsaa = false;
+                minecraft.vrSettings.useFsaa = true;
                 minecraft.vrSettings.vrUseStencil = true;
                 minecraft.reinitFramebuffers = true;
 			    this.guivrSettings.saveOptions();
@@ -183,6 +206,7 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
             {
                 this.guivrSettings.setOptionValue(((GuiSmallButtonEx)par1GuiButton).returnVrEnumOptions(), 1);
                 par1GuiButton.displayString = this.guivrSettings.getKeyBinding(VRSettings.VrOptions.getEnumOptions(par1GuiButton.id));
+                reinit = true;
             }
 
             if (num == VRSettings.VrOptions.MIRROR_DISPLAY ||
@@ -299,6 +323,27 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
                         "toggles rendering of the actual hand models, items",
                         "will still be rendered."
                 };
+            case MIXED_REALITY_UNITY_LIKE:
+                return new String[] {
+                        "Choose between Unity-style 4-pane layout, or 2-pane",
+                        "side by side"
+                };
+            case MIXED_REALITY_UNDISTORTED:
+                return new String[] {
+                        "Include an undistorted view in 4-pane layout Requires",
+                        "an extra render pass. Otherwise the HMD view will be used."
+                };
+            case MIXED_REALITY_ALPHA_MASK:
+                return new String[] {
+                        "In Unity layout, if yes, will draw a grayscale alpha mask",
+                        "to the upper-right quadrant (like Unity) for use in",
+                        "maskingthe foreground layer. Otherwise, foreground will",
+                        "be drawn with key color for use with color key effect."
+                };
+            case MIXED_REALITY_FOV:
+                return new String[] {
+                		"The FOV used for the mixed reality mirror mode."
+                };
             case INSIDE_BLOCK_SOLID_COLOR:
                 return new String[] {
                         "Whether to render the block texture or a solid",
@@ -306,10 +351,8 @@ public class GuiRenderOpticsSettings  extends BaseGuiSettings implements GuiEven
                 };
             case MONO_FOV:
                 return new String[] {
-                        "The FOV used for the mixed reality and",
-                        "undistorted mirror modes."
+                        "The FOV used for the undistorted mirror mode."
                 };
-
             case OTHER_RENDER_SETTINGS:
                 return new String[] {
                         "Configure IPD and FOV border settings."

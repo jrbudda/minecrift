@@ -9,10 +9,7 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class HiddenAreaMesh_t extends Structure {
-	/**
-	 * const struct vr::HmdVector2_t *<br>
-	 * C type : HmdVector2_t*
-	 */
+	/** const struct vr::HmdVector2_t * */
 	public jopenvr.HmdVector2_t.ByReference pVertexData;
 	public int unTriangleCount;
 	public HiddenAreaMesh_t() {
@@ -21,10 +18,6 @@ public class HiddenAreaMesh_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("pVertexData", "unTriangleCount");
 	}
-	/**
-	 * @param pVertexData const struct vr::HmdVector2_t *<br>
-	 * C type : HmdVector2_t*
-	 */
 	public HiddenAreaMesh_t(jopenvr.HmdVector2_t.ByReference pVertexData, int unTriangleCount) {
 		super();
 		this.pVertexData = pVertexData;

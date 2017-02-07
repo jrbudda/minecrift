@@ -80,7 +80,7 @@
      public static ReflectorClass ForgeBlock = new ReflectorClass(Block.class);
      public static ReflectorMethod ForgeBlock_getBedDirection = new ReflectorMethod(ForgeBlock, "getBedDirection");
      public static ReflectorMethod ForgeBlock_isBedFoot = new ReflectorMethod(ForgeBlock, "isBedFoot");
-@@ -136,12 +174,295 @@
+@@ -136,12 +174,296 @@
      public static ReflectorMethod ForgeItemStack_hasEffect = new ReflectorMethod(ForgeItemStack, "hasEffect", new Class[] {Integer.TYPE});
      public static ReflectorClass ForgeItemRecord = new ReflectorClass(ItemRecord.class);
      public static ReflectorMethod ForgeItemRecord_getRecordResource = new ReflectorMethod(ForgeItemRecord, "getRecordResource", new Class[] {String.class});
@@ -104,6 +104,7 @@
 +    public static ReflectorMethod FMLClientHandler_startIntegratedServer = new ReflectorMethod(FMLClientHandler, "startIntegratedServer");
 +    public static ReflectorMethod FMLClientHandler_handleClientWorldClosing = new ReflectorMethod(FMLClientHandler, "handleClientWorldClosing");
 +    public static ReflectorMethod FMLClientHandler_handleLoadingScreen = new ReflectorMethod(FMLClientHandler, "handleLoadingScreen");
++    public static ReflectorMethod FMLClientHandler_showInGameModOptions = new ReflectorMethod(FMLClientHandler, "showInGameModOptions");
 +    public static ReflectorMethod FMLCommonHandler_handleExit = new ReflectorMethod(FMLCommonHandler, "handleExit");
 +    public static ReflectorMethod FMLCommonHandler_onRenderTickStart = new ReflectorMethod(FMLCommonHandler, "onRenderTickStart");
 +    public static ReflectorMethod FMLCommonHandler_onRenderTickEnd = new ReflectorMethod(FMLCommonHandler, "onRenderTickEnd");
@@ -376,7 +377,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -150,7 +471,7 @@
+@@ -150,7 +472,7 @@
              {
                  return;
              }
@@ -385,7 +386,7 @@
              e.invoke((Object)null, params);
          }
          catch (Throwable var3)
-@@ -161,6 +482,7 @@
+@@ -161,6 +483,7 @@
  
      public static boolean callBoolean(ReflectorMethod refMethod, Object ... params)
      {
@@ -393,7 +394,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -171,6 +493,7 @@
+@@ -171,6 +494,7 @@
              }
              else
              {
@@ -401,7 +402,7 @@
                  Boolean retVal = (Boolean)e.invoke((Object)null, params);
                  return retVal.booleanValue();
              }
-@@ -184,6 +507,7 @@
+@@ -184,6 +508,7 @@
  
      public static int callInt(ReflectorMethod refMethod, Object ... params)
      {
@@ -409,7 +410,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -194,6 +518,7 @@
+@@ -194,6 +519,7 @@
              }
              else
              {
@@ -417,7 +418,7 @@
                  Integer retVal = (Integer)e.invoke((Object)null, params);
                  return retVal.intValue();
              }
-@@ -207,6 +532,7 @@
+@@ -207,6 +533,7 @@
  
      public static float callFloat(ReflectorMethod refMethod, Object ... params)
      {
@@ -425,7 +426,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -217,6 +543,7 @@
+@@ -217,6 +544,7 @@
              }
              else
              {
@@ -433,7 +434,7 @@
                  Float retVal = (Float)e.invoke((Object)null, params);
                  return retVal.floatValue();
              }
-@@ -230,6 +557,7 @@
+@@ -230,6 +558,7 @@
  
      public static double callDouble(ReflectorMethod refMethod, Object ... params)
      {
@@ -441,7 +442,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -240,6 +568,7 @@
+@@ -240,6 +569,7 @@
              }
              else
              {
@@ -449,7 +450,7 @@
                  Double retVal = (Double)e.invoke((Object)null, params);
                  return retVal.doubleValue();
              }
-@@ -253,6 +582,7 @@
+@@ -253,6 +583,7 @@
  
      public static String callString(ReflectorMethod refMethod, Object ... params)
      {
@@ -457,7 +458,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -263,6 +593,7 @@
+@@ -263,6 +594,7 @@
              }
              else
              {
@@ -465,7 +466,7 @@
                  String retVal = (String)e.invoke((Object)null, params);
                  return retVal;
              }
-@@ -276,6 +607,7 @@
+@@ -276,6 +608,7 @@
  
      public static Object call(ReflectorMethod refMethod, Object ... params)
      {
@@ -473,7 +474,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -286,6 +618,7 @@
+@@ -286,6 +619,7 @@
              }
              else
              {
@@ -481,7 +482,7 @@
                  Object retVal = e.invoke((Object)null, params);
                  return retVal;
              }
-@@ -299,6 +632,7 @@
+@@ -299,6 +633,7 @@
  
      public static void callVoid(Object obj, ReflectorMethod refMethod, Object ... params)
      {
@@ -489,7 +490,7 @@
          try
          {
              if (obj == null)
-@@ -312,7 +646,7 @@
+@@ -312,7 +647,7 @@
              {
                  return;
              }
@@ -498,7 +499,7 @@
              e.invoke(obj, params);
          }
          catch (Throwable var4)
-@@ -323,6 +657,7 @@
+@@ -323,6 +658,7 @@
  
      public static boolean callBoolean(Object obj, ReflectorMethod refMethod, Object ... params)
      {
@@ -506,7 +507,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -333,6 +668,7 @@
+@@ -333,6 +669,7 @@
              }
              else
              {
@@ -514,7 +515,7 @@
                  Boolean retVal = (Boolean)e.invoke(obj, params);
                  return retVal.booleanValue();
              }
-@@ -346,6 +682,7 @@
+@@ -346,6 +683,7 @@
  
      public static int callInt(Object obj, ReflectorMethod refMethod, Object ... params)
      {
@@ -522,7 +523,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -356,6 +693,7 @@
+@@ -356,6 +694,7 @@
              }
              else
              {
@@ -530,7 +531,7 @@
                  Integer retVal = (Integer)e.invoke(obj, params);
                  return retVal.intValue();
              }
-@@ -369,6 +707,7 @@
+@@ -369,6 +708,7 @@
  
      public static float callFloat(Object obj, ReflectorMethod refMethod, Object ... params)
      {
@@ -538,7 +539,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -379,6 +718,7 @@
+@@ -379,6 +719,7 @@
              }
              else
              {
@@ -546,7 +547,7 @@
                  Float retVal = (Float)e.invoke(obj, params);
                  return retVal.floatValue();
              }
-@@ -392,6 +732,7 @@
+@@ -392,6 +733,7 @@
  
      public static double callDouble(Object obj, ReflectorMethod refMethod, Object ... params)
      {
@@ -554,7 +555,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -402,6 +743,7 @@
+@@ -402,6 +744,7 @@
              }
              else
              {
@@ -562,7 +563,7 @@
                  Double retVal = (Double)e.invoke(obj, params);
                  return retVal.doubleValue();
              }
-@@ -415,6 +757,7 @@
+@@ -415,6 +758,7 @@
  
      public static String callString(Object obj, ReflectorMethod refMethod, Object ... params)
      {
@@ -570,7 +571,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -425,6 +768,7 @@
+@@ -425,6 +769,7 @@
              }
              else
              {
@@ -578,7 +579,7 @@
                  String retVal = (String)e.invoke(obj, params);
                  return retVal;
              }
-@@ -438,6 +782,7 @@
+@@ -438,6 +783,7 @@
  
      public static Object call(Object obj, ReflectorMethod refMethod, Object ... params)
      {
@@ -586,7 +587,7 @@
          try
          {
              Method e = refMethod.getTargetMethod();
-@@ -448,6 +793,7 @@
+@@ -448,6 +794,7 @@
              }
              else
              {

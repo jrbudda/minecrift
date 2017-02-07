@@ -8,28 +8,29 @@ import java.util.List;
  * a tool written by <a href="http://ochafik.com/">Olivier Chafik</a> that <a href="http://code.google.com/p/jnaerator/wiki/CreditsAndLicense">uses a few opensource projects.</a>.<br>
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
-public class HmdMatrix44_t extends Structure {
-	/** float[4][4] */
-	public float[] m = new float[((4) * (4))];
-	public HmdMatrix44_t() {
+public class IntersectionMaskCircle_t extends Structure {
+	public float m_flCenterX;
+	public float m_flCenterY;
+	public float m_flRadius;
+	public IntersectionMaskCircle_t() {
 		super();
 	}
 	protected List<? > getFieldOrder() {
-		return Arrays.asList("m");
+		return Arrays.asList("m_flCenterX", "m_flCenterY", "m_flRadius");
 	}
-	public HmdMatrix44_t(float m[]) {
+	public IntersectionMaskCircle_t(float m_flCenterX, float m_flCenterY, float m_flRadius) {
 		super();
-		if ((m.length != this.m.length)) 
-			throw new IllegalArgumentException("Wrong array size !");
-		this.m = m;
+		this.m_flCenterX = m_flCenterX;
+		this.m_flCenterY = m_flCenterY;
+		this.m_flRadius = m_flRadius;
 	}
-	public HmdMatrix44_t(Pointer peer) {
+	public IntersectionMaskCircle_t(Pointer peer) {
 		super(peer);
 	}
-	public static class ByReference extends HmdMatrix44_t implements Structure.ByReference {
+	public static class ByReference extends IntersectionMaskCircle_t implements Structure.ByReference {
 		
 	};
-	public static class ByValue extends HmdMatrix44_t implements Structure.ByValue {
+	public static class ByValue extends IntersectionMaskCircle_t implements Structure.ByValue {
 		
 	};
 }

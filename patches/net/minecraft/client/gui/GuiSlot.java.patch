@@ -128,7 +128,7 @@
                          }
                          else
                          {
-@@ -313,8 +322,8 @@
+@@ -313,15 +322,15 @@
                  }
                  else if (this.initialClickY >= 0.0F)
                  {
@@ -139,6 +139,14 @@
                  }
              }
              else
+             {
+                 for (; !this.mc.gameSettings.touchscreen && Mouse.next(); this.mc.currentScreen.handleMouseInput())
+                 {
+-                    int var7 = Mouse.getEventDWheel();
++                    int var7 = Mouse.getDWheel();
+ 
+                     if (var7 != 0)
+                     {
 @@ -346,16 +355,21 @@
          GL11.glDisable(GL11.GL_LIGHTING);
          GL11.glDisable(GL11.GL_FOG);

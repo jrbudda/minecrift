@@ -24,14 +24,15 @@ public class SwimTracker {
 	double swimspeed=0.8f;
 
 	public boolean isActive(EntityPlayerSP p){
-		if(!Minecraft.getMinecraft().vrSettings.vrFreeMove || Minecraft.getMinecraft().vrSettings.seated)
+		if(Minecraft.getMinecraft().vrSettings.seated)
+			return false;
+		if(!Minecraft.getMinecraft().vrSettings.realisticSwimEnabled)
 			return false;
 		if(p==null || p.isDead)
 			return false;
-		if(!p.isInWater()) //) && !p.isInLava())
+		if(!p.isInWater())
 			return false;
 		
-		//Block block=p.worldObj.getBlockState(p.getPosition().add(0,0.7,0)).getBlock();
 		return true;
 	}
 

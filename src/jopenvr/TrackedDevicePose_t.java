@@ -9,16 +9,10 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class TrackedDevicePose_t extends Structure {
-	/** C type : HmdMatrix34_t */
 	public HmdMatrix34_t mDeviceToAbsoluteTracking;
-	/** C type : HmdVector3_t */
 	public HmdVector3_t vVelocity;
-	/** C type : HmdVector3_t */
 	public HmdVector3_t vAngularVelocity;
-	/**
-	 * @see ETrackingResult<br>
-	 * C type : ETrackingResult
-	 */
+	/** @see ETrackingResult */
 	public int eTrackingResult;
 	public byte bPoseIsValid;
 	public byte bDeviceIsConnected;
@@ -28,13 +22,6 @@ public class TrackedDevicePose_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("mDeviceToAbsoluteTracking", "vVelocity", "vAngularVelocity", "eTrackingResult", "bPoseIsValid", "bDeviceIsConnected");
 	}
-	/**
-	 * @param mDeviceToAbsoluteTracking C type : HmdMatrix34_t<br>
-	 * @param vVelocity C type : HmdVector3_t<br>
-	 * @param vAngularVelocity C type : HmdVector3_t<br>
-	 * @param eTrackingResult @see ETrackingResult<br>
-	 * C type : ETrackingResult
-	 */
 	public TrackedDevicePose_t(HmdMatrix34_t mDeviceToAbsoluteTracking, HmdVector3_t vVelocity, HmdVector3_t vAngularVelocity, int eTrackingResult, byte bPoseIsValid, byte bDeviceIsConnected) {
 		super();
 		this.mDeviceToAbsoluteTracking = mDeviceToAbsoluteTracking;

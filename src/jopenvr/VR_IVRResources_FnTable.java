@@ -10,9 +10,7 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class VR_IVRResources_FnTable extends Structure {
-	/** C type : LoadSharedResource_callback* */
 	public VR_IVRResources_FnTable.LoadSharedResource_callback LoadSharedResource;
-	/** C type : GetResourceFullPath_callback* */
 	public VR_IVRResources_FnTable.GetResourceFullPath_callback GetResourceFullPath;
 	public interface LoadSharedResource_callback extends Callback {
 		int apply(Pointer pchResourceName, Pointer pchBuffer, int unBufferLen);
@@ -26,10 +24,6 @@ public class VR_IVRResources_FnTable extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("LoadSharedResource", "GetResourceFullPath");
 	}
-	/**
-	 * @param LoadSharedResource C type : LoadSharedResource_callback*<br>
-	 * @param GetResourceFullPath C type : GetResourceFullPath_callback*
-	 */
 	public VR_IVRResources_FnTable(VR_IVRResources_FnTable.LoadSharedResource_callback LoadSharedResource, VR_IVRResources_FnTable.GetResourceFullPath_callback GetResourceFullPath) {
 		super();
 		this.LoadSharedResource = LoadSharedResource;

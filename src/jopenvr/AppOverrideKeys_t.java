@@ -9,15 +9,9 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class AppOverrideKeys_t extends Structure {
-	/**
-	 * const char *<br>
-	 * C type : char*
-	 */
+	/** const char * */
 	public Pointer pchKey;
-	/**
-	 * const char *<br>
-	 * C type : char*
-	 */
+	/** const char * */
 	public Pointer pchValue;
 	public AppOverrideKeys_t() {
 		super();
@@ -25,12 +19,6 @@ public class AppOverrideKeys_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("pchKey", "pchValue");
 	}
-	/**
-	 * @param pchKey const char *<br>
-	 * C type : char*<br>
-	 * @param pchValue const char *<br>
-	 * C type : char*
-	 */
 	public AppOverrideKeys_t(Pointer pchKey, Pointer pchValue) {
 		super();
 		this.pchKey = pchKey;

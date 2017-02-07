@@ -668,7 +668,7 @@
 +    		
 +    		OpenVRPlayer.get().setRoomOrigin(
 +    				this.ridingEntity.posX + ox, 
-+    				this.ridingEntity.posY + (this.ridingEntity instanceof EntityHorse ? this.ridingEntity.getMountedYOffset() : 0 ),
++    				this.ridingEntity.posY + this.ridingEntity.getMountedYOffset(),
 +    				this.ridingEntity.posZ + oz, false, false); 
 +    		
 +    	} 

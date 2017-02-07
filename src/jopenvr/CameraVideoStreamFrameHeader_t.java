@@ -9,16 +9,12 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class CameraVideoStreamFrameHeader_t extends Structure {
-	/**
-	 * @see EVRTrackedCameraFrameType<br>
-	 * C type : EVRTrackedCameraFrameType
-	 */
+	/** @see EVRTrackedCameraFrameType */
 	public int eFrameType;
 	public int nWidth;
 	public int nHeight;
 	public int nBytesPerPixel;
 	public int nFrameSequence;
-	/** C type : TrackedDevicePose_t */
 	public TrackedDevicePose_t standingTrackedDevicePose;
 	public CameraVideoStreamFrameHeader_t() {
 		super();
@@ -26,11 +22,6 @@ public class CameraVideoStreamFrameHeader_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("eFrameType", "nWidth", "nHeight", "nBytesPerPixel", "nFrameSequence", "standingTrackedDevicePose");
 	}
-	/**
-	 * @param eFrameType @see EVRTrackedCameraFrameType<br>
-	 * C type : EVRTrackedCameraFrameType<br>
-	 * @param standingTrackedDevicePose C type : TrackedDevicePose_t
-	 */
 	public CameraVideoStreamFrameHeader_t(int eFrameType, int nWidth, int nHeight, int nBytesPerPixel, int nFrameSequence, TrackedDevicePose_t standingTrackedDevicePose) {
 		super();
 		this.eFrameType = eFrameType;

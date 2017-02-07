@@ -10,65 +10,29 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class COpenVRContext extends Structure {
-	/**
-	 * class vr::IVRSystem *<br>
-	 * C type : intptr_t
-	 */
+	/** class vr::IVRSystem * */
 	public IntByReference m_pVRSystem;
-	/**
-	 * class vr::IVRChaperone *<br>
-	 * C type : intptr_t
-	 */
+	/** class vr::IVRChaperone * */
 	public IntByReference m_pVRChaperone;
-	/**
-	 * class vr::IVRChaperoneSetup *<br>
-	 * C type : intptr_t
-	 */
+	/** class vr::IVRChaperoneSetup * */
 	public IntByReference m_pVRChaperoneSetup;
-	/**
-	 * class vr::IVRCompositor *<br>
-	 * C type : intptr_t
-	 */
+	/** class vr::IVRCompositor * */
 	public IntByReference m_pVRCompositor;
-	/**
-	 * class vr::IVROverlay *<br>
-	 * C type : intptr_t
-	 */
+	/** class vr::IVROverlay * */
 	public IntByReference m_pVROverlay;
-	/**
-	 * class vr::IVRResources *<br>
-	 * C type : intptr_t
-	 */
+	/** class vr::IVRResources * */
 	public IntByReference m_pVRResources;
-	/**
-	 * class vr::IVRRenderModels *<br>
-	 * C type : intptr_t
-	 */
+	/** class vr::IVRRenderModels * */
 	public IntByReference m_pVRRenderModels;
-	/**
-	 * class vr::IVRExtendedDisplay *<br>
-	 * C type : intptr_t
-	 */
+	/** class vr::IVRExtendedDisplay * */
 	public IntByReference m_pVRExtendedDisplay;
-	/**
-	 * class vr::IVRSettings *<br>
-	 * C type : intptr_t
-	 */
+	/** class vr::IVRSettings * */
 	public IntByReference m_pVRSettings;
-	/**
-	 * class vr::IVRApplications *<br>
-	 * C type : intptr_t
-	 */
+	/** class vr::IVRApplications * */
 	public IntByReference m_pVRApplications;
-	/**
-	 * class vr::IVRTrackedCamera *<br>
-	 * C type : intptr_t
-	 */
+	/** class vr::IVRTrackedCamera * */
 	public IntByReference m_pVRTrackedCamera;
-	/**
-	 * class vr::IVRScreenshots *<br>
-	 * C type : intptr_t
-	 */
+	/** class vr::IVRScreenshots * */
 	public IntByReference m_pVRScreenshots;
 	public COpenVRContext() {
 		super();

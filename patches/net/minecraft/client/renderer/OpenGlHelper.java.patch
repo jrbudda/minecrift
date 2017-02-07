@@ -29,21 +29,21 @@
 -    public static int field_153206_m;
 -    private static int field_153212_w;
 +    public static boolean isNvidia;
-+    public static int glFrameBuffer;
-+    public static int glRenderBuffer;
-+    public static int glColorAttachment0;
-+    public static int glDepthAttachment;
-+    public static int glFramebuffercomplete;
-+    public static int glIncompleteAttachment;
-+    public static int glMissingAttachment;
-+    public static int glIncompleteDrawBuffer;
-+    public static int incompleteReadBuffer;
-+    private static int textureType; // 0 = openGL 3.0
++    public static int field_153198_e; //glFrameBuffer do not rename cause IntegratedCircuits.
++    public static int field_153199_f; //glRenderBuffer;
++    public static int field_153200_g;//glColorAttachment0;
++    public static int field_153201_h; //glDepthAttachment
++    public static int field_153202_i; //glFramebuffercomplete
++    public static int field_153203_j; //glIncompleteAttachment
++    public static int field_153204_k; //glMissingAttachment
++    public static int field_153205_l; //glIncompleteDrawBuffer
++    public static int field_153206_m; //incompleteReadBuffer
++    private static int field_153212_w; // glTextureType do not rename cause IntegratedCircuits.
      public static boolean framebufferSupported;
 -    private static boolean field_153213_x;
 -    private static boolean field_153214_y;
-+    private static boolean shadersEnabled;
-+    private static boolean arbShaders;
++    private static boolean field_153213_x; //shadersEnabled
++    private static boolean field_153214_y; //arbShaders
      public static int GL_LINK_STATUS;
      public static int GL_COMPILE_STATUS;
      public static int GL_VERTEX_SHADER;
@@ -51,92 +51,87 @@
      public static boolean anisotropicFilteringSupported;
      public static int anisotropicFilteringMax;
 -    private static boolean field_153215_z;
-+    private static boolean arbMulti;
++    private static boolean field_153215_z; //arbMulti
      private static boolean openGL14;
 -    public static boolean field_153211_u;
-+    public static boolean extBlend;
++    public static boolean field_153211_u; //extBlend
      public static boolean shadersSupported;
 -    private static String field_153196_B = "";
-+    private static String initStatus = "";
++    private static String field_153196_B = ""; //initstatus
      private static final String __OBFID = "CL_00001179";
      public static float lastBrightnessX = 0.0F;
      public static float lastBrightnessY = 0.0F;
-@@ -70,107 +74,89 @@
+@@ -70,8 +74,8 @@
      public static void initializeTextures()
      {
          Config.initDisplay();
 -        ContextCapabilities var0 = GLContext.getCapabilities();
 -        field_153215_z = var0.GL_ARB_multitexture && !var0.OpenGL13;
 +        ContextCapabilities capabilities = GLContext.getCapabilities();
-+        arbMulti = capabilities.GL_ARB_multitexture && !capabilities.OpenGL13;
++        field_153215_z = capabilities.GL_ARB_multitexture && !capabilities.OpenGL13;
  
--        if (field_153215_z)
-+        if (arbMulti)
+         if (field_153215_z)
          {
--            field_153196_B = field_153196_B + "Using multitexturing ARB.\n";
-+            initStatus = initStatus + "Using multitexturing ARB.\n";
-             defaultTexUnit = 33984;
-             lightmapTexUnit = 33985;
-         }
-         else
-         {
--            field_153196_B = field_153196_B + "Using GL 1.3 multitexturing.\n";
-+            initStatus = initStatus + "Using GL 1.3 multitexturing.\n";
-             defaultTexUnit = 33984;
+@@ -86,68 +90,50 @@
              lightmapTexUnit = 33985;
          }
  
 -        field_153211_u = var0.GL_EXT_blend_func_separate && !var0.OpenGL14;
 -        openGL14 = var0.OpenGL14 || var0.GL_EXT_blend_func_separate;
 -        framebufferSupported = openGL14 && (var0.GL_ARB_framebuffer_object || var0.GL_EXT_framebuffer_object || var0.OpenGL30);
-+        extBlend = capabilities.GL_EXT_blend_func_separate && !capabilities.OpenGL14;
++        field_153211_u = capabilities.GL_EXT_blend_func_separate && !capabilities.OpenGL14;
 +        openGL14 = capabilities.OpenGL14 || capabilities.GL_EXT_blend_func_separate;
 +        framebufferSupported = openGL14 && (capabilities.GL_ARB_framebuffer_object || capabilities.GL_EXT_framebuffer_object || capabilities.OpenGL30);
  
          if (framebufferSupported)
          {
--            field_153196_B = field_153196_B + "Using framebuffer objects because ";
+             field_153196_B = field_153196_B + "Using framebuffer objects because ";
 -
 -            if (var0.OpenGL30)
-+            initStatus = initStatus + "Using framebuffer objects because ";
-+            glFrameBuffer = GL30.GL_FRAMEBUFFER;
-+            glRenderBuffer = 36161;
-+            glColorAttachment0 = 36064;
-+            glDepthAttachment = 36096;
-+            glFramebuffercomplete = 36053;
-+            glIncompleteAttachment = 36054;
-+            glMissingAttachment = 36055;
-+            glIncompleteDrawBuffer = 36059;
-+            incompleteReadBuffer = 36060;
++            field_153198_e = GL30.GL_FRAMEBUFFER;
++            field_153199_f = 36161;
++            field_153200_g = 36064;
++            field_153201_h = 36096;
++            field_153202_i = 36053;
++            field_153203_j = 36054;
++            field_153204_k = 36055;
++            field_153205_l = 36059;
++            field_153206_m = 36060;
 +            
 +            if (capabilities.OpenGL30)
-+            {
-+                initStatus = initStatus + "OpenGL 3.0 is supported and separate blending is supported.\n";
-+                textureType = 0;
-+            }
+             {
+                 field_153196_B = field_153196_B + "OpenGL 3.0 is supported and separate blending is supported.\n";
+                 field_153212_w = 0;
+-                field_153198_e = 36160;
+-                field_153199_f = 36161;
+-                field_153200_g = 36064;
+-                field_153201_h = 36096;
+-                field_153202_i = 36053;
+-                field_153203_j = 36054;
+-                field_153204_k = 36055;
+-                field_153205_l = 36059;
+-                field_153206_m = 36060;
+             }
+-            else if (var0.GL_ARB_framebuffer_object)
 +            else if (capabilities.GL_ARB_framebuffer_object)
-+            {
-+                initStatus = initStatus + "ARB_framebuffer_object is supported and separate blending is supported.\n";
-+                textureType = 1;
-+            }
+             {
+                 field_153196_B = field_153196_B + "ARB_framebuffer_object is supported and separate blending is supported.\n";
+                 field_153212_w = 1;
+-                field_153198_e = 36160;
+-                field_153199_f = 36161;
+-                field_153200_g = 36064;
+-                field_153201_h = 36096;
+-                field_153202_i = 36053;
+-                field_153204_k = 36055;
+-                field_153203_j = 36054;
+-                field_153205_l = 36059;
+-                field_153206_m = 36060;
+             }
+-            else if (var0.GL_EXT_framebuffer_object)
 +            else if (capabilities.GL_EXT_framebuffer_object)
              {
--                field_153196_B = field_153196_B + "OpenGL 3.0 is supported and separate blending is supported.\n";
--                field_153212_w = 0;
--                field_153198_e = 36160;
--                field_153199_f = 36161;
--                field_153200_g = 36064;
--                field_153201_h = 36096;
--                field_153202_i = 36053;
--                field_153203_j = 36054;
--                field_153204_k = 36055;
--                field_153205_l = 36059;
--                field_153206_m = 36060;
--            }
--            else if (var0.GL_ARB_framebuffer_object)
--            {
--                field_153196_B = field_153196_B + "ARB_framebuffer_object is supported and separate blending is supported.\n";
--                field_153212_w = 1;
+                 field_153196_B = field_153196_B + "EXT_framebuffer_object is supported.\n";
+                 field_153212_w = 2;
 -                field_153198_e = 36160;
 -                field_153199_f = 36161;
 -                field_153200_g = 36064;
@@ -146,90 +141,46 @@
 -                field_153203_j = 36054;
 -                field_153205_l = 36059;
 -                field_153206_m = 36060;
--            }
--            else if (var0.GL_EXT_framebuffer_object)
--            {
--                field_153196_B = field_153196_B + "EXT_framebuffer_object is supported.\n";
--                field_153212_w = 2;
--                field_153198_e = 36160;
--                field_153199_f = 36161;
--                field_153200_g = 36064;
--                field_153201_h = 36096;
--                field_153202_i = 36053;
--                field_153204_k = 36055;
--                field_153203_j = 36054;
--                field_153205_l = 36059;
--                field_153206_m = 36060;
-+                initStatus = initStatus + "EXT_framebuffer_object is supported.\n";
-+                textureType = 2;
              }
          }
          else
          {
--            field_153196_B = field_153196_B + "Not using framebuffer objects because ";
+             field_153196_B = field_153196_B + "Not using framebuffer objects because ";
 -            field_153196_B = field_153196_B + "OpenGL 1.4 is " + (var0.OpenGL14 ? "" : "not ") + "supported, ";
 -            field_153196_B = field_153196_B + "EXT_blend_func_separate is " + (var0.GL_EXT_blend_func_separate ? "" : "not ") + "supported, ";
 -            field_153196_B = field_153196_B + "OpenGL 3.0 is " + (var0.OpenGL30 ? "" : "not ") + "supported, ";
 -            field_153196_B = field_153196_B + "ARB_framebuffer_object is " + (var0.GL_ARB_framebuffer_object ? "" : "not ") + "supported, and ";
 -            field_153196_B = field_153196_B + "EXT_framebuffer_object is " + (var0.GL_EXT_framebuffer_object ? "" : "not ") + "supported.\n";
-+            initStatus = initStatus + "Not using framebuffer objects because ";
-+            initStatus = initStatus + "OpenGL 1.4 is " + (capabilities.OpenGL14 ? "" : "not ") + "supported, ";
-+            initStatus = initStatus + "EXT_blend_func_separate is " + (capabilities.GL_EXT_blend_func_separate ? "" : "not ") + "supported, ";
-+            initStatus = initStatus + "OpenGL 3.0 is " + (capabilities.OpenGL30 ? "" : "not ") + "supported, ";
-+            initStatus = initStatus + "ARB_framebuffer_object is " + (capabilities.GL_ARB_framebuffer_object ? "" : "not ") + "supported, and ";
-+            initStatus = initStatus + "EXT_framebuffer_object is " + (capabilities.GL_EXT_framebuffer_object ? "" : "not ") + "supported.\n";
++            field_153196_B = field_153196_B + "OpenGL 1.4 is " + (capabilities.OpenGL14 ? "" : "not ") + "supported, ";
++            field_153196_B = field_153196_B + "EXT_blend_func_separate is " + (capabilities.GL_EXT_blend_func_separate ? "" : "not ") + "supported, ";
++            field_153196_B = field_153196_B + "OpenGL 3.0 is " + (capabilities.OpenGL30 ? "" : "not ") + "supported, ";
++            field_153196_B = field_153196_B + "ARB_framebuffer_object is " + (capabilities.GL_ARB_framebuffer_object ? "" : "not ") + "supported, and ";
++            field_153196_B = field_153196_B + "EXT_framebuffer_object is " + (capabilities.GL_EXT_framebuffer_object ? "" : "not ") + "supported.\n";
          }
  
 -        anisotropicFilteringSupported = var0.GL_EXT_texture_filter_anisotropic;
 +        anisotropicFilteringSupported = capabilities.GL_EXT_texture_filter_anisotropic;
          anisotropicFilteringMax = (int)(anisotropicFilteringSupported ? GL11.glGetFloat(34047) : 0.0F);
--        field_153196_B = field_153196_B + "Anisotropic filtering is " + (anisotropicFilteringSupported ? "" : "not ") + "supported";
-+        initStatus = initStatus + "Anisotropic filtering is " + (anisotropicFilteringSupported ? "" : "not ") + "supported";
+         field_153196_B = field_153196_B + "Anisotropic filtering is " + (anisotropicFilteringSupported ? "" : "not ") + "supported";
  
-         if (anisotropicFilteringSupported)
-         {
--            field_153196_B = field_153196_B + " and maximum anisotropy is " + anisotropicFilteringMax + ".\n";
-+            initStatus = initStatus + " and maximum anisotropy is " + anisotropicFilteringMax + ".\n";
-         }
-         else
-         {
--            field_153196_B = field_153196_B + ".\n";
-+            initStatus = initStatus + ".\n";
+@@ -161,13 +147,13 @@
          }
  
          GameSettings.Options.ANISOTROPIC_FILTERING.setValueMax((float)anisotropicFilteringMax);
 -        openGL21 = var0.OpenGL21;
 -        field_153213_x = openGL21 || var0.GL_ARB_vertex_shader && var0.GL_ARB_fragment_shader && var0.GL_ARB_shader_objects;
--        field_153196_B = field_153196_B + "Shaders are " + (field_153213_x ? "" : "not ") + "available because ";
 +        openGL21 = capabilities.OpenGL21;
-+        shadersEnabled = openGL21 || capabilities.GL_ARB_vertex_shader && capabilities.GL_ARB_fragment_shader && capabilities.GL_ARB_shader_objects;
-+        initStatus = initStatus + "Shaders are " + (shadersEnabled ? "" : "not ") + "available because ";
++        field_153213_x = openGL21 || capabilities.GL_ARB_vertex_shader && capabilities.GL_ARB_fragment_shader && capabilities.GL_ARB_shader_objects;
+         field_153196_B = field_153196_B + "Shaders are " + (field_153213_x ? "" : "not ") + "available because ";
  
--        if (field_153213_x)
-+        if (shadersEnabled)
+         if (field_153213_x)
          {
 -            if (var0.OpenGL21)
 +            if (capabilities.OpenGL21)
              {
--                field_153196_B = field_153196_B + "OpenGL 2.1 is supported.\n";
--                field_153214_y = false;
-+                initStatus = initStatus + "OpenGL 2.1 is supported.\n";
-+                arbShaders = false;
-                 GL_LINK_STATUS = 35714;
-                 GL_COMPILE_STATUS = 35713;
-                 GL_VERTEX_SHADER = 35633;
-@@ -178,8 +164,8 @@
-             }
-             else
-             {
--                field_153196_B = field_153196_B + "ARB_shader_objects, ARB_vertex_shader, and ARB_fragment_shader are supported.\n";
--                field_153214_y = true;
-+                initStatus = initStatus + "ARB_shader_objects, ARB_vertex_shader, and ARB_fragment_shader are supported.\n";
-+                arbShaders = true;
-                 GL_LINK_STATUS = 35714;
-                 GL_COMPILE_STATUS = 35713;
-                 GL_VERTEX_SHADER = 35633;
-@@ -188,34 +174,34 @@
+                 field_153196_B = field_153196_B + "OpenGL 2.1 is supported.\n";
+                 field_153214_y = false;
+@@ -188,22 +174,22 @@
          }
          else
          {
@@ -237,15 +188,14 @@
 -            field_153196_B = field_153196_B + "ARB_shader_objects is " + (var0.GL_ARB_shader_objects ? "" : "not ") + "supported, ";
 -            field_153196_B = field_153196_B + "ARB_vertex_shader is " + (var0.GL_ARB_vertex_shader ? "" : "not ") + "supported, and ";
 -            field_153196_B = field_153196_B + "ARB_fragment_shader is " + (var0.GL_ARB_fragment_shader ? "" : "not ") + "supported.\n";
-+            initStatus = initStatus + "OpenGL 2.1 is " + (capabilities.OpenGL21 ? "" : "not ") + "supported, ";
-+            initStatus = initStatus + "ARB_shader_objects is " + (capabilities.GL_ARB_shader_objects ? "" : "not ") + "supported, ";
-+            initStatus = initStatus + "ARB_vertex_shader is " + (capabilities.GL_ARB_vertex_shader ? "" : "not ") + "supported, and ";
-+            initStatus = initStatus + "ARB_fragment_shader is " + (capabilities.GL_ARB_fragment_shader ? "" : "not ") + "supported.\n";
++            field_153196_B = field_153196_B + "OpenGL 2.1 is " + (capabilities.OpenGL21 ? "" : "not ") + "supported, ";
++            field_153196_B = field_153196_B + "ARB_shader_objects is " + (capabilities.GL_ARB_shader_objects ? "" : "not ") + "supported, ";
++            field_153196_B = field_153196_B + "ARB_vertex_shader is " + (capabilities.GL_ARB_vertex_shader ? "" : "not ") + "supported, and ";
++            field_153196_B = field_153196_B + "ARB_fragment_shader is " + (capabilities.GL_ARB_fragment_shader ? "" : "not ") + "supported.\n";
          }
  
--        shadersSupported = framebufferSupported && field_153213_x;
+         shadersSupported = framebufferSupported && field_153213_x;
 -        field_153197_d = GL11.glGetString(GL11.GL_VENDOR).toLowerCase().contains("nvidia");
-+        shadersSupported = framebufferSupported && shadersEnabled;
 +        isNvidia = GL11.glGetString(GL11.GL_VENDOR).toLowerCase().contains("nvidia");
      }
  
@@ -256,298 +206,54 @@
      }
  
 -    public static String func_153172_c()
-+    public static String getInitStatus()
++    public static String func_153172_c() //getinitstatus
      {
--        return field_153196_B;
-+        return initStatus;
+         return field_153196_B;
+     }
+@@ -479,6 +465,7 @@
+         return field_153214_y ? ARBVertexShader.glGetAttribLocationARB(p_153164_0_, p_153164_1_) : GL20.glGetAttribLocation(p_153164_0_, p_153164_1_);
      }
  
-     public static int glGetProgrami(int p_153175_0_, int p_153175_1_)
-     {
--        return field_153214_y ? ARBShaderObjects.glGetObjectParameteriARB(p_153175_0_, p_153175_1_) : GL20.glGetProgrami(p_153175_0_, p_153175_1_);
-+        return arbShaders ? ARBShaderObjects.glGetObjectParameteriARB(p_153175_0_, p_153175_1_) : GL20.glGetProgrami(p_153175_0_, p_153175_1_);
-     }
- 
-     public static void glAttachShader(int p_153178_0_, int p_153178_1_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glAttachObjectARB(p_153178_0_, p_153178_1_);
-         }
-@@ -227,7 +213,7 @@
- 
-     public static void glDeleteShader(int p_153180_0_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glDeleteObjectARB(p_153180_0_);
-         }
-@@ -242,12 +228,12 @@
-      */
-     public static int glCreateShader(int p_153195_0_)
-     {
--        return field_153214_y ? ARBShaderObjects.glCreateShaderObjectARB(p_153195_0_) : GL20.glCreateShader(p_153195_0_);
-+        return arbShaders ? ARBShaderObjects.glCreateShaderObjectARB(p_153195_0_) : GL20.glCreateShader(p_153195_0_);
-     }
- 
-     public static void glShaderSource(int p_153169_0_, ByteBuffer p_153169_1_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glShaderSourceARB(p_153169_0_, p_153169_1_);
-         }
-@@ -259,7 +245,7 @@
- 
-     public static void glCompileShader(int p_153170_0_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glCompileShaderARB(p_153170_0_);
-         }
-@@ -271,22 +257,22 @@
- 
-     public static int glGetShaderi(int p_153157_0_, int p_153157_1_)
-     {
--        return field_153214_y ? ARBShaderObjects.glGetObjectParameteriARB(p_153157_0_, p_153157_1_) : GL20.glGetShaderi(p_153157_0_, p_153157_1_);
-+        return arbShaders ? ARBShaderObjects.glGetObjectParameteriARB(p_153157_0_, p_153157_1_) : GL20.glGetShaderi(p_153157_0_, p_153157_1_);
-     }
- 
-     public static String glGetShaderInfoLog(int p_153158_0_, int p_153158_1_)
-     {
--        return field_153214_y ? ARBShaderObjects.glGetInfoLogARB(p_153158_0_, p_153158_1_) : GL20.glGetShaderInfoLog(p_153158_0_, p_153158_1_);
-+        return arbShaders ? ARBShaderObjects.glGetInfoLogARB(p_153158_0_, p_153158_1_) : GL20.glGetShaderInfoLog(p_153158_0_, p_153158_1_);
-     }
- 
-     public static String glGetProgramInfoLog(int p_153166_0_, int p_153166_1_)
-     {
--        return field_153214_y ? ARBShaderObjects.glGetInfoLogARB(p_153166_0_, p_153166_1_) : GL20.glGetProgramInfoLog(p_153166_0_, p_153166_1_);
-+        return arbShaders ? ARBShaderObjects.glGetInfoLogARB(p_153166_0_, p_153166_1_) : GL20.glGetProgramInfoLog(p_153166_0_, p_153166_1_);
-     }
- 
-     public static void glUseProgram(int p_153161_0_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUseProgramObjectARB(p_153161_0_);
-         }
-@@ -298,12 +284,12 @@
- 
-     public static int glCreateProgram()
-     {
--        return field_153214_y ? ARBShaderObjects.glCreateProgramObjectARB() : GL20.glCreateProgram();
-+        return arbShaders ? ARBShaderObjects.glCreateProgramObjectARB() : GL20.glCreateProgram();
-     }
- 
-     public static void glDeleteProgram(int p_153187_0_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glDeleteObjectARB(p_153187_0_);
-         }
-@@ -315,7 +301,7 @@
- 
-     public static void glLinkProgram(int p_153179_0_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glLinkProgramARB(p_153179_0_);
-         }
-@@ -327,12 +313,12 @@
- 
-     public static int glGetUniformLocation(int p_153194_0_, CharSequence p_153194_1_)
-     {
--        return field_153214_y ? ARBShaderObjects.glGetUniformLocationARB(p_153194_0_, p_153194_1_) : GL20.glGetUniformLocation(p_153194_0_, p_153194_1_);
-+        return arbShaders ? ARBShaderObjects.glGetUniformLocationARB(p_153194_0_, p_153194_1_) : GL20.glGetUniformLocation(p_153194_0_, p_153194_1_);
-     }
- 
-     public static void glUniform1(int p_153181_0_, IntBuffer p_153181_1_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUniform1ARB(p_153181_0_, p_153181_1_);
-         }
-@@ -344,7 +330,7 @@
- 
-     public static void glUniform1i(int p_153163_0_, int p_153163_1_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUniform1iARB(p_153163_0_, p_153163_1_);
-         }
-@@ -356,7 +342,7 @@
- 
-     public static void glUniform1(int p_153168_0_, FloatBuffer p_153168_1_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUniform1ARB(p_153168_0_, p_153168_1_);
-         }
-@@ -368,7 +354,7 @@
- 
-     public static void glUniform2(int p_153182_0_, IntBuffer p_153182_1_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUniform2ARB(p_153182_0_, p_153182_1_);
-         }
-@@ -380,7 +366,7 @@
- 
-     public static void glUniform2(int p_153177_0_, FloatBuffer p_153177_1_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUniform2ARB(p_153177_0_, p_153177_1_);
-         }
-@@ -392,7 +378,7 @@
- 
-     public static void glUniform3(int p_153192_0_, IntBuffer p_153192_1_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUniform3ARB(p_153192_0_, p_153192_1_);
-         }
-@@ -404,7 +390,7 @@
- 
-     public static void glUniform3(int p_153191_0_, FloatBuffer p_153191_1_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUniform3ARB(p_153191_0_, p_153191_1_);
-         }
-@@ -416,7 +402,7 @@
- 
-     public static void glUniform4(int p_153162_0_, IntBuffer p_153162_1_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUniform4ARB(p_153162_0_, p_153162_1_);
-         }
-@@ -428,7 +414,7 @@
- 
-     public static void glUniform4(int p_153159_0_, FloatBuffer p_153159_1_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUniform4ARB(p_153159_0_, p_153159_1_);
-         }
-@@ -440,7 +426,7 @@
- 
-     public static void glUniformMatrix2(int p_153173_0_, boolean p_153173_1_, FloatBuffer p_153173_2_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUniformMatrix2ARB(p_153173_0_, p_153173_1_, p_153173_2_);
-         }
-@@ -452,7 +438,7 @@
- 
-     public static void glUniformMatrix3(int p_153189_0_, boolean p_153189_1_, FloatBuffer p_153189_2_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUniformMatrix3ARB(p_153189_0_, p_153189_1_, p_153189_2_);
-         }
-@@ -464,7 +450,7 @@
- 
-     public static void glUniformMatrix4(int p_153160_0_, boolean p_153160_1_, FloatBuffer p_153160_2_)
-     {
--        if (field_153214_y)
-+        if (arbShaders)
-         {
-             ARBShaderObjects.glUniformMatrix4ARB(p_153160_0_, p_153160_1_, p_153160_2_);
-         }
-@@ -476,14 +462,14 @@
- 
-     public static int glGetAttribLocation(int p_153164_0_, CharSequence p_153164_1_)
-     {
--        return field_153214_y ? ARBVertexShader.glGetAttribLocationARB(p_153164_0_, p_153164_1_) : GL20.glGetAttribLocation(p_153164_0_, p_153164_1_);
-+        return arbShaders ? ARBVertexShader.glGetAttribLocationARB(p_153164_0_, p_153164_1_) : GL20.glGetAttribLocation(p_153164_0_, p_153164_1_);
-     }
- 
--    public static void func_153171_g(int p_153171_0_, int p_153171_1_)
-+    public static void glBinDframeBuffer(int p_153171_0_, int p_153171_1_)
++    //glBinDframeBuffer
+     public static void func_153171_g(int p_153171_0_, int p_153171_1_)
      {
          if (framebufferSupported)
-         {
--            switch (field_153212_w)
-+            switch (textureType)
-             {
-                 case 0:
-                     GL30.glBindFramebuffer(p_153171_0_, p_153171_1_);
-@@ -499,11 +485,11 @@
+@@ -499,6 +486,7 @@
          }
      }
  
--    public static void func_153176_h(int p_153176_0_, int p_153176_1_)
-+    public static void glBindRenderBuffer(int p_153176_0_, int p_153176_1_)
++    //glBindRenderBuffer
+     public static void func_153176_h(int p_153176_0_, int p_153176_1_)
      {
          if (framebufferSupported)
-         {
--            switch (field_153212_w)
-+            switch (textureType)
-             {
-                 case 0:
-                     GL30.glBindRenderbuffer(p_153176_0_, p_153176_1_);
-@@ -519,11 +505,11 @@
+@@ -519,6 +507,7 @@
          }
      }
  
--    public static void func_153184_g(int p_153184_0_)
-+    public static void glDeleteRenderBuffer(int p_153184_0_)
++    //glDeleteRenderBuffer
+     public static void func_153184_g(int p_153184_0_)
      {
          if (framebufferSupported)
-         {
--            switch (field_153212_w)
-+            switch (textureType)
-             {
-                 case 0:
-                     GL30.glDeleteRenderbuffers(p_153184_0_);
-@@ -539,11 +525,11 @@
+@@ -539,6 +528,7 @@
          }
      }
  
--    public static void func_153174_h(int p_153174_0_)
-+    public static void glDeleteFramebuffers(int p_153174_0_)
++    //glDeleteFramebuffers
+     public static void func_153174_h(int p_153174_0_)
      {
          if (framebufferSupported)
-         {
--            switch (field_153212_w)
-+            switch (textureType)
-             {
-                 case 0:
-                     GL30.glDeleteFramebuffers(p_153174_0_);
-@@ -559,7 +545,7 @@
+@@ -558,7 +548,8 @@
+             }
          }
      }
- 
--    public static int func_153165_e()
-+    public static int glGenFramebuffer()
+-
++    
++    //glGenFramebuffer
+     public static int func_153165_e()
      {
          if (!framebufferSupported)
-         {
-@@ -567,10 +553,10 @@
-         }
-         else
-         {
--            switch (field_153212_w)
-+            switch (textureType)
+@@ -570,7 +561,7 @@
+             switch (field_153212_w)
              {
                  case 0:
 -                    return GL30.glGenFramebuffers();
@@ -555,121 +261,47 @@
  
                  case 1:
                      return ARBFramebufferObject.glGenFramebuffers();
-@@ -584,7 +570,7 @@
+@@ -584,6 +575,7 @@
          }
      }
  
--    public static int func_153185_f()
-+    public static int glGenRenderBuffer()
++    //glGenRenderBuffer
+     public static int func_153185_f()
      {
          if (!framebufferSupported)
-         {
-@@ -592,7 +578,7 @@
-         }
-         else
-         {
--            switch (field_153212_w)
-+            switch (textureType)
-             {
-                 case 0:
-                     return GL30.glGenRenderbuffers();
-@@ -609,11 +595,11 @@
+@@ -609,6 +601,7 @@
          }
      }
  
--    public static void func_153186_a(int p_153186_0_, int p_153186_1_, int p_153186_2_, int p_153186_3_)
-+    public static void glGenRenderBufferStorage(int p_153186_0_, int p_153186_1_, int p_153186_2_, int p_153186_3_)
++    //glGenRenderBufferStorage
+     public static void func_153186_a(int p_153186_0_, int p_153186_1_, int p_153186_2_, int p_153186_3_)
      {
          if (framebufferSupported)
-         {
--            switch (field_153212_w)
-+            switch (textureType)
-             {
-                 case 0:
-                     GL30.glRenderbufferStorage(p_153186_0_, p_153186_1_, p_153186_2_, p_153186_3_);
-@@ -629,11 +615,11 @@
+@@ -629,6 +622,7 @@
          }
      }
  
--    public static void func_153190_b(int p_153190_0_, int p_153190_1_, int p_153190_2_, int p_153190_3_)
-+    public static void glFrameBufferRenderBuffer(int p_153190_0_, int p_153190_1_, int p_153190_2_, int p_153190_3_)
++    //glFrameBufferRenderBuffer
+     public static void func_153190_b(int p_153190_0_, int p_153190_1_, int p_153190_2_, int p_153190_3_)
      {
          if (framebufferSupported)
-         {
--            switch (field_153212_w)
-+            switch (textureType)
-             {
-                 case 0:
-                     GL30.glFramebufferRenderbuffer(p_153190_0_, p_153190_1_, p_153190_2_, p_153190_3_);
-@@ -649,7 +635,7 @@
+@@ -649,6 +643,7 @@
          }
      }
  
--    public static int func_153167_i(int p_153167_0_)
-+    public static int glCheckFrameBufferStatus(int p_153167_0_)
++    //glCheckFrameBufferStatus
+     public static int func_153167_i(int p_153167_0_)
      {
          if (!framebufferSupported)
-         {
-@@ -657,7 +643,7 @@
-         }
-         else
-         {
--            switch (field_153212_w)
-+            switch (textureType)
-             {
-                 case 0:
-                     return GL30.glCheckFramebufferStatus(p_153167_0_);
-@@ -674,11 +660,11 @@
+@@ -674,6 +669,7 @@
          }
      }
  
--    public static void func_153188_a(int p_153188_0_, int p_153188_1_, int p_153188_2_, int p_153188_3_, int p_153188_4_)
-+    public static void glFrameBufferTexture2D(int p_153188_0_, int p_153188_1_, int p_153188_2_, int p_153188_3_, int p_153188_4_)
++    //glFrameBufferTexture2D
+     public static void func_153188_a(int p_153188_0_, int p_153188_1_, int p_153188_2_, int p_153188_3_, int p_153188_4_)
      {
          if (framebufferSupported)
-         {
--            switch (field_153212_w)
-+            switch (textureType)
-             {
-                 case 0:
-                     GL30.glFramebufferTexture2D(p_153188_0_, p_153188_1_, p_153188_2_, p_153188_3_, p_153188_4_);
-@@ -699,7 +685,7 @@
-      */
-     public static void setActiveTexture(int par0)
-     {
--        if (field_153215_z)
-+        if (arbMulti)
-         {
-             ARBMultitexture.glActiveTextureARB(par0);
-         }
-@@ -714,7 +700,7 @@
-      */
-     public static void setClientActiveTexture(int par0)
-     {
--        if (field_153215_z)
-+        if (arbMulti)
-         {
-             ARBMultitexture.glClientActiveTextureARB(par0);
-         }
-@@ -729,7 +715,7 @@
-      */
-     public static void setLightmapTextureCoords(int par0, float par1, float par2)
-     {
--        if (field_153215_z)
-+        if (arbMulti)
-         {
-             ARBMultitexture.glMultiTexCoord2fARB(par0, par1, par2);
-         }
-@@ -749,7 +735,7 @@
-     {
-         if (openGL14)
-         {
--            if (field_153211_u)
-+            if (extBlend)
-             {
-                 EXTBlendFuncSeparate.glBlendFuncSeparateEXT(p_148821_0_, p_148821_1_, p_148821_2_, p_148821_3_);
-             }
-@@ -764,8 +750,16 @@
+@@ -764,8 +760,16 @@
          }
      }
  

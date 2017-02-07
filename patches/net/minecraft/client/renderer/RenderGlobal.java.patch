@@ -289,12 +289,12 @@
 +            }
 +
 +            /** MINECRIFT */ // Render crosshair...
-+            if (!Reflector.forgeExists())
++         //   if (!Reflector.forgeExists())
 +                this.mc.entityRenderer.disableLightmap((double)nano);
 +
 +            this.mc.entityRenderer.renderCrosshairAtDepth(nano);
 +
-+            if (!Reflector.forgeExists())
++          //  if (!Reflector.forgeExists())
 +                this.mc.entityRenderer.enableLightmap((double)nano);
 +
 +

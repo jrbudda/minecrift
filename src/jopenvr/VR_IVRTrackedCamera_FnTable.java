@@ -13,28 +13,17 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class VR_IVRTrackedCamera_FnTable extends Structure {
-	/** C type : GetCameraErrorNameFromEnum_callback* */
 	public VR_IVRTrackedCamera_FnTable.GetCameraErrorNameFromEnum_callback GetCameraErrorNameFromEnum;
-	/** C type : HasCamera_callback* */
 	public VR_IVRTrackedCamera_FnTable.HasCamera_callback HasCamera;
-	/** C type : GetCameraFrameSize_callback* */
 	public VR_IVRTrackedCamera_FnTable.GetCameraFrameSize_callback GetCameraFrameSize;
-	/** C type : GetCameraIntrinisics_callback* */
-	public VR_IVRTrackedCamera_FnTable.GetCameraIntrinisics_callback GetCameraIntrinisics;
-	/** C type : GetCameraProjection_callback* */
+	public VR_IVRTrackedCamera_FnTable.GetCameraIntrinsics_callback GetCameraIntrinsics;
 	public VR_IVRTrackedCamera_FnTable.GetCameraProjection_callback GetCameraProjection;
-	/** C type : AcquireVideoStreamingService_callback* */
 	public VR_IVRTrackedCamera_FnTable.AcquireVideoStreamingService_callback AcquireVideoStreamingService;
-	/** C type : ReleaseVideoStreamingService_callback* */
 	public VR_IVRTrackedCamera_FnTable.ReleaseVideoStreamingService_callback ReleaseVideoStreamingService;
-	/** C type : GetVideoStreamFrameBuffer_callback* */
 	public VR_IVRTrackedCamera_FnTable.GetVideoStreamFrameBuffer_callback GetVideoStreamFrameBuffer;
 	public VR_IVRTrackedCamera_FnTable.GetVideoStreamTextureSize_callback GetVideoStreamTextureSize;
-	/** C type : GetVideoStreamTextureD3D11_callback* */
 	public VR_IVRTrackedCamera_FnTable.GetVideoStreamTextureD3D11_callback GetVideoStreamTextureD3D11;
-	/** C type : GetVideoStreamTextureGL_callback* */
 	public VR_IVRTrackedCamera_FnTable.GetVideoStreamTextureGL_callback GetVideoStreamTextureGL;
-	/** C type : ReleaseVideoStreamTextureGL_callback* */
 	public VR_IVRTrackedCamera_FnTable.ReleaseVideoStreamTextureGL_callback ReleaseVideoStreamTextureGL;
 	public interface GetCameraErrorNameFromEnum_callback extends Callback {
 		Pointer apply(int eCameraError);
@@ -45,7 +34,7 @@ public class VR_IVRTrackedCamera_FnTable extends Structure {
 	public interface GetCameraFrameSize_callback extends Callback {
 		int apply(int nDeviceIndex, int eFrameType, IntByReference pnWidth, IntByReference pnHeight, IntByReference pnFrameBufferSize);
 	};
-	public interface GetCameraIntrinisics_callback extends Callback {
+	public interface GetCameraIntrinsics_callback extends Callback {
 		int apply(int nDeviceIndex, int eFrameType, HmdVector2_t pFocalLength, HmdVector2_t pCenter);
 	};
 	public interface GetCameraProjection_callback extends Callback {
@@ -76,7 +65,7 @@ public class VR_IVRTrackedCamera_FnTable extends Structure {
 		super();
 	}
 	protected List<? > getFieldOrder() {
-		return Arrays.asList("GetCameraErrorNameFromEnum", "HasCamera", "GetCameraFrameSize", "GetCameraIntrinisics", "GetCameraProjection", "AcquireVideoStreamingService", "ReleaseVideoStreamingService", "GetVideoStreamFrameBuffer", "GetVideoStreamTextureSize", "GetVideoStreamTextureD3D11", "GetVideoStreamTextureGL", "ReleaseVideoStreamTextureGL");
+		return Arrays.asList("GetCameraErrorNameFromEnum", "HasCamera", "GetCameraFrameSize", "GetCameraIntrinsics", "GetCameraProjection", "AcquireVideoStreamingService", "ReleaseVideoStreamingService", "GetVideoStreamFrameBuffer", "GetVideoStreamTextureSize", "GetVideoStreamTextureD3D11", "GetVideoStreamTextureGL", "ReleaseVideoStreamTextureGL");
 	}
 	public VR_IVRTrackedCamera_FnTable(Pointer peer) {
 		super(peer);

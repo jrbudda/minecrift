@@ -42,7 +42,7 @@ public class KeyboardSimulator {
         doType(chars, 0, chars.length);
 	}
     
-    private static int[] getCodes(char character) {
+    public static int[] getCodes(char character) {
         switch (character) {
 	        case 'a': return codes(VK_A); 
 	        case 'b': return codes(VK_B); 

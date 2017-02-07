@@ -9,14 +9,9 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class RenderModel_Vertex_t extends Structure {
-	/** C type : HmdVector3_t */
 	public HmdVector3_t vPosition;
-	/** C type : HmdVector3_t */
 	public HmdVector3_t vNormal;
-	/**
-	 * float[2]<br>
-	 * C type : float[2]
-	 */
+	/** float[2] */
 	public float[] rfTextureCoord = new float[2];
 	public RenderModel_Vertex_t() {
 		super();
@@ -24,12 +19,6 @@ public class RenderModel_Vertex_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("vPosition", "vNormal", "rfTextureCoord");
 	}
-	/**
-	 * @param vPosition C type : HmdVector3_t<br>
-	 * @param vNormal C type : HmdVector3_t<br>
-	 * @param rfTextureCoord float[2]<br>
-	 * C type : float[2]
-	 */
 	public RenderModel_Vertex_t(HmdVector3_t vPosition, HmdVector3_t vNormal, float rfTextureCoord[]) {
 		super();
 		this.vPosition = vPosition;

@@ -9,10 +9,7 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class HmdVector3_t extends Structure {
-	/**
-	 * float[3]<br>
-	 * C type : float[3]
-	 */
+	/** float[3] */
 	public float[] v = new float[3];
 	public HmdVector3_t() {
 		super();
@@ -20,10 +17,6 @@ public class HmdVector3_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("v");
 	}
-	/**
-	 * @param v float[3]<br>
-	 * C type : float[3]
-	 */
 	public HmdVector3_t(float v[]) {
 		super();
 		if ((v.length != this.v.length)) 

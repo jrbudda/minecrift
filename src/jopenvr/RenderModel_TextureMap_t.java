@@ -11,10 +11,7 @@ import java.util.List;
 public class RenderModel_TextureMap_t extends Structure {
 	public short unWidth;
 	public short unHeight;
-	/**
-	 * const uint8_t *<br>
-	 * C type : uint8_t*
-	 */
+	/** const uint8_t * */
 	public Pointer rubTextureMapData;
 	public RenderModel_TextureMap_t() {
 		super();
@@ -22,10 +19,6 @@ public class RenderModel_TextureMap_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("unWidth", "unHeight", "rubTextureMapData");
 	}
-	/**
-	 * @param rubTextureMapData const uint8_t *<br>
-	 * C type : uint8_t*
-	 */
 	public RenderModel_TextureMap_t(short unWidth, short unHeight, Pointer rubTextureMapData) {
 		super();
 		this.unWidth = unWidth;

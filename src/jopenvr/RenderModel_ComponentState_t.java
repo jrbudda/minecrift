@@ -9,11 +9,8 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class RenderModel_ComponentState_t extends Structure {
-	/** C type : HmdMatrix34_t */
 	public HmdMatrix34_t mTrackingToComponentRenderModel;
-	/** C type : HmdMatrix34_t */
 	public HmdMatrix34_t mTrackingToComponentLocal;
-	/** C type : VRComponentProperties */
 	public int uProperties;
 	public RenderModel_ComponentState_t() {
 		super();
@@ -21,11 +18,6 @@ public class RenderModel_ComponentState_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("mTrackingToComponentRenderModel", "mTrackingToComponentLocal", "uProperties");
 	}
-	/**
-	 * @param mTrackingToComponentRenderModel C type : HmdMatrix34_t<br>
-	 * @param mTrackingToComponentLocal C type : HmdMatrix34_t<br>
-	 * @param uProperties C type : VRComponentProperties
-	 */
 	public RenderModel_ComponentState_t(HmdMatrix34_t mTrackingToComponentRenderModel, HmdMatrix34_t mTrackingToComponentLocal, int uProperties) {
 		super();
 		this.mTrackingToComponentRenderModel = mTrackingToComponentRenderModel;

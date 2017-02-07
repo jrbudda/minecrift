@@ -63,5 +63,9 @@ public interface IRoomscaleAdapter  {
 	public Vec3 getControllerDir_World(int c);
 	public Vec3 getControllerDir_Room(int c);
 
+	public float getControllerYaw_World(int controller); //degrees
+	public float getControllerPitch_World(int controller); //degrees
+	public float getControllerRoll_World(int controller); //degrees
+	
 }
 

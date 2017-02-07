@@ -22,7 +22,6 @@ public class Compositor_OverlaySettings extends Structure {
 	public float gridDivs;
 	public float gridWidth;
 	public float gridScale;
-	/** C type : HmdMatrix44_t */
 	public HmdMatrix44_t transform;
 	public Compositor_OverlaySettings() {
 		super();

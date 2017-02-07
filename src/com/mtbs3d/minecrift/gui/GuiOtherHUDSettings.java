@@ -14,14 +14,14 @@ public class GuiOtherHUDSettings extends BaseGuiSettings
 {
     // VIVE START - hide options not supported by tracked controller UI
     static VRSettings.VrOptions[] hudOptions = new VRSettings.VrOptions[] {
-            //VRSettings.VrOptions.CROSSHAIR_SCALE,
+            VRSettings.VrOptions.CROSSHAIR_SCALE,
             VRSettings.VrOptions.RENDER_CROSSHAIR_MODE,
             //VRSettings.VrOptions.CROSSHAIR_ROLL,
             VRSettings.VrOptions.RENDER_BLOCK_OUTLINE_MODE,
             VRSettings.VrOptions.MENU_CROSSHAIR_SCALE,
             VRSettings.VrOptions.CROSSHAIR_OCCLUSION,
             //VRSettings.VrOptions.MAX_CROSSHAIR_DISTANCE_AT_BLOCKREACH,
-            //VRSettings.VrOptions.CROSSHAIR_SCALES_WITH_DISTANCE,
+            VRSettings.VrOptions.CROSSHAIR_SCALES_WITH_DISTANCE,
           //  VRSettings.VrOptions.CHAT_FADE_AWAY,
             VRSettings.VrOptions.DUMMY,
     };
@@ -99,6 +99,7 @@ public class GuiOtherHUDSettings extends BaseGuiSettings
                 this.guivrSettings.renderInGameCrosshairMode = VRSettings.RENDER_CROSSHAIR_MODE_ALWAYS;
                 this.guivrSettings.menuCrosshairScale = 1f;
                 this.guivrSettings.useCrosshairOcclusion = false;
+                this.guivrSettings.crosshairScalesWithDistance = false;
 
 
                 Minecraft.getMinecraft().vrSettings.saveOptions();
@@ -155,13 +156,11 @@ public class GuiOtherHUDSettings extends BaseGuiSettings
                 };
             case CROSSHAIR_SCALES_WITH_DISTANCE:
                 return new String[] {
-                        "Determines if the crosshair will remain a static size,",
-                        "or scale with distance.",
-                        "  Static:   The crosshair will be rendered at the correct",
-                        "            depth, but will always appear the same size.",
-                        "  With Distance: The crosshair will be rendered at the",
-                        "                 correct depth, and scale appropriately",
-                        "                 with distance."
+                        "Determines how the crosshair changes with distance.",
+                        "  ON:   The crosshair will grow larger in the distance to",
+                        "   remain the same apparent size from your viewpoint.",
+                        "  OFF: The crosshair will always be the same size",
+                        "   in the world and appear to shrink with distance."
                 };
             case CHAT_FADE_AWAY:
                 return new String[] {

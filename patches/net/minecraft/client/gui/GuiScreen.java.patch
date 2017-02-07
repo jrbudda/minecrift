@@ -1,6 +1,11 @@
 --- a/net/minecraft/client/gui/GuiScreen.java
 +++ b/net/minecraft/client/gui/GuiScreen.java
-@@ -9,11 +9,16 @@
+@@ -5,15 +5,21 @@
+ import java.awt.datatransfer.DataFlavor;
+ import java.awt.datatransfer.StringSelection;
+ import java.awt.datatransfer.Transferable;
++import java.io.IOException;
+ import java.util.ArrayList;
  import java.util.Arrays;
  import java.util.Iterator;
  import java.util.List;
@@ -17,7 +22,7 @@
  import net.minecraft.util.EnumChatFormatting;
  import org.lwjgl.input.Keyboard;
  import org.lwjgl.input.Mouse;
-@@ -44,13 +49,17 @@
+@@ -44,13 +50,17 @@
      public boolean allowUserInput;
  
      /** The FontRenderer used by GuiScreen */
@@ -36,7 +41,7 @@
      /**
       * Incremented when the game is in touchscreen mode and the screen is tapped, decremented if the screen isn't
       * tapped. Does not appear to be used.
-@@ -84,6 +93,10 @@
+@@ -84,6 +94,10 @@
      {
          if (keyCode == 1)
          {
@@ -47,7 +52,7 @@
              this.mc.displayGuiScreen((GuiScreen)null);
              this.mc.setIngameFocus();
          }
-@@ -142,21 +155,37 @@
+@@ -142,21 +156,37 @@
                  var4.set(var5, EnumChatFormatting.GRAY + (String)var4.get(var5));
              }
          }
@@ -89,7 +94,7 @@
          if (!textLines.isEmpty())
          {
              GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-@@ -169,7 +198,9 @@
+@@ -169,7 +199,9 @@
              while (var5.hasNext())
              {
                  String var6 = (String)var5.next();
@@ -100,7 +105,7 @@
  
                  if (var7 > var4)
                  {
-@@ -214,7 +245,9 @@
+@@ -214,7 +246,9 @@
              for (int var12 = 0; var12 < textLines.size(); ++var12)
              {
                  String var13 = (String)textLines.get(var12);
@@ -111,7 +116,7 @@
  
                  if (var12 == 0)
                  {
-@@ -246,10 +279,26 @@
+@@ -246,10 +280,26 @@
  
                  if (var5.mousePressed(this.mc, mouseX, mouseY))
                  {
@@ -142,7 +147,7 @@
              }
          }
      }
-@@ -285,8 +334,22 @@
+@@ -285,8 +335,22 @@
          this.fontRendererObj = mc.fontRendererObj;
          this.width = width;
          this.height = height;
@@ -167,7 +172,7 @@
      }
  
      /**
-@@ -302,7 +365,14 @@
+@@ -302,7 +366,14 @@
          if (Mouse.isCreated())
          {
              while (Mouse.next())
@@ -183,7 +188,7 @@
                  this.handleMouseInput();
              }
          }
-@@ -321,9 +391,19 @@
+@@ -321,9 +392,19 @@
       */
      public void handleMouseInput()
      {
@@ -205,7 +210,7 @@
  
          if (Mouse.getEventButtonState())
          {
-@@ -388,8 +468,17 @@
+@@ -388,8 +469,17 @@
      {
          if (this.mc.theWorld != null)
          {
@@ -223,7 +228,7 @@
          else
          {
              this.drawBackground(tint);
-@@ -441,4 +530,64 @@
+@@ -441,4 +531,68 @@
      {
          return Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54);
      }
@@ -285,6 +290,10 @@
 +    {
 +        int mY = this.mc.currentScreen.height - Mouse.getY() * this.mc.currentScreen.height / this.mc.displayHeight - 1;
 +        return mY;
++    }
++
++    public void keyTypedPublic(char typedChar, int keyCode) throws IOException {
++    	keyTyped(typedChar, keyCode);
 +    }
 +
  }

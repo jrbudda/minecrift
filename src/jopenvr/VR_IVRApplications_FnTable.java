@@ -11,60 +11,34 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class VR_IVRApplications_FnTable extends Structure {
-	/** C type : AddApplicationManifest_callback* */
 	public VR_IVRApplications_FnTable.AddApplicationManifest_callback AddApplicationManifest;
-	/** C type : RemoveApplicationManifest_callback* */
 	public VR_IVRApplications_FnTable.RemoveApplicationManifest_callback RemoveApplicationManifest;
-	/** C type : IsApplicationInstalled_callback* */
 	public VR_IVRApplications_FnTable.IsApplicationInstalled_callback IsApplicationInstalled;
-	/** C type : GetApplicationCount_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationCount_callback GetApplicationCount;
-	/** C type : GetApplicationKeyByIndex_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationKeyByIndex_callback GetApplicationKeyByIndex;
-	/** C type : GetApplicationKeyByProcessId_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationKeyByProcessId_callback GetApplicationKeyByProcessId;
-	/** C type : LaunchApplication_callback* */
 	public VR_IVRApplications_FnTable.LaunchApplication_callback LaunchApplication;
-	/** C type : LaunchDashboardOverlay_callback* */
 	public VR_IVRApplications_FnTable.LaunchTemplateApplication_callback LaunchTemplateApplication;
 	public VR_IVRApplications_FnTable.LaunchApplicationFromMimeType_callback LaunchApplicationFromMimeType;
 	public VR_IVRApplications_FnTable.LaunchDashboardOverlay_callback LaunchDashboardOverlay;
-	/** C type : CancelApplicationLaunch_callback* */
 	public VR_IVRApplications_FnTable.CancelApplicationLaunch_callback CancelApplicationLaunch;
-	/** C type : IdentifyApplication_callback* */
 	public VR_IVRApplications_FnTable.IdentifyApplication_callback IdentifyApplication;
-	/** C type : GetApplicationProcessId_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationProcessId_callback GetApplicationProcessId;
-	/** C type : GetApplicationsErrorNameFromEnum_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationsErrorNameFromEnum_callback GetApplicationsErrorNameFromEnum;
-	/** C type : GetApplicationPropertyString_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationPropertyString_callback GetApplicationPropertyString;
-	/** C type : GetApplicationPropertyBool_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationPropertyBool_callback GetApplicationPropertyBool;
-	/** C type : GetApplicationPropertyUint64_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationPropertyUint64_callback GetApplicationPropertyUint64;
-	/** C type : SetApplicationAutoLaunch_callback* */
 	public VR_IVRApplications_FnTable.SetApplicationAutoLaunch_callback SetApplicationAutoLaunch;
-	/** C type : GetApplicationAutoLaunch_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationAutoLaunch_callback GetApplicationAutoLaunch;
 	public VR_IVRApplications_FnTable.SetDefaultApplicationForMimeType_callback SetDefaultApplicationForMimeType;
-	/** C type : GetDefaultApplicationForMimeType_callback* */
 	public VR_IVRApplications_FnTable.GetDefaultApplicationForMimeType_callback GetDefaultApplicationForMimeType;
-	/** C type : GetApplicationSupportedMimeTypes_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationSupportedMimeTypes_callback GetApplicationSupportedMimeTypes;
-	/** C type : GetApplicationsThatSupportMimeType_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationsThatSupportMimeType_callback GetApplicationsThatSupportMimeType;
-	/** C type : GetApplicationLaunchArguments_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationLaunchArguments_callback GetApplicationLaunchArguments;
-	/** C type : GetStartingApplication_callback* */
 	public VR_IVRApplications_FnTable.GetStartingApplication_callback GetStartingApplication;
-	/** C type : GetTransitionState_callback* */
 	public VR_IVRApplications_FnTable.GetTransitionState_callback GetTransitionState;
-	/** C type : PerformApplicationPrelaunchCheck_callback* */
 	public VR_IVRApplications_FnTable.PerformApplicationPrelaunchCheck_callback PerformApplicationPrelaunchCheck;
-	/** C type : GetApplicationsTransitionStateNameFromEnum_callback* */
 	public VR_IVRApplications_FnTable.GetApplicationsTransitionStateNameFromEnum_callback GetApplicationsTransitionStateNameFromEnum;
-	/** C type : IsQuitUserPromptRequested_callback* */
 	public VR_IVRApplications_FnTable.IsQuitUserPromptRequested_callback IsQuitUserPromptRequested;
 	public VR_IVRApplications_FnTable.LaunchInternalProcess_callback LaunchInternalProcess;
 	public interface AddApplicationManifest_callback extends Callback {

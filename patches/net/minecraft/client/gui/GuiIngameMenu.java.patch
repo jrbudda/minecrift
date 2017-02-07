@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/GuiIngameMenu.java
 +++ b/net/minecraft/client/gui/GuiIngameMenu.java
-@@ -1,9 +1,15 @@
+@@ -1,9 +1,16 @@
  package net.minecraft.client.gui;
  
 +import com.google.common.base.Enums;
@@ -12,11 +12,12 @@
  import net.minecraft.client.multiplayer.WorldClient;
  import net.minecraft.client.resources.I18n;
 +import net.minecraft.client.settings.KeyBinding;
++import net.minecraft.src.Reflector;
 +import net.minecraft.util.ScreenShotHelper;
  
  public class GuiIngameMenu extends GuiScreen
  {
-@@ -11,29 +17,40 @@
+@@ -11,29 +18,45 @@
      private int field_146444_f;
      private static final String __OBFID = "CL_00000703";
  
@@ -37,7 +38,9 @@
 +    	byte var1 = -16;
 +    	boolean var2 = true;
 +
-+    	this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 144 + var1, I18n.format("menu.returnToMenu", new Object[0])));
++    	int off = Reflector.forgeExists() ? 24 : 0;
++    	
++    	this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 144 + var1 + off, I18n.format("menu.returnToMenu", new Object[0])));
 +
 +    	if (!this.mc.isIntegratedServerRunning())
 +    	{
@@ -51,7 +54,10 @@
 +      	this.buttonList.add(new GuiButton(102, this.width / 2 - 100,this.height / 4 + 120 + var1, 49, 20, "Overlay"));
 +      	this.buttonList.add(new GuiButton(103, this.width / 2 - 50,this.height / 4 + 120 + var1, 49, 20, "Profiler"));
 +      	this.buttonList.add(new GuiButton(104, this.width / 2 + 2,this.height / 4 + 120 + var1, 98,	 20, "Screenshot"));
-+
++      
++      	if(Reflector.forgeExists())
++      		this.buttonList.add(new GuiButton(12, this.width / 2 -50, this.height / 4 + 144 + var1, 98, 20, "Mod Options..."));
++      	
 +    	GuiButton var3;
 +    	this.buttonList.add(var3 = new GuiButton(7, this.width / 2 + 2, this.height / 4 + 96 + var1, 98, 20, I18n.format("menu.shareToLan", new Object[0])));
 +    	this.buttonList.add(new GuiButton(5, this.width / 2 - 100, this.height / 4 + 48 + var1, 98, 20, I18n.format("gui.achievements", new Object[0])));
@@ -73,7 +79,7 @@
      }
  
      protected void actionPerformed(GuiButton button)
-@@ -52,24 +69,43 @@
+@@ -52,24 +75,46 @@
  
              case 2:
              case 3:
@@ -90,12 +96,18 @@
                  break;
 -
              case 6:
-                 this.mc.displayGuiScreen(new GuiStats(this, this.mc.thePlayer.getStatFileWriter()));
-                 break;
+-                this.mc.displayGuiScreen(new GuiStats(this, this.mc.thePlayer.getStatFileWriter()));
+-                break;
 -
++            	this.mc.displayGuiScreen(new GuiStats(this, this.mc.thePlayer.getStatFileWriter()));
++            	break;
              case 7:
-                 this.mc.displayGuiScreen(new GuiShareToLan(this));
-+                break;
+-                this.mc.displayGuiScreen(new GuiShareToLan(this));
++            	this.mc.displayGuiScreen(new GuiShareToLan(this));
++            	break;
++            case 12:
++            	Reflector.call(Reflector.call(Reflector.FMLClientHandler_instance, new Object[0]), Reflector.FMLClientHandler_showInGameModOptions,new Object[]{this});
++            	break;
 +            case 100:
 +            	this.mc.displayGuiScreen(new GuiChat());
 +            	break;

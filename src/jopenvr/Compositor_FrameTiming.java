@@ -12,6 +12,7 @@ public class Compositor_FrameTiming extends Structure {
 	public int m_nSize;
 	public int m_nFrameIndex;
 	public int m_nNumFramePresents;
+	public int m_nNumMisPresented;
 	public int m_nNumDroppedFrames;
 	public int m_nReprojectionFlags;
 	public double m_flSystemTimeInSeconds;
@@ -31,13 +32,12 @@ public class Compositor_FrameTiming extends Structure {
 	public float m_flCompositorUpdateStartMs;
 	public float m_flCompositorUpdateEndMs;
 	public float m_flCompositorRenderStartMs;
-	/** C type : TrackedDevicePose_t */
 	public TrackedDevicePose_t m_HmdPose;
 	public Compositor_FrameTiming() {
 		super();
 	}
 	protected List<? > getFieldOrder() {
-		return Arrays.asList("m_nSize", "m_nFrameIndex", "m_nNumFramePresents", "m_nNumDroppedFrames", "m_nReprojectionFlags", "m_flSystemTimeInSeconds", "m_flPreSubmitGpuMs", "m_flPostSubmitGpuMs", "m_flTotalRenderGpuMs", "m_flCompositorRenderGpuMs", "m_flCompositorRenderCpuMs", "m_flCompositorIdleCpuMs", "m_flClientFrameIntervalMs", "m_flPresentCallCpuMs", "m_flWaitForPresentCpuMs", "m_flSubmitFrameMs", "m_flWaitGetPosesCalledMs", "m_flNewPosesReadyMs", "m_flNewFrameReadyMs", "m_flCompositorUpdateStartMs", "m_flCompositorUpdateEndMs", "m_flCompositorRenderStartMs", "m_HmdPose");
+		return Arrays.asList("m_nSize", "m_nFrameIndex", "m_nNumFramePresents", "m_nNumMisPresented", "m_nNumDroppedFrames", "m_nReprojectionFlags", "m_flSystemTimeInSeconds", "m_flPreSubmitGpuMs", "m_flPostSubmitGpuMs", "m_flTotalRenderGpuMs", "m_flCompositorRenderGpuMs", "m_flCompositorRenderCpuMs", "m_flCompositorIdleCpuMs", "m_flClientFrameIntervalMs", "m_flPresentCallCpuMs", "m_flWaitForPresentCpuMs", "m_flSubmitFrameMs", "m_flWaitGetPosesCalledMs", "m_flNewPosesReadyMs", "m_flNewFrameReadyMs", "m_flCompositorUpdateStartMs", "m_flCompositorUpdateEndMs", "m_flCompositorRenderStartMs", "m_HmdPose");
 	}
 	public Compositor_FrameTiming(Pointer peer) {
 		super(peer);

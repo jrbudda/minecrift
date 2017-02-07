@@ -9,10 +9,7 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class VREvent_Keyboard_t extends Structure {
-	/**
-	 * char[8]<br>
-	 * C type : char*[8]
-	 */
+	/** char[8] */
 	public Pointer[] cNewInput = new Pointer[8];
 	public long uUserValue;
 	public VREvent_Keyboard_t() {
@@ -21,10 +18,6 @@ public class VREvent_Keyboard_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("cNewInput", "uUserValue");
 	}
-	/**
-	 * @param cNewInput char[8]<br>
-	 * C type : char*[8]
-	 */
 	public VREvent_Keyboard_t(Pointer cNewInput[], long uUserValue) {
 		super();
 		if ((cNewInput.length != this.cNewInput.length)) 

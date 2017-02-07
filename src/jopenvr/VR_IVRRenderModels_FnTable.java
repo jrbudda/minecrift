@@ -12,39 +12,23 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class VR_IVRRenderModels_FnTable extends Structure {
-	/** C type : LoadRenderModel_Async_callback* */
 	public VR_IVRRenderModels_FnTable.LoadRenderModel_Async_callback LoadRenderModel_Async;
-	/** C type : FreeRenderModel_callback* */
 	public VR_IVRRenderModels_FnTable.FreeRenderModel_callback FreeRenderModel;
-	/** C type : LoadTexture_Async_callback* */
 	public VR_IVRRenderModels_FnTable.LoadTexture_Async_callback LoadTexture_Async;
-	/** C type : FreeTexture_callback* */
 	public VR_IVRRenderModels_FnTable.FreeTexture_callback FreeTexture;
-	/** C type : LoadTextureD3D11_Async_callback* */
 	public VR_IVRRenderModels_FnTable.LoadTextureD3D11_Async_callback LoadTextureD3D11_Async;
-	/** C type : FreeTextureD3D11_callback* */
 	public VR_IVRRenderModels_FnTable.LoadIntoTextureD3D11_Async_callback LoadIntoTextureD3D11_Async;
 	public VR_IVRRenderModels_FnTable.FreeTextureD3D11_callback FreeTextureD3D11;
-	/** C type : GetRenderModelName_callback* */
 	public VR_IVRRenderModels_FnTable.GetRenderModelName_callback GetRenderModelName;
-	/** C type : GetRenderModelCount_callback* */
 	public VR_IVRRenderModels_FnTable.GetRenderModelCount_callback GetRenderModelCount;
-	/** C type : GetComponentCount_callback* */
 	public VR_IVRRenderModels_FnTable.GetComponentCount_callback GetComponentCount;
-	/** C type : GetComponentName_callback* */
 	public VR_IVRRenderModels_FnTable.GetComponentName_callback GetComponentName;
-	/** C type : GetComponentButtonMask_callback* */
 	public VR_IVRRenderModels_FnTable.GetComponentButtonMask_callback GetComponentButtonMask;
-	/** C type : GetComponentRenderModelName_callback* */
 	public VR_IVRRenderModels_FnTable.GetComponentRenderModelName_callback GetComponentRenderModelName;
-	/** C type : GetComponentState_callback* */
 	public VR_IVRRenderModels_FnTable.GetComponentState_callback GetComponentState;
-	/** C type : RenderModelHasComponent_callback* */
 	public VR_IVRRenderModels_FnTable.RenderModelHasComponent_callback RenderModelHasComponent;
 	public VR_IVRRenderModels_FnTable.GetRenderModelThumbnailURL_callback GetRenderModelThumbnailURL;
-	/** C type : GetRenderModelOriginalPath_callback* */
 	public VR_IVRRenderModels_FnTable.GetRenderModelOriginalPath_callback GetRenderModelOriginalPath;
-	/** C type : GetRenderModelErrorNameFromEnum_callback* */
 	public VR_IVRRenderModels_FnTable.GetRenderModelErrorNameFromEnum_callback GetRenderModelErrorNameFromEnum;
 	public interface LoadRenderModel_Async_callback extends Callback {
 		int apply(Pointer pchRenderModelName, PointerByReference ppRenderModel);

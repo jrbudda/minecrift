@@ -98,7 +98,7 @@
  import net.minecraft.util.MathHelper;
  import net.minecraft.util.MouseFilter;
  import net.minecraft.util.MovingObjectPosition;
-@@ -61,2593 +104,5051 @@
+@@ -61,2593 +104,5076 @@
  import net.minecraft.world.World;
  import net.minecraft.world.WorldProvider;
  import net.minecraft.world.biome.BiomeGenBase;
@@ -1667,36 +1667,49 @@
 +		}
 +		
 +		
-+		if(mc.vrSettings.displayMirrorMode == mc.vrSettings.MIRROR_MIXED_REALITY){
-+			//render the camera
-+			GL11.glMatrixMode(GL11.GL_PROJECTION);
-+			GL11.glPushMatrix();
-+			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-+			GL11.glPushMatrix();
-+				setupCameraTransform(par1, 0);
-+			
-+				Vec3 cam = getEyeRenderPos(renderPass.Third);
-+				
-+				Vec3 o = getEyeRenderPos(renderPass.Center );
-+				
-+				Vec3 pos = o.subtract(cam).addVector(0, 0.02, 0);
-+				
-+				GL11.glTranslated(pos.xCoord, pos.yCoord, pos.zCoord);
-+				
-+				GL11.glRotatef(-mc.vrSettings.vrFixedCamrotRoll, 0.0F, 0.0F, 1.0F);
-+				GL11.glRotatef(-mc.vrSettings.vrFixedCamrotYaw + mc.vrSettings.vrWorldRotation, 0.0F, 1.0F, 0.0F);
-+				GL11.glRotatef(mc.vrSettings.vrFixedCamrotPitch, 1.0F, 0.0F, 0.0F);
-+				
-+				setupPolyRendering(true);
-+					renderDebugAxes(0, 0, 0, 0.08f * mc.vrPlayer.worldScale); //TODO: camera model?
-+				setupPolyRendering(false);
++			if(mc.vrSettings.displayMirrorMode == mc.vrSettings.MIRROR_MIXED_REALITY && (mc.currentPass == renderPass.Left || mc.currentPass == renderPass.Right)){
++				//render the camera
++				GL11.glMatrixMode(GL11.GL_PROJECTION);
++				GL11.glPushMatrix();
++				GL11.glMatrixMode(GL11.GL_MODELVIEW);
++				GL11.glPushMatrix();
++
++					setupCameraTransform(par1, 0);
++					
++					//TODO: Techjar fix plz.
++//					if (MCOpenVR.mrMovingCamActive) {
++//						Vec3d cam = new Vec3d(MCOpenVR.mrControllerPos.xCoord * mc.vrPlayer.interpolatedWorldScale, MCOpenVR.mrControllerPos.yCoord * mc.vrPlayer.interpolatedWorldScale, MCOpenVR.mrControllerPos.zCoord * mc.vrPlayer.interpolatedWorldScale);
++//						cam = cam.rotateYaw(mc.vrPlayer.worldRotationRadians);
++//						cam = interPolatedRoomOrigin.addVector(cam.xCoord, cam.yCoord, cam.zCoord);
++//						Vec3d o = getEyeRenderPos(renderPass.Center);
++//						Vec3d pos = cam.subtract(o).addVector(0, 0.02, 0);
++//
++//						GL11.glTranslated(pos.xCoord, pos.yCoord, pos.zCoord);
++//						GL11.glRotatef(-mc.vrSettings.vrFixedCamrotYaw, 0.0F, 1.0F, 0.0F);
++//						GL11.glRotatef(mc.vrSettings.vrFixedCamrotPitch, 1.0F, 0.0F, 0.0F);
++//						GL11.glRotatef(mc.vrSettings.vrFixedCamrotRoll, 0.0F, 0.0F, 1.0F);
++//						GL11.glTranslatef(mc.vrSettings.mrMovingCamOffsetX * mc.vrPlayer.interpolatedWorldScale, mc.vrSettings.mrMovingCamOffsetY * mc.vrPlayer.interpolatedWorldScale, mc.vrSettings.mrMovingCamOffsetZ * mc.vrPlayer.interpolatedWorldScale);
++//					} else {
++//						Vec3d cam = getEyeRenderPos(renderPass.Third);
++//						Vec3d o = getEyeRenderPos(renderPass.Center);
++//						Vec3d pos = cam.subtract(o).addVector(0, 0.02, 0);
++//						
++//						GL11.glTranslated(pos.xCoord, pos.yCoord, pos.zCoord);
++//						GL11.glRotatef(-mc.vrSettings.vrFixedCamrotRoll, 0.0F, 0.0F, 1.0F);
++//						GL11.glRotatef(mc.vrSettings.vrFixedCamrotPitch, 1.0F, 0.0F, 0.0F);
++//						GL11.glRotatef(-mc.vrSettings.vrFixedCamrotYaw + mc.vrSettings.vrWorldRotation, 0.0F, 1.0F, 0.0F);
++//					}
++					
++					setupPolyRendering(true);
++						renderDebugAxes(0, 0, 0, 0.08f * mc.vrPlayer.worldScale); //TODO: camera model?
++					setupPolyRendering(false);
 +					
 +				GL11.glMatrixMode(GL11.GL_PROJECTION);
 +				GL11.glPopMatrix();
 +				GL11.glMatrixMode(GL11.GL_MODELVIEW);
 +				GL11.glPopMatrix();
-+			
-+		}
++				
++			}
 +		
 +		if (shadersMod) {
 +			//does nothing at all.
@@ -2649,7 +2662,7 @@
 +			Reflector.callVoid(Reflector.ForgeHooksClient_dispatchRenderLast, new Object[] {rg, Float.valueOf(par1)});
 +		}          
 +
-+		eyeCollisionBlock = getEyeCollisionBlock(mc.currentPass);
++		eyeCollisionBlock = getEyeCollisionBlock(mc.currentPass, false);
 +
 +		eyeCollision = (eyeCollisionBlock != null && eyeCollisionBlock.isNormalCube());
 +		
@@ -3278,7 +3291,7 @@
 +
 +			//jrbudda override for cam pos           
 +			//Block var5 = ActiveRenderInfo.getBlockAtEntityViewpoint(this.mc.theWorld, var3, par2);
-+			Block var5 = getEyeCollisionBlock(this.mc.currentPass);
++			Block var5 = getEyeCollisionBlock(this.mc.currentPass, false);
 +
 +			if(var5==null) {
 +				Vec3 L = this.getEyeBlock(this.mc.currentPass);
@@ -4350,7 +4363,11 @@
 +		
 +			Vec3 eye =mc.entityRenderer.getEyeRenderPos(currentPass);
 +			if (mc.theWorld==null) {
-+				eye = mc.roomScale.getEyePos_Room(currentPass);
++				if (mc.currentPass != renderPass.Third) {
++					eye = mc.roomScale.getEyePos_Room(currentPass);
++				} else {
++					eye = Vec3.createVectorHelper(mc.vrSettings.vrFixedCamposX, mc.vrSettings.vrFixedCamposY, mc.vrSettings.vrFixedCamposZ);
++				}
 +			}
 +			Vector3f guipos = MCOpenVR.guiPos_World;
 +			Matrix4f guirot = MCOpenVR.guiRotationPose; 
@@ -4382,6 +4399,12 @@
 +
 +						Vec3 v = mc.vrPlayer.getHMDPos_World();
 +						Vec3 d = mc.vrPlayer.getHMDDir_World();
++						
++						if(mc.vrSettings.seated && mc.vrSettings.seatedHudAltMode){
++							d = mc.vrPlayer.getControllerDir_World(0);
++							max = Matrix4f.multiply(rot, MCOpenVR.getAimRotation(0)); 
++						}
++						
 +						guipos.x = (float) (v.xCoord + d.xCoord*mc.vrPlayer.worldScale);
 +						guipos.y = (float) (v.yCoord + d.yCoord*mc.vrPlayer.worldScale);
 +						guipos.z = (float) (v.zCoord + d.zCoord*mc.vrPlayer.worldScale);
@@ -4508,9 +4531,9 @@
 +			if (currentPass != renderPass.Third) {
 +					GL11.glMultMatrix(mc.roomScale.getHMDMatrix_World());
 +			} else {
++				GL11.glRotatef(mc.vrSettings.vrFixedCamrotRoll, 0.0F, 0.0F, 1.0F);
 +				GL11.glRotatef(mc.vrSettings.vrFixedCamrotPitch, 1.0F, 0.0F, 0.0F);
 +				GL11.glRotatef(180+mc.vrSettings.vrFixedCamrotYaw - mc.vrSettings.vrWorldRotation, 0.0F, 1.0F, 0.0F);
-+				GL11.glRotatef(mc.vrSettings.vrFixedCamrotRoll, 0.0F, 0.0F, 1.0F);
 +			}
 +
 +			GL11.glTranslatef((float) (guipos.x - eye.xCoord), (float)(guipos.y - eye.yCoord), (float)(guipos.z - eye.zCoord));
@@ -4536,15 +4559,20 @@
 +		Vec3 eye =mc.entityRenderer.getEyeRenderPos(currentPass);
 +		if (mc.theWorld==null) {
 +			eye = mc.roomScale.getEyePos_Room(currentPass);
++			if (mc.currentPass != renderPass.Third) {
++				eye = mc.roomScale.getEyePos_Room(currentPass);
++			} else {
++				eye = Vec3.createVectorHelper(mc.vrSettings.vrFixedCamposX, mc.vrSettings.vrFixedCamposY, mc.vrSettings.vrFixedCamposZ);
++			}
 +		}
 +		
 +		// counter head rotation
 +		if (currentPass != renderPass.Third) {
 +				GL11.glMultMatrix(mc.roomScale.getHMDMatrix_World());
 +		} else {
++			GL11.glRotatef(mc.vrSettings.vrFixedCamrotRoll, 0.0F, 0.0F, 1.0F);
 +			GL11.glRotatef(mc.vrSettings.vrFixedCamrotPitch, 1.0F, 0.0F, 0.0F);
 +			GL11.glRotatef(180+mc.vrSettings.vrFixedCamrotYaw - mc.vrSettings.vrWorldRotation, 0.0F, 1.0F, 0.0F);
-+			GL11.glRotatef(mc.vrSettings.vrFixedCamrotRoll, 0.0F, 0.0F, 1.0F);
 +		}
 +
 +		GL11.glTranslatef((float)(interPolatedRoomOrigin.xCoord - eye.xCoord), (float)(interPolatedRoomOrigin.yCoord - eye.yCoord), (float)(interPolatedRoomOrigin.zCoord - eye.zCoord));
@@ -4589,11 +4617,7 @@
 +						
 +						///JRBUDDA MAIN MENU ROOM            
 +						if(inMenuRoom){		
-+							if (mc.vrSettings.menuRoom == VRSettings.MAINMENU_JRBUDDA) {
-+								renderJrbuddasAwesomeMainMenuRoom();
-+							} else if (mc.vrSettings.menuRoom == VRSettings.MAINMENU_TECHJAR) {
 +								renderTechjarsAwesomeMainMenuRoom();
-+							}
 +						}
 +						
 +						GL11.glLoadIdentity();
@@ -5156,9 +5180,9 @@
 +				if (mc.currentPass != renderPass.Third) {
 +					GL11.glMultMatrix(mc.roomScale.getHMDMatrix_World());
 +				} else {
++					GL11.glRotatef(mc.vrSettings.vrFixedCamrotRoll, 0.0F, 0.0F, 1.0F);
 +					GL11.glRotatef(mc.vrSettings.vrFixedCamrotPitch, 1.0F, 0.0F, 0.0F);
 +					GL11.glRotatef(mc.vrSettings.vrFixedCamrotYaw - mc.vrSettings.vrWorldRotation, 0.0F, 1.0F, 0.0F);
-+					GL11.glRotatef(mc.vrSettings.vrFixedCamrotRoll, 0.0F, 0.0F, 1.0F);
 +				}
 +
 +				
@@ -5722,10 +5746,14 @@
 +	}
 +
 +	//checks around the eye position for an opaque block or water block so we can render fog and overlays for that eye
-+	public Block getEyeCollisionBlock(renderPass currentPass){
++	public Block getEyeCollisionBlock(renderPass currentPass, boolean c1){
 +		if(currentPass == renderPass.Third) return null;
-+		Vec3 exact = mc.roomScale.getEyePos_World(currentPass);
-+		
++		Vec3 exact;
++		if(c1) 
++			exact = mc.roomScale.getControllerPos_World(1);
++		else
++			exact = mc.roomScale.getEyePos_World(currentPass);
++
 +		int var2 = (int) Math.floor(exact.xCoord);
 +		int var3 = (int) Math.floor(exact.yCoord);
 +		int var4 = (int) Math.floor(exact.zCoord);
@@ -5790,9 +5818,7 @@
 +			GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f); //white crosshair, with blending
 +			float crossDepth =(float)crossVec.subtract(mc.roomScale.getControllerPos_World(0)).lengthVector();
 +			if (crossDepth > MAX_CROSSHAIR_DISTANCE) crossDepth = MAX_CROSSHAIR_DISTANCE;
-+			float depthscale = 0.4f + 0.6f*( (MAX_CROSSHAIR_DISTANCE - crossDepth) / MAX_CROSSHAIR_DISTANCE);
 +			float scale = (float) (0.15f* this.mc.vrSettings.crosshairScale * Math.sqrt(mc.vrPlayer.worldScale));
-+			scale/=(depthscale);
 +			GL11.glMatrixMode(GL11.GL_PROJECTION);
 +			GL11.glPushMatrix();
 +			GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -5801,15 +5827,14 @@
 +					GL11.glTranslatef(crossX, crossY, crossZ);
 +					GL11.glRotatef(-mc.vrPlayer.getControllerMainYaw_World(), 0.0F, 1.0F, 0.0F);
 +					GL11.glRotatef(-mc.roomScale.getControllerMainPitch_World(), 1.0F, 0.0F, 0.0F);
-+					if (false)
++					
++					if (this.mc.vrSettings.crosshairScalesWithDistance)
 +					{
-+						// VIVE START - adjust depth scaling to handle far crosshair positions
-+						scale = -0.05f;
-+						GL11.glScalef(scale, scale, scale); // VIVE
-+						// VIVE END - adjust depth scaling to handle far crosshair positions
++						float depthscale = .3f + 0.2f * crossDepth;
++						scale *=(depthscale);
 +					}
-+					else
-+						GL11.glScalef(-scale, -scale, scale);
++					
++					GL11.glScalef(scale, scale, scale);
 +					GL11.glDisable(GL11.GL_LIGHTING);
 +					
 +					if (!this.mc.vrSettings.useCrosshairOcclusion)	GL11.glDisable(GL11.GL_DEPTH_TEST);

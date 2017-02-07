@@ -1366,6 +1366,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
         forgePanel.setLayout( new BoxLayout(forgePanel, BoxLayout.X_AXIS));
         //Create forge: no/yes buttons
         useForge = new JCheckBox();
+		useForge.setSelected(true); //and on that day, hundreds of clicks were saved.
         AbstractAction actf = new updateActionF();
         actf.putValue(AbstractAction.NAME, "Install Vivecraft with Forge " + FORGE_VERSION);
         useForge.setAction(actf);

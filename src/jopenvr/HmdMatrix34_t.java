@@ -9,10 +9,7 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class HmdMatrix34_t extends Structure {
-	/**
-	 * float[3][4]<br>
-	 * C type : float[3][4]
-	 */
+	/** float[3][4] */
 	public float[] m = new float[((3) * (4))];
 	public HmdMatrix34_t() {
 		super();
@@ -20,10 +17,6 @@ public class HmdMatrix34_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("m");
 	}
-	/**
-	 * @param m float[3][4]<br>
-	 * C type : float[3][4]
-	 */
 	public HmdMatrix34_t(float m[]) {
 		super();
 		if ((m.length != this.m.length)) 

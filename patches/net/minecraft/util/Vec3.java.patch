@@ -39,6 +39,6 @@
 +        double var6 = this.yCoord;
 +        double var8 = this.zCoord * (double)var2 - this.xCoord * (double)var3;
 +        return new Vec3(var4, var6, var8);
-+	}    
-+    
++	}
++
  }

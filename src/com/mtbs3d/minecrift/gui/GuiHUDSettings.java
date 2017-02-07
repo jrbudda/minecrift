@@ -23,7 +23,6 @@ public class GuiHUDSettings extends BaseGuiSettings
             VRSettings.VrOptions.HUD_OPACITY,
             VRSettings.VrOptions.RENDER_MENU_BACKGROUND,
             VRSettings.VrOptions.TOUCH_HOTBAR,
-            VRSettings.VrOptions.MAIN_MENU_ROOM,
     };
 
     public GuiHUDSettings(GuiScreen guiScreen, VRSettings guivrSettings) {
@@ -126,7 +125,6 @@ public class GuiHUDSettings extends BaseGuiSettings
                 this.guivrSettings.menuBackground = false;
                 this.guivrSettings.vrHudLockMode = guivrSettings.HUD_LOCK_HAND;
                 this.guivrSettings.hudOcclusion = true;
-                this.guivrSettings.menuRoom = 1;
 
                 Minecraft.getMinecraft().vrSettings.saveOptions();
                 this.reinit = true;
@@ -206,12 +204,6 @@ public class GuiHUDSettings extends BaseGuiSettings
                     return new String[] {
                             "If enabled allow you to touch the hotbar with",
                             "your main hand to select an item."
-                    };
-                case MAIN_MENU_ROOM:
-                    return new String[] {
-                            "Choose which main menu room to use.",
-                            "  OLD: The original dirt box.",
-                            "  NEW: The new outside menu area."
                     };
                 default:
                     return null;

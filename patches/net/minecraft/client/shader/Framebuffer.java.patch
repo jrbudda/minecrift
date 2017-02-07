@@ -105,27 +105,21 @@
          }
          else
          {
-@@ -50,9 +103,11 @@
+@@ -50,8 +103,10 @@
                  this.deleteFramebuffer();
              }
  
 -            this.createFramebuffer(p_147613_1_, p_147613_2_);
 -            this.checkFramebufferComplete();
--            OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, 0);
 +            this.createFramebuffer(width, height, textureId);
 +			/** MINECRIFT *
 +			this.checkFramebufferComplete();
 +			** END MINECRIFT */
-+            OpenGlHelper.glBinDframeBuffer(OpenGlHelper.glFrameBuffer, 0);
+             OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, 0);
          }
      }
- 
-@@ -65,31 +120,40 @@
- 
-             if (this.depthBuffer > -1)
-             {
--                OpenGlHelper.func_153184_g(this.depthBuffer);
-+                OpenGlHelper.glDeleteRenderBuffer(this.depthBuffer);
+@@ -68,11 +123,13 @@
+                 OpenGlHelper.func_153184_g(this.depthBuffer);
                  this.depthBuffer = -1;
              }
 -
@@ -143,13 +137,7 @@
              }
  
              if (this.framebufferObject > -1)
-             {
--                OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, 0);
--                OpenGlHelper.func_153174_h(this.framebufferObject);
-+                OpenGlHelper.glBinDframeBuffer(OpenGlHelper.glFrameBuffer, 0);
-+                OpenGlHelper.glDeleteFramebuffers(this.framebufferObject);
-                 this.framebufferObject = -1;
-             }
+@@ -84,12 +141,19 @@
          }
      }
  
@@ -174,14 +162,14 @@
  
          if (!OpenGlHelper.isFramebufferEnabled())
          {
-@@ -97,68 +161,119 @@
+@@ -97,43 +161,88 @@
          }
          else
          {
 -            this.framebufferObject = OpenGlHelper.func_153165_e();
 -            this.framebufferTexture = TextureUtil.glGenTextures();
 +			/** MINECRIFT */
-+            this.framebufferObject = OpenGlHelper.glGenFramebuffer();      // GL30.glGenFramebuffers()
++            this.framebufferObject = OpenGlHelper.func_153165_e();      // GL30.glGenFramebuffers()
 +            if (textureId == NO_TEXTURE_ID) {
 +                // generate texture
 +                this.framebufferTextures[0] = TextureUtil.glGenTextures();
@@ -224,8 +212,8 @@
 +                genMipMaps();                // TODO: Check GLContext capabilities
 +            }
 +
-+            OpenGlHelper.glBinDframeBuffer(OpenGlHelper.glFrameBuffer, this.framebufferObject);   // GL30.glBindFramebuffer
-+            OpenGlHelper.glFrameBufferTexture2D(OpenGlHelper.glFrameBuffer, OpenGlHelper.glColorAttachment0, this.textureType, this.framebufferTextures[0], 0);    // GL30.glFramebufferTexture2D
++            OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, this.framebufferObject);   // GL30.glBindFramebuffer
++            OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, this.textureType, this.framebufferTextures[0], 0);    // GL30.glFramebufferTexture2D
  
              if (this.useDepth)
              {
@@ -282,31 +270,7 @@
          }
      }
  
-     public void checkFramebufferComplete()
-     {
--        int var1 = OpenGlHelper.func_153167_i(OpenGlHelper.field_153198_e);
-+        int var1 = OpenGlHelper.glCheckFrameBufferStatus(OpenGlHelper.glFrameBuffer);
- 
--        if (var1 != OpenGlHelper.field_153202_i)
-+        if (var1 != OpenGlHelper.glFramebuffercomplete)
-         {
--            if (var1 == OpenGlHelper.field_153203_j)
-+            if (var1 == OpenGlHelper.glIncompleteAttachment)
-             {
-                 throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-             }
--            else if (var1 == OpenGlHelper.field_153204_k)
-+            else if (var1 == OpenGlHelper.glMissingAttachment)
-             {
-                 throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-             }
--            else if (var1 == OpenGlHelper.field_153205_l)
-+            else if (var1 == OpenGlHelper.glIncompleteDrawBuffer)
-             {
-                 throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
-             }
--            else if (var1 == OpenGlHelper.field_153206_m)
-+            else if (var1 == OpenGlHelper.incompleteReadBuffer)
+@@ -159,6 +268,12 @@
              {
                  throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
              }
@@ -348,23 +312,13 @@
      {
          if (OpenGlHelper.isFramebufferEnabled())
          {
--            OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, this.framebufferObject);
-+            OpenGlHelper.glBinDframeBuffer(OpenGlHelper.glFrameBuffer, this.framebufferObject);
+             OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, this.framebufferObject);
  
 -            if (p_147610_1_)
 +            if (setViewport)
              {
                  GL11.glViewport(0, 0, this.framebufferWidth, this.framebufferHeight);
              }
-@@ -199,7 +318,7 @@
-     {
-         if (OpenGlHelper.isFramebufferEnabled())
-         {
--            OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, 0);
-+            OpenGlHelper.glBinDframeBuffer(OpenGlHelper.glFrameBuffer, 0);
-         }
-     }
- 
 @@ -211,8 +330,15 @@
          this.framebufferColor[3] = p_147604_4_;
      }
@@ -492,12 +446,12 @@
 +
 +	public void attachColorTex(int id)
 +    {
-+            OpenGlHelper.glFrameBufferTexture2D(OpenGlHelper.glFrameBuffer, OpenGlHelper.glColorAttachment0, this.textureType, id, 0);    // GL30.glFramebufferTexture2D
++            OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, this.textureType, id, 0);    // GL30.glFramebufferTexture2D
 +	}
 +
 +    public int getFramebufferType()
 +    {
-+        return OpenGlHelper.glFrameBuffer; // GL_FRAMEBUFFER (draw framebuffer)
++        return OpenGlHelper.field_153198_e; // GL_FRAMEBUFFER (draw framebuffer)
 +    }
 +
 +    public int getFramebufferId()

@@ -11,9 +11,7 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class VR_IVRNotifications_FnTable extends Structure {
-	/** C type : CreateNotification_callback* */
 	public VR_IVRNotifications_FnTable.CreateNotification_callback CreateNotification;
-	/** C type : RemoveNotification_callback* */
 	public VR_IVRNotifications_FnTable.RemoveNotification_callback RemoveNotification;
 	public interface CreateNotification_callback extends Callback {
 		int apply(long ulOverlayHandle, long ulUserValue, int type, Pointer pchText, int style, NotificationBitmap_t pImage, IntByReference pNotificationId);
@@ -27,10 +25,6 @@ public class VR_IVRNotifications_FnTable extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("CreateNotification", "RemoveNotification");
 	}
-	/**
-	 * @param CreateNotification C type : CreateNotification_callback*<br>
-	 * @param RemoveNotification C type : RemoveNotification_callback*
-	 */
 	public VR_IVRNotifications_FnTable(VR_IVRNotifications_FnTable.CreateNotification_callback CreateNotification, VR_IVRNotifications_FnTable.RemoveNotification_callback RemoveNotification) {
 		super();
 		this.CreateNotification = CreateNotification;

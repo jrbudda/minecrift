@@ -34,11 +34,13 @@ def main(mcp_dir, patch_dir = "patches", orig_dir = ".minecraft_orig"):
     new_src_dir    = os.path.join( base_dir , "src" )
     patch_base_dir = os.path.join( base_dir , patch_dir )
     patchsrc_base_dir = os.path.join( base_dir , "patchsrc" )
+    assets_base_dir    = os.path.join(base_dir, "assets", "vivecraft" )
 
     try:
         shutil.rmtree( new_src_dir )
         shutil.rmtree( patch_base_dir )
         shutil.rmtree( patchsrc_base_dir )
+        shutil.rmtree( assets_base_dir )
     except OSError as e:
         pass
     
@@ -51,7 +53,11 @@ def main(mcp_dir, patch_dir = "patches", orig_dir = ".minecraft_orig"):
     if not os.path.exists( patchsrc_base_dir ):
         os.mkdir( patchsrc_base_dir )
 
+    if not os.path.exists( assets_base_dir ):
+        os.makedirs( assets_base_dir )
+
     mod_src_dir = os.path.join( mcp_dir , "src", "minecraft" )
+    assets_src_dir = os.path.join( mcp_dir , "src", "assets" )
     org_src_dir = os.path.join( mcp_dir , "src", orig_dir )
 
     for src_dir, dirs, files in os.walk(mod_src_dir):
@@ -91,10 +97,26 @@ def main(mcp_dir, patch_dir = "patches", orig_dir = ".minecraft_orig"):
                 if os.path.exists( new_file ):
                     os.remove( new_file )
                 shutil.copy(mod_file, new_dir)
+
+    for asset_dir, dirs, files in os.walk(assets_src_dir):
+        pkg       = os.path.relpath(asset_dir,assets_src_dir)
+        new_dir   = os.path.join( assets_base_dir,    pkg )
+        if not os.path.exists(new_dir):
+            os.mkdir(new_dir)
+        for file_ in files:              
+            new_file = os.path.join(new_dir, file_)
+            mod_file = os.path.join(asset_dir, file_)
+            print "Copy asset %s" % (mod_file)
+
+            #new class file, just replace
+            if os.path.exists( new_file ):
+                os.remove( new_file )
+            shutil.copy(mod_file, new_dir)
     
     removeEmptyFolders(patch_base_dir)
     removeEmptyFolders(new_src_dir)
     removeEmptyFolders(patchsrc_base_dir)
+    removeEmptyFolders(assets_base_dir)
 
 def removeEmptyFolders(path):
     if not os.path.isdir(path):

@@ -4,6 +4,7 @@ import com.mtbs3d.minecrift.api.IStereoProvider;
 import com.mtbs3d.minecrift.render.RenderConfigException;
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
 
 import de.fruitfly.ovr.enums.EyeType;
 import de.fruitfly.ovr.structs.*;
@@ -35,18 +36,17 @@ public class OpenVRStereoRenderer implements IStereoProvider
 	@Override
 	public RenderTextureInfo getRenderTextureSizes(float renderScaleFactor)
 	{
-		IntBuffer rtx = IntBuffer.allocate(1);
-		IntBuffer rty = IntBuffer.allocate(1);
+		IntByReference rtx = new IntByReference();
+		IntByReference rty = new IntByReference();
 		MCOpenVR.vrsystem.GetRecommendedRenderTargetSize.apply(rtx, rty);
 
 		RenderTextureInfo info = new RenderTextureInfo();
-		info.HmdNativeResolution.w = rtx.get(0);
-		info.HmdNativeResolution.h = rty.get(0);
-		info.LeftFovTextureResolution.w = (int) (rtx.get(0) );
-		info.LeftFovTextureResolution.h = (int) (rty.get(0) );
-		info.RightFovTextureResolution.w = (int) (rtx.get(0) );
-		info.RightFovTextureResolution.h = (int) (rty.get(0) );
-
+		info.HmdNativeResolution.w = rtx.getValue();
+		info.HmdNativeResolution.h = rtx.getValue();
+		info.LeftFovTextureResolution.w = (int) (rtx.getValue());
+		info.LeftFovTextureResolution.h = (int) (rtx.getValue());
+		info.RightFovTextureResolution.w = (int) (rtx.getValue());
+		info.RightFovTextureResolution.h = (int) (rtx.getValue());
 		if ( info.LeftFovTextureResolution.w % 2 != 0) info.LeftFovTextureResolution.w++;
 		if ( info.LeftFovTextureResolution.h % 2 != 0) info.LeftFovTextureResolution.w++;
 		if ( info.RightFovTextureResolution.w % 2 != 0) info.LeftFovTextureResolution.w++;
@@ -57,7 +57,7 @@ public class OpenVRStereoRenderer implements IStereoProvider
 
 
 		for (int i = 0; i < 2; i++) {
-			hiddenMeshes[i] = MCOpenVR.vrsystem.GetHiddenAreaMesh.apply(i, 0);
+			hiddenMeshes[i] = MCOpenVR.vrsystem.GetHiddenAreaMesh.apply(i,0);
 			hiddenMeshes[i].read();
 			int tc = hiddenMeshes[i].unTriangleCount;
 			if(tc >0){
@@ -86,11 +86,11 @@ public class OpenVRStereoRenderer implements IStereoProvider
 	{
 		if ( eyeType == 0 )
 		{
-			HmdMatrix44_t mat = MCOpenVR.vrsystem.GetProjectionMatrix.apply(JOpenVRLibrary.EVREye.EVREye_Eye_Left, nearClip, farClip, JOpenVRLibrary.EGraphicsAPIConvention.EGraphicsAPIConvention_API_OpenGL);
+			HmdMatrix44_t mat = MCOpenVR.vrsystem.GetProjectionMatrix.apply(JOpenVRLibrary.EVREye.EVREye_Eye_Left, nearClip, farClip);
 			MCOpenVR.hmdProjectionLeftEye = new Matrix4f();
 			return OpenVRUtil.convertSteamVRMatrix4ToMatrix4f(mat, MCOpenVR.hmdProjectionLeftEye);
 		}else{
-			HmdMatrix44_t mat = MCOpenVR.vrsystem.GetProjectionMatrix.apply(JOpenVRLibrary.EVREye.EVREye_Eye_Right, nearClip, farClip, JOpenVRLibrary.EGraphicsAPIConvention.EGraphicsAPIConvention_API_OpenGL);
+			HmdMatrix44_t mat = MCOpenVR.vrsystem.GetProjectionMatrix.apply(JOpenVRLibrary.EVREye.EVREye_Eye_Right, nearClip, farClip);
 			MCOpenVR.hmdProjectionRightEye = new Matrix4f();
 			return OpenVRUtil.convertSteamVRMatrix4ToMatrix4f(mat, MCOpenVR.hmdProjectionRightEye);
 		}
@@ -166,9 +166,9 @@ public class OpenVRStereoRenderer implements IStereoProvider
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, lwidth, lheight, 0, GL11.GL_RGBA, GL11.GL_INT, (java.nio.ByteBuffer) null);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, boundTextureId);
 
-		MCOpenVR.texType0.handle = LeftEyeTextureId;
+		MCOpenVR.texType0.handle= Pointer.createConstant(LeftEyeTextureId);
 		MCOpenVR.texType0.eColorSpace = JOpenVRLibrary.EColorSpace.EColorSpace_ColorSpace_Gamma;
-		MCOpenVR.texType0.eType = JOpenVRLibrary.EGraphicsAPIConvention.EGraphicsAPIConvention_API_OpenGL;
+		MCOpenVR.texType0.eType = JOpenVRLibrary.ETextureType.ETextureType_TextureType_OpenGL;
 		MCOpenVR.texType0.write();
 		
 		// generate right eye texture
@@ -181,9 +181,9 @@ public class OpenVRStereoRenderer implements IStereoProvider
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, lwidth, lheight, 0, GL11.GL_RGBA, GL11.GL_INT, (java.nio.ByteBuffer) null);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, boundTextureId);
 
-		MCOpenVR.texType1.handle = RightEyeTextureId;
+		MCOpenVR.texType1.handle=Pointer.createConstant(RightEyeTextureId);
 		MCOpenVR.texType1.eColorSpace = JOpenVRLibrary.EColorSpace.EColorSpace_ColorSpace_Gamma;
-		MCOpenVR.texType1.eType = JOpenVRLibrary.EGraphicsAPIConvention.EGraphicsAPIConvention_API_OpenGL;
+		MCOpenVR.texType1.eType = JOpenVRLibrary.ETextureType.ETextureType_TextureType_OpenGL;
 		MCOpenVR.texType1.write();
 
 		RenderTextureSet textureSet = new RenderTextureSet();
@@ -229,7 +229,7 @@ public class OpenVRStereoRenderer implements IStereoProvider
 	}
 
 	
-	public String getCompostiorError(int code){
+	public static String getCompostiorError(int code){
 		switch (code){
 		case EVRCompositorError.EVRCompositorError_VRCompositorError_DoNotHaveFocus:
 			return "DoesNotHaveFocus";

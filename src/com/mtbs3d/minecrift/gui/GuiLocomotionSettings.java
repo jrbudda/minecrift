@@ -13,14 +13,14 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
     {
             VRSettings.VrOptions.WEAPON_COLLISION,
             VRSettings.VrOptions.REALISTIC_JUMP,
+            VRSettings.VrOptions.ANIMAL_TOUCHING,
             VRSettings.VrOptions.ALLOW_MODE_SWITCH,
             VRSettings.VrOptions.REALISTIC_SNEAK,
             VRSettings.VrOptions.BCB_ON,
             VRSettings.VrOptions.REALISTIC_CLIMB,
             VRSettings.VrOptions.WALK_MULTIPLIER,
             VRSettings.VrOptions.REALISTIC_SWIM,
-            VRSettings.VrOptions.DUMMY,
-            VRSettings.VrOptions.REALISTIC_ROW,
+            VRSettings.VrOptions.DUMMY
     };
 
     static VRSettings.VrOptions[] teleportSettings = new VRSettings.VrOptions[]
@@ -33,6 +33,7 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
     static VRSettings.VrOptions[] freeMoveSettings = new VRSettings.VrOptions[]
     {
     		VRSettings.VrOptions.FREEMOVE_MODE,
+            VRSettings.VrOptions.WALK_UP_BLOCKS,
             VRSettings.VrOptions.MOVEMENT_MULTIPLIER,
             VRSettings.VrOptions.INERTIA_FACTOR,
             VRSettings.VrOptions.FOV_REDUCTION
@@ -56,6 +57,7 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
         GuiSmallButtonEx mode = new GuiSmallButtonEx(VRSettings.VrOptions.MOVE_MODE.returnEnumOrdinal(), this.width / 2 - 68, this.height / 6 + 102,VRSettings.VrOptions.MOVE_MODE, this.guivrSettings.getKeyBinding(VRSettings.VrOptions.MOVE_MODE));
         mode.setEventHandler(this);
         this.buttonList.add(mode);
+        mc.vrSettings.vrFreeMove = mc.vrPlayer.getFreeMoveMode();
         if(mc.vrSettings.vrFreeMove)
         	addButtons(freeMoveSettings,134);
         else
@@ -179,6 +181,7 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                 vr.realisticRowEnabled = true;
                 vr.vehicleRotation = false;
                 vr.useFOVReduction = false;
+                vr.animaltouching = true;
                 //end jrbudda
                 
                 Minecraft.getMinecraft().gameSettings.viewBobbing = true;
@@ -239,6 +242,12 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                             "if on a Multiplayer server!!",
                             "Defaults to 0.33 (1.0 is standard Minecraft movement",
                             "speed)."
+                    } ;
+                case ANIMAL_TOUCHING:
+                    return new String[] {
+                            "If enabled, touching a passive mob (animal) without a",
+                            "weapon will right-click (interact) instead of attacking.",
+                            "Turn off for Piggy Slapping, Josh.",
                     } ;
                 case WALK_UP_BLOCKS:
                     return new String[] {

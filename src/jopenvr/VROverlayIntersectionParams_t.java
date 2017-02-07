@@ -9,14 +9,9 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class VROverlayIntersectionParams_t extends Structure {
-	/** C type : HmdVector3_t */
 	public HmdVector3_t vSource;
-	/** C type : HmdVector3_t */
 	public HmdVector3_t vDirection;
-	/**
-	 * @see ETrackingUniverseOrigin<br>
-	 * C type : ETrackingUniverseOrigin
-	 */
+	/** @see ETrackingUniverseOrigin */
 	public int eOrigin;
 	public VROverlayIntersectionParams_t() {
 		super();
@@ -24,12 +19,6 @@ public class VROverlayIntersectionParams_t extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("vSource", "vDirection", "eOrigin");
 	}
-	/**
-	 * @param vSource C type : HmdVector3_t<br>
-	 * @param vDirection C type : HmdVector3_t<br>
-	 * @param eOrigin @see ETrackingUniverseOrigin<br>
-	 * C type : ETrackingUniverseOrigin
-	 */
 	public VROverlayIntersectionParams_t(HmdVector3_t vSource, HmdVector3_t vDirection, int eOrigin) {
 		super();
 		this.vSource = vSource;

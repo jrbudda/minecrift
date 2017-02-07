@@ -48,6 +48,15 @@
      public boolean fancyGraphics = true;
  
      /** Smooth Lighting */
+@@ -113,7 +119,7 @@
+     public boolean ofStars = true;
+     public boolean ofSunMoon = true;
+     public int ofVignette = 0;
+-    public int ofChunkUpdates = 1;
++    public int ofChunkUpdates = 5;
+     public int ofChunkLoading = 0;
+     public boolean ofChunkUpdatesDynamic = false;
+     public int ofTime = 0;
 @@ -277,96 +283,41 @@
  
      public GameSettings(Minecraft par1Minecraft, File par2File)
@@ -179,6 +188,15 @@
  
              this.updateVSync();
          }
+@@ -905,7 +858,7 @@
+         {
+             ++this.ofChunkUpdates;
+ 
+-            if (this.ofChunkUpdates > 5)
++            if (this.ofChunkUpdates > 15)
+             {
+                 this.ofChunkUpdates = 1;
+             }
 @@ -1026,15 +979,9 @@
  
          if (par1EnumOptions == GameSettings.Options.FAST_RENDER)
@@ -360,6 +378,15 @@
              String s = "";
  
              while ((s = bufferedreader.readLine()) != null)
+@@ -2670,7 +2647,7 @@
+                     if (exception1[0].equals("ofChunkUpdates") && exception1.length >= 2)
+                     {
+                         this.ofChunkUpdates = Integer.valueOf(exception1[1]).intValue();
+-                        this.ofChunkUpdates = Config.limit(this.ofChunkUpdates, 1, 5);
++                        this.ofChunkUpdates = Config.limit(this.ofChunkUpdates, 1, 15);
+                     }
+ 
+                     if (exception1[0].equals("ofChunkLoading") && exception1.length >= 2)
 @@ -2802,11 +2779,20 @@
          }
      }
@@ -398,6 +425,15 @@
          this.renderDistanceChunks = 8;
          this.viewBobbing = true;
          this.anaglyph = false;
+@@ -2932,7 +2925,7 @@
+         this.ofStars = true;
+         this.ofSunMoon = true;
+         this.ofVignette = 0;
+-        this.ofChunkUpdates = 1;
++        this.ofChunkUpdates = 5;
+         this.ofChunkLoading = 0;
+         this.ofChunkUpdatesDynamic = false;
+         this.ofTime = 0;
 @@ -2966,17 +2959,39 @@
          this.ofAnimatedTerrain = true;
          this.ofAnimatedItems = true;

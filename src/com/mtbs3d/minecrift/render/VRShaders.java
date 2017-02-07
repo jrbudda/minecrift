@@ -32,6 +32,7 @@ public class VRShaders {
 	public static int _DepthMask_viewMatrix = -1;
 	public static int _DepthMask_passUniform = -1;
 	public static int _DepthMask_keyColorUniform = -1;
+	public static int _DepthMask_alphaModeUniform = -1;
 
 	public static int _FOVReduction_Enabled = -1;
 	public static int _FOVReduction_RadiusUniform = -1;
@@ -57,8 +58,11 @@ public class VRShaders {
 		try {
 			if(is==null){
 				//uhh debugging?
-				Path p5 = Paths.get(System.getProperty("user.dir")); // ..\mcpxxx\jars\
-				p5 = p5.getParent().getParent().resolve("assets/vivecraft/shaders/" + name);
+				Path dir = Paths.get(System.getProperty("user.dir")); // ..\mcpxxx\jars\
+				Path p5 = dir.getParent().resolve("src/assets/shaders/" + name);
+				if (!p5.toFile().exists()) {
+					p5 = dir.getParent().getParent().resolve("assets/vivecraft/shaders/" + name);
+				}
 				is = new FileInputStream(p5.toFile());
 			}
 			InputStreamReader in = new InputStreamReader(is);
@@ -97,6 +101,7 @@ public class VRShaders {
 		_DepthMask_viewMatrix = ARBShaderObjects.glGetUniformLocationARB(_DepthMask_shaderProgramId, "viewMatrix");
 		_DepthMask_passUniform = ARBShaderObjects.glGetUniformLocationARB(_DepthMask_shaderProgramId, "pass");
 		_DepthMask_keyColorUniform = ARBShaderObjects.glGetUniformLocationARB(_DepthMask_shaderProgramId, "keyColor");
+		_DepthMask_alphaModeUniform = ARBShaderObjects.glGetUniformLocationARB(_DepthMask_shaderProgramId, "alphaMode");
 		
 	}
 	
