@@ -59,7 +59,8 @@ def applychanges(mcp_dir, patch_dir = "patches", applyPatches=True, backup = Tru
     mod_src_dir = os.path.join(mcp_dir, "src","minecraft")
     mod_bak_dir = os.path.join(mcp_dir, "src","minecraft-bak")
     org_src_dir = os.path.join(mcp_dir, "src",origDir)
-    
+    mod_ass_dir = os.path.join(mcp_dir, "src","assets")
+
     if backup and os.path.exists(mod_src_dir):
         print("Backing up src/minecraft to src/minecraft-bak")
         shutil.rmtree( mod_bak_dir, True )
@@ -75,7 +76,8 @@ def applychanges(mcp_dir, patch_dir = "patches", applyPatches=True, backup = Tru
     if mergeInNew:
         #merge in the new classes
         merge_tree( os.path.join( base_dir, "src" ), mod_src_dir )
-    
+        merge_tree( os.path.join( base_dir, "assets", "vivecraft"), mod_ass_dir )
+
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option('-m', '--mcp-dir', action='store', dest='mcp_dir', help='Path to MCP to use', default=None)
