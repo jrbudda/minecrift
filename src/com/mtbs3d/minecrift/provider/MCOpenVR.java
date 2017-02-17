@@ -242,7 +242,7 @@ public static boolean mrMovingCamActive;
 	{
 		super();
 
-		for (int c=0;c<2;c++)
+		for (int c=0;c<3;c++)
 		{
 			aimSource[c] = Vec3.createVectorHelper(0.0D, 0.0D, 0.0D);
 			for (int sample = 0; sample < 5; sample++)
@@ -334,7 +334,7 @@ public static boolean mrMovingCamActive;
 			initializeJOpenVR();
 			initOpenVRCompositor(true) ;
 			initOpenVROverlay() ;	
-			initOpenVROSettings();
+			initOpenVRSettings();
 			initOpenVRRenderModels();
 			initOpenVRChaperone();
 		} catch (Exception e) {
@@ -374,7 +374,7 @@ public static boolean mrMovingCamActive;
 	final int rotationIncrement = 0;
 
 	public static boolean isError(){
-		return hmdErrorStore.getValue() != 0 && hmdErrorStoreBuf.get(0) != 0;
+		return hmdErrorStore.getValue() != 0 || hmdErrorStoreBuf.get(0) != 0;
 	}
 	
 	public static int getError(){
@@ -474,12 +474,17 @@ public static boolean mrMovingCamActive;
 			vrOverlay.read();					
 			System.out.println("OpenVR Overlay initialized OK");
 		} else {
-			throw new Exception(jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));		
+			if (getError() == 7) {
+				System.out.println("VROverlay init failed: " + jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
+				vrOverlay = null;
+			} else {
+				throw new Exception(jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
+			}	
 		}
 	}
 
 
-	public static void initOpenVROSettings() throws Exception
+	public static void initOpenVRSettings() throws Exception
 	{
 		vrSettings = new VR_IVRSettings_FnTable(JOpenVRLibrary.VR_GetGenericInterface(JOpenVRLibrary.IVRSettings_Version, hmdErrorStoreBuf));
 		if (vrSettings != null &&  !isError()) {     		
@@ -487,7 +492,12 @@ public static boolean mrMovingCamActive;
 			vrSettings.read();					
 			System.out.println("OpenVR Settings initialized OK");
 		} else {
-			throw new Exception(jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));		
+			if (getError() == 7) {
+				System.out.println("VRSettings init failed: " + jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
+				vrSettings = null;
+			} else {
+				throw new Exception(jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
+			}	
 		}
 	}
 	
@@ -579,7 +589,12 @@ public static boolean mrMovingCamActive;
 			vrRenderModels.read();			
 			System.out.println("OpenVR RenderModels initialized OK");
 		} else {
-			throw new Exception(jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
+			if (getError() == 7) {
+				System.out.println("VRRenderModels init failed: " + jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
+				vrRenderModels = null;
+			} else {
+				throw new Exception(jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
+			}
 		}
 	}
 	
@@ -590,9 +605,12 @@ public static boolean mrMovingCamActive;
 			vrChaperone.read();
 			System.out.println("OpenVR chaperone initialized.");
 		} else {
-			System.out.println("Chaperone init failed: " + jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(hmdErrorStore.getValue()).getString(0));
-			vrChaperone = null;
-			//throw new Exception(jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(hmdErrorStore.getValue()).getString(0));
+			if (getError() == 7) {
+				System.out.println("VRChaperone init failed: " + jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
+				vrChaperone = null;
+			} else {
+				throw new Exception(jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
+			}
 		}
 	}
 
@@ -649,7 +667,7 @@ public static boolean mrMovingCamActive;
 		processVRFunctions(sleeping, mc.currentScreen != null);
 
 		Minecraft.getMinecraft().mcProfiler.endStartSection("updatePose");
-		updatePose();
+			updatePose();
 		Minecraft.getMinecraft().mcProfiler.endSection();
 	}
 
@@ -717,6 +735,7 @@ public static boolean mrMovingCamActive;
 	private static int quickTorchPreviousSlot;
 
 	public static boolean setKeyboardOverlayShowing(boolean showingState, GuiTextField gui) {
+		if (vrOverlay == null) return false;
 		try {
 			if(mc.vrSettings.seated) showingState = false;
 			keyboardGui = gui;
@@ -1981,7 +2000,8 @@ public static boolean mrMovingCamActive;
 			triggerHapticPulse(1, 500);
 		}
 
-		controllerDeviceIndex[THIRD_CONTROLLER] = -1;
+		if(controllerDeviceIndex[0] != -1 && controllerDeviceIndex[1] !=-1)
+			controllerDeviceIndex[THIRD_CONTROLLER] = -1;
 		
 		for (int nDevice = 0; nDevice < JOpenVRLibrary.k_unMaxTrackedDeviceCount; ++nDevice )
 		{
@@ -1994,10 +2014,12 @@ public static boolean mrMovingCamActive;
 			if(mc.vrSettings.displayMirrorMode == VRSettings.MIRROR_MIXED_REALITY){
 				int c = vrsystem.GetTrackedDeviceClass.apply(nDevice);
 				int r = vrsystem.GetControllerRoleForTrackedDeviceIndex.apply(nDevice);
-				if((c == 2 && r == 0) || c == 3) controllerDeviceIndex[THIRD_CONTROLLER] = nDevice;
-			}
+					if((c == 2 && r == 0) || c == 3)
+						controllerDeviceIndex[THIRD_CONTROLLER] = nDevice;
+			} 
 			
 		}
+		
 		if (hmdTrackedDevicePoses[JOpenVRLibrary.k_unTrackedDeviceIndex_Hmd].bPoseIsValid != 0 )
 		{
 			OpenVRUtil.Matrix4fCopy(poseMatrices[JOpenVRLibrary.k_unTrackedDeviceIndex_Hmd], hmdPose);
@@ -2029,7 +2051,6 @@ public static boolean mrMovingCamActive;
 		getTipTransforms(); //TODO dont do this @90hz.
 
 		updateAim();
-
 	}
 	
 	/**
@@ -2541,14 +2562,14 @@ public static boolean mrMovingCamActive;
 				mrMovingCamActive = false;
 			}
 		}
-
 	}
 	
 	public static Matrix4f getHandRotation( int controller ) {
 		return controller == 0 ? handRotation[0]: handRotation[1];
 	}
 	
-	private static void getTipTransforms(){
+	private static void getTipTransforms() {
+		if (vrRenderModels == null) return;
 		int count = vrRenderModels.GetRenderModelCount.apply();
 		Pointer pointer = new Memory(JOpenVRLibrary.k_unMaxPropertyStringSize);
 		for (int i = 0; i < 2; i++) {

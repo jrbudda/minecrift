@@ -7,6 +7,7 @@ import org.lwjgl.util.vector.Matrix3f;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import net.minecraft.util.Vec3;
 
@@ -100,6 +101,14 @@ public class Utils
 		return new Vector3f(vector.getX(), vector.getY(), vector.getZ());
 	}
 
+	public static Vector3f convertVector(de.fruitfly.ovr.structs.Vector3f vector) {
+		return new Vector3f(vector.x, vector.y, vector.z);
+	}
+
+	public static de.fruitfly.ovr.structs.Vector3f convertToOVRVector(Vector3f vector) {
+		return new de.fruitfly.ovr.structs.Vector3f(vector.x, vector.y, vector.z);
+	}
+
 	public static Vector3 convertVector(Vector3f vector) {
 		return new Vector3(vector.getX(), vector.getY(), vector.getZ());
 	}
@@ -133,6 +142,13 @@ public class Utils
 		mat.m21 = matrix.m21;
 		mat.m22 = matrix.m22;
 		return mat;
+	}
+	
+	public static Vector3f directionFromMatrix(Matrix4f matrix, float x, float y, float z) {
+		Vector4f vec = new Vector4f(x, y, z, 0);
+		Matrix4f.transform(matrix, vec, vec);
+		vec.normalise(vec);
+		return new Vector3f(vec.x, vec.y, vec.z);
 	}
     
 }

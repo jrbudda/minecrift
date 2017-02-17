@@ -155,7 +155,7 @@
  import net.minecraft.world.EnumDifficulty;
  import net.minecraft.world.WorldProviderEnd;
  import net.minecraft.world.WorldProviderHell;
-@@ -150,2988 +226,4947 @@
+@@ -150,2988 +226,4966 @@
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
@@ -1246,7 +1246,7 @@
 +	 * The minecriftVerString will be automatically updated by the build scripts, do not modify here.
 +	 * Modify minecriftversion.py in root minecrift dir.
 +	 */
-+    public final String minecriftVerString = "Vivecraft 1.7.10 jrbudda-37";
++    public final String minecriftVerString = "Vivecraft 1.7.10 jrbudda-37r1";
 +	private boolean trigger;
 +	/* end version */
 +	/** END MINECRIFT */
@@ -2232,10 +2232,12 @@
 +				}
 +			}
 +	
-+			
 +			var6 = System.nanoTime() - var5;
 +						
 +			RenderBlocks.fancyGrass = this.gameSettings.fancyGraphics;
++			this.mcProfiler.startSection("sound");
++			//	this.mcSoundHandler.setListener(this.thePlayer, this.timer.renderPartialTicks);
++			this.mcProfiler.endSection();
 +			
 +			this.mcProfiler.startSection("Gui");
 +			// Render GUI to FBO if necessary
@@ -2250,6 +2252,7 @@
 +				
 +				checkGLError("post 2d ");
 +			this.mcProfiler.endSection();
++			
 +			//if (!this.stereoProvider.isGuiOrtho()) { // Useless here
 +			//	if (fmlCommonHandler != null) {
 +			//		Reflector.callVoid(fmlCommonHandler, Reflector.FMLCommonHandler_onRenderTickEnd, new Object[]{this.timer.renderPartialTicks});
@@ -2261,11 +2264,8 @@
 +				MCOpenVR.poll(frameIndex);
 +			this.mcProfiler.endSection();
 +
-+			this.mcProfiler.startSection("sound");
-+				//this.mcSoundHandler.setListener(this.thePlayer, this.timer.renderPartialTicks);
-+				updateSoundListener(); // we update the sound listener from the HMD info
-+			this.mcProfiler.endSection();
-+
++			updateSoundListener(); // we update the sound listener from the HMD info.
++			
 +			this.mcProfiler.startSection("hmdSampling");
 +
 +			if (hmdPosSamples.size() == hmdAvgLength)
@@ -2359,7 +2359,165 @@
 +						this.framebufferMc.bindFramebuffer(true);	//draw to main texture for every pass
 +					this.mcProfiler.endSection();
 +					
-+						shouldupdate = renderSingleView(i,nano);
++					{//renderSingleView
++						int eye = i;
++						if (this.entityRenderer != null)
++						{
++							this.entityRenderer.theShaderGroup = shaderGroup;
++						}
++
++						GL11.glClearColor(0f, 0, 0, 1f);	
++						GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
++						GL11.glEnable(GL11.GL_TEXTURE_2D);
++
++
++						Object fmlCommonHandler = null;
++						if (Reflector.FMLCommonHandler_instance.exists()) {
++							fmlCommonHandler = Reflector.call(Reflector.FMLCommonHandler_instance, new Object[0]);
++						}		
++
++						this.mcProfiler.startSection("updateCameraAndRender");
++
++						if (!this.skipRenderWorld)
++						{
++							/** MINECRIFT FORGE **/
++							if (!this.stereoProvider.isStereo()) {
++								if (fmlCommonHandler != null) {
++									Reflector.callVoid(fmlCommonHandler, Reflector.FMLCommonHandler_onRenderTickStart, new Object[]{nano});
++								}
++							}			
++							///THIS IS WHERE EVERYTHING IS RENDERED
++							this.entityRenderer.updateCameraAndRender(nano);
++
++							checkGLError("postucr " + eye);
++
++
++							if (!this.stereoProvider.isStereo()) {
++								if (fmlCommonHandler != null) {
++									Reflector.callVoid(fmlCommonHandler, Reflector.FMLCommonHandler_onRenderTickEnd, new Object[]{this.timer.renderPartialTicks});
++								}
++							}
++							/** END MINECRIFT FORGE **/
++						}
++						this.mcProfiler.endSection();
++
++						if(currentPass != renderPass.Third && currentPass != renderPass.Center) {	
++							//copies the rendered scene to eye tex with fsaa and other postprocessing effects.
++							this.mcProfiler.startSection("postprocesseye");
++
++							Framebuffer source = this.framebuffer;
++
++							if (this.vrSettings.useFsaa)
++							{
++								this.mcProfiler.startSection("fsaa");
++								doFSAA();
++								source = fsaaLastPassResultFBO;
++								checkGLError("fsaa " + eye);
++								this.mcProfiler.endSection();
++							}
++
++							if(currentPass == renderPass.Left)	
++								framebufferEye0.bindFramebuffer(true); //draw to L eye tex
++							else
++								framebufferEye1.bindFramebuffer(true); //draw to R eye tex
++
++							if(vrSettings.useFOVReduction && vrSettings.vrFreeMove){
++								if( thePlayer !=null && (Math.abs(thePlayer.moveForward) > 0 || Math.abs(thePlayer.moveStrafing) > 0)) {	
++									fov -=0.05;
++									if(fov < 0.22) fov = 0.22f;
++								} else {
++									fov +=0.01;
++									if(fov > 0.8) fov = 0.8f;				
++								}
++							} else {
++								fov = 1f;
++							}
++
++							ARBShaderObjects.glUseProgramObjectARB(VRShaders._FOVReduction_shaderProgramId);
++							ARBShaderObjects.glUniform1iARB(VRShaders._FOVReduction_TextureUniform, 0);
++
++							if(pumpkineffect > 0){
++								ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_RadiusUniform, 0.25f);
++								ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_BorderUniform, 0.0f);
++							} else{
++								ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_RadiusUniform, fov);
++								ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_BorderUniform, 0.06f);
++							}
++
++							// VIVE start - screen flash when hurt instead of view tilt
++							float r = 0, k = 0;
++							// VIVE start - screen flash when hurt instead of view tilt
++							float time =  (float) (System.currentTimeMillis() - usageSnooper.getMinecraftStartTimeMillis()) / 1000;
++							if (thePlayer!=null) {
++
++								if(entityRenderer.itemRenderer.inwater){
++									watereffect = 1.3f;
++								} else {
++									if(watereffect == 1.3f) watereffect = 2.3f;
++									watereffect -= (1f/60f);
++									if(watereffect < 0) watereffect = 0;
++								}
++
++								if(Reflector.shadersModExists()) watereffect = 0; //dont stack.
++
++								if(entityRenderer.itemRenderer.inportal){
++									portaleffect = 1f;
++								} else {
++									portaleffect -= (1f/60f);
++									if(portaleffect < 0) portaleffect = 0;
++								}
++
++								float var3 = (float)thePlayer.hurtTime - nano;
++
++								float percent = 1 - thePlayer.getHealth() / thePlayer.getMaxHealth();
++								percent = (percent-0.5f) * 0.75f;
++
++								if (var3>0.0f)
++								{
++									var3 /= (float) thePlayer.maxHurtTime;
++									var3 = percent + MathHelper.sin(var3 * var3 * var3 * var3 * (float) Math.PI) * 0.5f;
++									r = var3;
++								} else {
++									r =  (float) (percent * Math.abs(Math.sin(2.5f*time/(1-percent+.1) )));
++									if (thePlayer.capabilities.isCreativeMode) r = 0;
++								}
++
++								if(entityRenderer.itemRenderer.inblock && thePlayer.isDead == false){
++									k = (float) entityRenderer.itemRenderer.inBlock;				
++								}
++
++								if (thePlayer.isPlayerSleeping()){
++									if(k<0.8)k=.8f;
++								}
++
++								if (MCOpenVR.isWalkingAbout){
++									if(k<0.8)k=.8f;
++								}						
++							} 
++							ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_HealthAlpha, r);
++							ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_BlackAlpha, k);
++							ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_time,time);
++							ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_waterAmplitude, watereffect);
++							ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_portalAmplitutde, portaleffect);		
++							ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_pumpkinAmplitutde, pumpkineffect);		
++							ARBShaderObjects.glUniform1iARB(VRShaders._Overlay_eye, currentPass == currentPass.Left ? 1 : -1);	
++
++							source.framebufferRender(framebufferEye0.framebufferWidth, framebufferEye0.framebufferHeight);
++
++							ARBShaderObjects.glUseProgramObjectARB(0);
++
++							checkGLError("post-draw " + eye);
++
++							this.mcProfiler.endSection();
++
++						}
++
++						this.mcProfiler.startSection("mirror");
++						shouldupdate =copyToMirror(this.currentPass);
++						checkGLError("post-mirror " + eye);
++						this.mcProfiler.endSection();
++
++					}
 +												
 +				this.mcProfiler.endSection(); //eye
 +			} //end per eye rendering.
@@ -2444,168 +2602,6 @@
 +		}
 +		/** END MINECRIFT */
 +		mcProfiler.startSection("Idle");
-+	}
-+
-+	private boolean renderSingleView(int eye, float nano) {
-+		boolean shouldupdate = false;
-+	
-+				if (this.entityRenderer != null)
-+				{
-+					this.entityRenderer.theShaderGroup = shaderGroup;
-+				}
-+	
-+				GL11.glClearColor(0f, 0, 0, 1f);	
-+				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-+				GL11.glEnable(GL11.GL_TEXTURE_2D);
-+						
-+				
-+				Object fmlCommonHandler = null;
-+				if (Reflector.FMLCommonHandler_instance.exists()) {
-+					fmlCommonHandler = Reflector.call(Reflector.FMLCommonHandler_instance, new Object[0]);
-+				}		
-+				
-+			this.mcProfiler.startSection("updateCameraAndRender");
-+				
-+				if (!this.skipRenderWorld)
-+				{
-+					/** MINECRIFT FORGE **/
-+					if (!this.stereoProvider.isStereo()) {
-+						if (fmlCommonHandler != null) {
-+							Reflector.callVoid(fmlCommonHandler, Reflector.FMLCommonHandler_onRenderTickStart, new Object[]{nano});
-+						}
-+					}			
-+						///THIS IS WHERE EVERYTHING IS RENDERED
-+						this.entityRenderer.updateCameraAndRender(nano);
-+	
-+						checkGLError("postucr " + eye);
-+						
-+										
-+					if (!this.stereoProvider.isStereo()) {
-+						if (fmlCommonHandler != null) {
-+							Reflector.callVoid(fmlCommonHandler, Reflector.FMLCommonHandler_onRenderTickEnd, new Object[]{this.timer.renderPartialTicks});
-+						}
-+					}
-+					/** END MINECRIFT FORGE **/
-+				}
-+			this.mcProfiler.endSection();
-+				
-+			if(currentPass != renderPass.Third && currentPass != renderPass.Center) {	
-+				//copies the rendered scene to eye tex with fsaa and other postprocessing effects.
-+				this.mcProfiler.startSection("postprocesseye");
-+
-+				Framebuffer source = this.framebuffer;
-+
-+				if (this.vrSettings.useFsaa)
-+				{
-+					this.mcProfiler.startSection("fsaa");
-+					doFSAA();
-+					source = fsaaLastPassResultFBO;
-+					checkGLError("fsaa " + eye);
-+					this.mcProfiler.endSection();
-+				}
-+
-+				if(currentPass == renderPass.Left)	
-+					framebufferEye0.bindFramebuffer(true); //draw to L eye tex
-+				else
-+					framebufferEye1.bindFramebuffer(true); //draw to R eye tex
-+
-+				if(vrSettings.useFOVReduction && vrSettings.vrFreeMove){
-+					if( thePlayer !=null && (Math.abs(thePlayer.moveForward) > 0 || Math.abs(thePlayer.moveStrafing) > 0)) {	
-+						fov -=0.05;
-+						if(fov < 0.22) fov = 0.22f;
-+					} else {
-+						fov +=0.01;
-+						if(fov > 0.8) fov = 0.8f;				
-+					}
-+				} else {
-+					fov = 1f;
-+				}
-+
-+				ARBShaderObjects.glUseProgramObjectARB(VRShaders._FOVReduction_shaderProgramId);
-+				ARBShaderObjects.glUniform1iARB(VRShaders._FOVReduction_TextureUniform, 0);
-+				
-+				if(pumpkineffect > 0){
-+					ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_RadiusUniform, 0.25f);
-+					ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_BorderUniform, 0.0f);
-+				} else{
-+					ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_RadiusUniform, fov);
-+					ARBShaderObjects.glUniform1fARB(VRShaders._FOVReduction_BorderUniform, 0.06f);
-+				}
-+				
-+				// VIVE start - screen flash when hurt instead of view tilt
-+				float r = 0, k = 0;
-+				// VIVE start - screen flash when hurt instead of view tilt
-+				float time =  (float) (System.currentTimeMillis() - usageSnooper.getMinecraftStartTimeMillis()) / 1000;
-+				if (thePlayer!=null) {
-+					
-+					if(entityRenderer.itemRenderer.inwater){
-+						watereffect = 1.3f;
-+					} else {
-+						if(watereffect == 1.3f) watereffect = 2.3f;
-+						watereffect -= (1f/60f);
-+						if(watereffect < 0) watereffect = 0;
-+					}
-+					
-+					if(Reflector.shadersModExists()) watereffect = 0; //dont stack.
-+					
-+					if(entityRenderer.itemRenderer.inportal){
-+						portaleffect = 1f;
-+					} else {
-+						portaleffect -= (1f/60f);
-+						if(portaleffect < 0) portaleffect = 0;
-+					}
-+					
-+					float var3 = (float)thePlayer.hurtTime - nano;
-+
-+					float percent = 1 - thePlayer.getHealth() / thePlayer.getMaxHealth();
-+					percent = (percent-0.5f) * 0.75f;
-+
-+					if (var3>0.0f)
-+					{
-+						var3 /= (float) thePlayer.maxHurtTime;
-+						var3 = percent + MathHelper.sin(var3 * var3 * var3 * var3 * (float) Math.PI) * 0.5f;
-+						r = var3;
-+					} else {
-+						r =  (float) (percent * Math.abs(Math.sin(2.5f*time/(1-percent+.1) )));
-+						if (thePlayer.capabilities.isCreativeMode) r = 0;
-+					}
-+					
-+					if(entityRenderer.itemRenderer.inblock && thePlayer.isDead == false){
-+						k = (float) entityRenderer.itemRenderer.inBlock;				
-+					}
-+				
-+					if (thePlayer.isPlayerSleeping()){
-+						if(k<0.8)k=.8f;
-+					}
-+					
-+					if (MCOpenVR.isWalkingAbout){
-+						if(k<0.8)k=.8f;
-+					}						
-+				} 
-+				ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_HealthAlpha, r);
-+				ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_BlackAlpha, k);
-+				ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_time,time);
-+				ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_waterAmplitude, watereffect);
-+				ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_portalAmplitutde, portaleffect);		
-+				ARBShaderObjects.glUniform1fARB(VRShaders._Overlay_pumpkinAmplitutde, pumpkineffect);		
-+				ARBShaderObjects.glUniform1iARB(VRShaders._Overlay_eye, currentPass == currentPass.Left ? 1 : -1);	
-+				
-+				source.framebufferRender(framebufferEye0.framebufferWidth, framebufferEye0.framebufferHeight);
-+
-+				ARBShaderObjects.glUseProgramObjectARB(0);
-+
-+				checkGLError("post-draw " + eye);
-+
-+				this.mcProfiler.endSection();
-+
-+			}
-+			
-+			this.mcProfiler.startSection("mirror");
-+				shouldupdate =copyToMirror(this.currentPass);
-+				checkGLError("post-mirror " + eye);
-+			this.mcProfiler.endSection();
-+			
-+		return shouldupdate;
 +	}
 +
 +	private float fov;
@@ -4973,6 +4969,8 @@
 +	/** MINECRIFT ADDITIONS BELOW */
 +
 +	float mixedRealityPlayerDepth;
++	public org.lwjgl.util.vector.Matrix4f thirdPassInverseViewMatrix = new org.lwjgl.util.vector.Matrix4f();
++	public org.lwjgl.util.vector.Matrix4f thirdPassViewMatrix = new org.lwjgl.util.vector.Matrix4f();
 +
 +	private boolean copyToMirror(renderPass currentPass2)
 +	{
@@ -4990,19 +4988,45 @@
 +				boolean hasShaders = Reflector.shadersModExists();
 +				
 +				this.framebufferMc.unbindFramebuffer();	//draw directly to window
-+				
-+				float yaw = (float)(vrSettings.vrFixedCamrotYaw - vrSettings.vrWorldRotation);
-+				float pitch = (float)(vrSettings.vrFixedCamrotPitch);
-+										
-+		        float f = MathHelper.cos(-yaw * 0.017453292F - (float)Math.PI);
-+		        float f1 = MathHelper.sin(-yaw * 0.017453292F - (float)Math.PI);
-+		        float f2 = -MathHelper.cos(-pitch * 0.017453292F);
-+		        float f3 = MathHelper.sin(-pitch * 0.017453292F);	
-+				
-+				Vector3f CameraLook = new Vector3f(-(f1 * f2), f3, -f * f2);
 +
-+				Vec3 camplayer = entityRenderer.getEyeRenderPos(renderPass.Center).subtract(entityRenderer.getEyeRenderPos(renderPass.Third));				
++				// create view matrix
++				//temp
++				vrSettings.mrMovingCamOffsetPitch = 0;
++				vrSettings.mrMovingCamOffsetYaw = 0;
++				vrSettings.mrMovingCamOffsetRoll = 0;
++				vrSettings.mrMovingCamOffsetX = 0;
++				vrSettings.mrMovingCamOffsetY = 0f;
++				vrSettings.mrMovingCamOffsetZ = 0f;
++				//
++				Vec3 cam = entityRenderer.getEyeRenderPos(renderPass.Third);
++				GL11.glMatrixMode(GL11.GL_MODELVIEW);
++				GL11.glPushMatrix();
++					GL11.glLoadIdentity();
++					GL11.glTranslated(cam.xCoord, cam.yCoord, cam.zCoord);
++					entityRenderer.test(false);			
++					GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, matrixBuffer);
++					matrixBuffer.rewind();
++					this.thirdPassViewMatrix.load(matrixBuffer);
++					matrixBuffer.rewind();
++				GL11.glPopMatrix();
 +				
++
++				Vec3 camplayer = new Vec3(thirdPassViewMatrix.m30, thirdPassViewMatrix.m31, thirdPassViewMatrix.m32).subtractProperly(entityRenderer.getEyeRenderPos(renderPass.Center));
++				camplayer = camplayer.rotateYaw((float) Math.PI);
++			//	org.lwjgl.util.vector.Vector3f CameraLookx = new org.lwjgl.util.vector.Vector3f(0,0,-1); 
++			//	org.lwjgl.util.vector.Vector3f CameraLooky = Utils.directionFromMatrix(thirdPassViewMatrix, 0, 0, -1);
++				float yaw = (float) Math.toRadians(180+vrSettings.vrFixedCamrotYaw + vrSettings.vrWorldRotation);
++			//	float yawx = (float) Math.atan2((-thirdPassViewMatrix.m20),(Math.sqrt(Math.pow(thirdPassViewMatrix.m21, 2) + Math.pow(thirdPassViewMatrix.m22, 2))));
++				org.lwjgl.util.vector.Vector3f CameraLook = new org.lwjgl.util.vector.Vector3f((float) Math.sin(yaw), 0f, (float)Math.cos(yaw));
++
++				org.lwjgl.util.vector.Matrix4f viewMatrix = new org.lwjgl.util.vector.Matrix4f(thirdPassViewMatrix);
++				viewMatrix.m33 =1;
++				viewMatrix.m30 =0;
++				viewMatrix.m31 =0; 
++				viewMatrix.m32 =0;
++				
++			//	Vec3d camplayerx = entityRenderer.getMRCamLocation().subtract(entityRenderer.getEyeRenderPos(renderPass.Center));				
++
 +				boolean alphaMask = this.vrSettings.mixedRealityUnityLike && this.vrSettings.mixedRealityAlphaMask;
 +				
 +				GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
@@ -5021,12 +5045,7 @@
 +					matrixBuffer.rewind();
 +					ARBShaderObjects.glUniformMatrix4ARB(VRShaders._DepthMask_projectionMatrix, false, matrixBuffer);
 +
-+					// create view matrix
-+					org.lwjgl.util.vector.Matrix4f viewMatrix = new org.lwjgl.util.vector.Matrix4f();
-+					viewMatrix.rotate((float)Math.toRadians(vrSettings.vrFixedCamrotRoll), new org.lwjgl.util.vector.Vector3f(0.0F, 0.0F, 1.0F));
-+					viewMatrix.rotate((float)Math.toRadians(vrSettings.vrFixedCamrotPitch), new org.lwjgl.util.vector.Vector3f(1.0F, 0.0F, 0.0F));
-+					viewMatrix.rotate((float)Math.toRadians(vrSettings.vrFixedCamrotYaw - vrSettings.vrWorldRotation), new org.lwjgl.util.vector.Vector3f(0.0F, 1.0F, 0.0F));
-+
++					
 +					// set view matrix
 +					viewMatrix.store(matrixBuffer);
 +					matrixBuffer.rewind();
@@ -5056,21 +5075,21 @@
 +					ARBShaderObjects.glUniform1iARB(VRShaders._DepthMask_colorTexUniform, 1);
 +					ARBShaderObjects.glUniform1iARB(VRShaders._DepthMask_depthTexUniform, 2);
 +					ARBShaderObjects.glUniform3fARB(VRShaders._DepthMask_hmdViewPosition, (float)camplayer.xCoord, (float)camplayer.yCoord, (float)camplayer.zCoord);
-+					ARBShaderObjects.glUniform3fARB(VRShaders._DepthMask_hmdPlaneNormal, -CameraLook.x, 0, -CameraLook.z);
++					ARBShaderObjects.glUniform3fARB(VRShaders._DepthMask_hmdPlaneNormal, CameraLook.x, 0, -CameraLook.z);
 +					ARBShaderObjects.glUniform1iARB(VRShaders._DepthMask_passUniform, i);
 +					ARBShaderObjects.glUniform3fARB(VRShaders._DepthMask_keyColorUniform, vrSettings.mixedRealityKeyColor.getRed() / 255F, vrSettings.mixedRealityKeyColor.getGreen() / 255F, vrSettings.mixedRealityKeyColor.getBlue() / 255F);
 +					ARBShaderObjects.glUniform1iARB(VRShaders._DepthMask_alphaModeUniform, alphaMask ? 1 : 0);
 +					
 +					// bind color and depth textures
 +					GL13.glActiveTexture(GL13.GL_TEXTURE1);
-+					framebuffer.bindFramebufferTexture();
++					framebufferMR.bindFramebufferTexture();
 +					GL13.glActiveTexture(GL13.GL_TEXTURE2);
 +					if (hasShaders) GL11.glBindTexture(GL11.GL_TEXTURE_2D, entityRenderer.smcDepthBuffer); // shaders mod has it's own depth buffer
-+					else GL11.glBindTexture(GL11.GL_TEXTURE_2D, framebuffer.depthBuffer);
++					else GL11.glBindTexture(GL11.GL_TEXTURE_2D, framebufferMR.depthBuffer);
 +					GL13.glActiveTexture(GL13.GL_TEXTURE0);
 +
 +					// draw framebuffer
-+					framebufferMc.framebufferRender(posW, resW, resH, posH);
++					framebufferMR.framebufferRender(posW, resW, resH, posH);
 +
 +					OpenGlHelper.glUseProgram(0);
 +					

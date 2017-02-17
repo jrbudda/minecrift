@@ -53,7 +53,7 @@
      public boolean ofSunMoon = true;
      public int ofVignette = 0;
 -    public int ofChunkUpdates = 1;
-+    public int ofChunkUpdates = 5;
++    public int ofChunkUpdates = 2;
      public int ofChunkLoading = 0;
      public boolean ofChunkUpdatesDynamic = false;
      public int ofTime = 0;
@@ -188,15 +188,6 @@
  
              this.updateVSync();
          }
-@@ -905,7 +858,7 @@
-         {
-             ++this.ofChunkUpdates;
- 
--            if (this.ofChunkUpdates > 5)
-+            if (this.ofChunkUpdates > 15)
-             {
-                 this.ofChunkUpdates = 1;
-             }
 @@ -1026,15 +979,9 @@
  
          if (par1EnumOptions == GameSettings.Options.FAST_RENDER)
@@ -378,16 +369,15 @@
              String s = "";
  
              while ((s = bufferedreader.readLine()) != null)
-@@ -2670,7 +2647,7 @@
-                     if (exception1[0].equals("ofChunkUpdates") && exception1.length >= 2)
+@@ -2671,6 +2648,7 @@
                      {
                          this.ofChunkUpdates = Integer.valueOf(exception1[1]).intValue();
--                        this.ofChunkUpdates = Config.limit(this.ofChunkUpdates, 1, 5);
-+                        this.ofChunkUpdates = Config.limit(this.ofChunkUpdates, 1, 15);
+                         this.ofChunkUpdates = Config.limit(this.ofChunkUpdates, 1, 5);
++                        if(ofChunkUpdates > 2) ofChunkUpdates = 2; //remove this line some day.
                      }
  
                      if (exception1[0].equals("ofChunkLoading") && exception1.length >= 2)
-@@ -2802,11 +2779,20 @@
+@@ -2802,11 +2780,20 @@
          }
      }
  
@@ -409,7 +399,7 @@
              exception.println("ofRenderDistanceChunks:" + this.renderDistanceChunks);
              exception.println("ofFogType:" + this.ofFogType);
              exception.println("ofFogStart:" + this.ofFogStart);
-@@ -2882,8 +2868,15 @@
+@@ -2882,8 +2869,15 @@
          }
      }
  
@@ -425,7 +415,7 @@
          this.renderDistanceChunks = 8;
          this.viewBobbing = true;
          this.anaglyph = false;
-@@ -2932,7 +2925,7 @@
+@@ -2932,7 +2926,7 @@
          this.ofStars = true;
          this.ofSunMoon = true;
          this.ofVignette = 0;
@@ -434,7 +424,7 @@
          this.ofChunkLoading = 0;
          this.ofChunkUpdatesDynamic = false;
          this.ofTime = 0;
-@@ -2966,17 +2959,39 @@
+@@ -2966,17 +2960,39 @@
          this.ofAnimatedTerrain = true;
          this.ofAnimatedItems = true;
          this.ofAnimatedTextures = true;
@@ -481,7 +471,7 @@
  
      private void updateWaterOpacity()
      {
-@@ -3181,12 +3196,12 @@
+@@ -3181,12 +3197,12 @@
              return null;
          }
  
@@ -497,7 +487,7 @@
          {
              this.enumString = p_i45004_3_;
              this.enumFloat = p_i45004_4_;
-@@ -3252,9 +3267,9 @@
+@@ -3252,9 +3268,9 @@
              return p_148264_1_;
          }
  

@@ -1,0 +1,12 @@
+--- a/net/minecraft/src/GuiPerformanceSettingsOF.java
++++ b/net/minecraft/src/GuiPerformanceSettingsOF.java
+@@ -48,6 +48,9 @@
+             {
+                 this.buttonList.add(new GuiOptionSlider(enumoptions.returnEnumOrdinal(), x, y, enumoptions));
+             }
++            if (enumoptions == GameSettings.Options.SMOOTH_FPS) {
++            	((GuiButton)this.buttonList.get(i)).enabled = false;
++            }
+ 
+             ++i;
+         }

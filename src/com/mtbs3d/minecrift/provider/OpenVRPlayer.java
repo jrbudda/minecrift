@@ -21,6 +21,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityMinecart;
@@ -729,7 +730,11 @@ public class OpenVRPlayer implements IRoomscaleAdapter
             newPos.yCoord = pos.yCoord + velocity.yCoord;
             newPos.zCoord = pos.zCoord + velocity.zCoord;
             
-            boolean water = mc.entityRenderer.getEyeCollisionBlock(mc.currentPass, true).getMaterial() == Material.water;
+          		
+            boolean	water =false;
+            Block b = mc.entityRenderer.getEyeCollisionBlock(mc.currentPass, true);
+            water = b!=null &&b.getMaterial() == Material.water;
+
             
             MovingObjectPosition collision = tpRaytrace(player.worldObj, pos, newPos, !water, true, false);
 			
@@ -1055,11 +1060,14 @@ public class OpenVRPlayer implements IRoomscaleAdapter
     			bb = player.boundingBox.copy().offset(offset.xCoord, offset.yCoord, offset.zCoord);
     			emptySpotReq = mc.theWorld.getCollidingBoundingBoxes(player,bb).isEmpty(); 	
     		}
-
+    		
+    		float ex = 0;
+    		if(mc.vrSettings.seated)ex = 0.5f;
+    		
     		if(emptySpotReq){
-    			movementTeleportDestination = Vec3.createVectorHelper((bb.maxX - bb.minX) /2 ,bb.minY, (bb.maxZ - bb.minZ)/2);
+    			movementTeleportDestination = Vec3.createVectorHelper((bb.maxX + bb.minX) /2 ,bb.minY + ex, (bb.maxZ + bb.minZ)/2);
     			movementTeleportDestinationSideHit = collision.sideHit;
-    			return true;
+    			bFoundValidSpot =  true;
     		}
 
     	} else if (collision.sideHit != 1) 
@@ -1075,7 +1083,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
                         movementTeleportDestination.yCoord = dest.yCoord;
                         movementTeleportDestination.zCoord = dest.zCoord;
                         movementTeleportDestinationSideHit = collision.sideHit;
-						return true; //really should check if the block above is passable. Maybe later.
+						bFoundValidSpot =  true; //really should check if the block above is passable. Maybe later.
 			} else {
 					if (!mc.thePlayer.capabilities.allowFlying && mc.vrSettings.vrLimitedSurvivalTeleport) {return false;} //if creative, check if can hop on top.
 			}
@@ -1628,7 +1636,9 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 
 	@Override
 	public float getControllerRoll_World(int controller) {
-		org.lwjgl.util.vector.Matrix4f mat = (org.lwjgl.util.vector.Matrix4f)new org.lwjgl.util.vector.Matrix4f().load(getControllerMatrix_World(controller));
+		org.lwjgl.util.vector.Matrix4f mat = 
+				(org.lwjgl.util.vector.Matrix4f)new org.lwjgl.util.vector.Matrix4f().
+				load(getControllerMatrix_World_Normal(controller));
 		return (float)-Math.toDegrees(Math.atan2(mat.m10, mat.m11));
 	}
 	
@@ -1639,6 +1649,12 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 		return Matrix4f.multiply(rot,out).transposed().toFloatBuffer();
 	}
 
+	public FloatBuffer getControllerMatrix_World_Normal(int controller) {
+		Matrix4f out = MCOpenVR.getAimRotation(controller);
+		Matrix4f rot = Matrix4f.rotationY(worldRotationRadians);
+		return Matrix4f.multiply(rot,out).toFloatBuffer();
+	}
+	
 	@Override
 	public Vec3 getCustomHMDVector(Vec3 axis) {
 		Vector3f v3 = MCOpenVR.hmdRotation.transform(new Vector3f((float)axis.xCoord, (float)axis.yCoord, (float)axis.zCoord));

@@ -1853,8 +1853,8 @@ public class VRSettings
     		out[ViveButtons.BUTTON_LEFT_TOUCHPAD_UR.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_UR, "key.inventory");
     		out[ViveButtons.BUTTON_LEFT_TOUCHPAD_SWIPE_UP.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_SWIPE_UP, "none");
     		out[ViveButtons.BUTTON_LEFT_TOUCHPAD_SWIPE_DOWN.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_SWIPE_DOWN, "none");
-    		out[ViveButtons.BUTTON_LEFT_TOUCHPAD_SWIPE_LEFT.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_SWIPE_LEFT, "none");
-    		out[ViveButtons.BUTTON_LEFT_TOUCHPAD_SWIPE_RIGHT.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_SWIPE_RIGHT, "none");
+    		out[ViveButtons.BUTTON_LEFT_TOUCHPAD_SWIPE_LEFT.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_SWIPE_LEFT, "Hotbar Prev");
+    		out[ViveButtons.BUTTON_LEFT_TOUCHPAD_SWIPE_RIGHT.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_LEFT_TOUCHPAD_SWIPE_RIGHT, "Hotbar Next");
     		out[ViveButtons.BUTTON_RIGHT_TOUCHPAD_SWIPE_UP.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TOUCHPAD_SWIPE_UP, "none");
     		out[ViveButtons.BUTTON_RIGHT_TOUCHPAD_SWIPE_DOWN.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TOUCHPAD_SWIPE_DOWN, "none");
     		out[ViveButtons.BUTTON_RIGHT_TOUCHPAD_SWIPE_LEFT.ordinal()] = new VRControllerButtonMapping(ViveButtons.BUTTON_RIGHT_TOUCHPAD_SWIPE_LEFT, "Hotbar Prev");

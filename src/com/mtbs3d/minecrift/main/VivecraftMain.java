@@ -31,7 +31,6 @@ public class VivecraftMain
 	
 	public static void main(String[] p_main_0_)
     {
-
 		LaunchClassLoader load = (LaunchClassLoader) Thread.currentThread().getContextClassLoader();
 		
 		try {
