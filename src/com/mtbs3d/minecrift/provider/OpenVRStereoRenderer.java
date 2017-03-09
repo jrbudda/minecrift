@@ -42,11 +42,11 @@ public class OpenVRStereoRenderer implements IStereoProvider
 
 		RenderTextureInfo info = new RenderTextureInfo();
 		info.HmdNativeResolution.w = rtx.getValue();
-		info.HmdNativeResolution.h = rtx.getValue();
+		info.HmdNativeResolution.h = rty.getValue();
 		info.LeftFovTextureResolution.w = (int) (rtx.getValue());
-		info.LeftFovTextureResolution.h = (int) (rtx.getValue());
+		info.LeftFovTextureResolution.h = (int) (rty.getValue());
 		info.RightFovTextureResolution.w = (int) (rtx.getValue());
-		info.RightFovTextureResolution.h = (int) (rtx.getValue());
+		info.RightFovTextureResolution.h = (int) (rty.getValue());
 		if ( info.LeftFovTextureResolution.w % 2 != 0) info.LeftFovTextureResolution.w++;
 		if ( info.LeftFovTextureResolution.h % 2 != 0) info.LeftFovTextureResolution.w++;
 		if ( info.RightFovTextureResolution.w % 2 != 0) info.LeftFovTextureResolution.w++;

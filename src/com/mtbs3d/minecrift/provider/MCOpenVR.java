@@ -7,6 +7,7 @@ import com.mtbs3d.minecrift.render.QuaternionHelper;
 import com.mtbs3d.minecrift.settings.VRHotkeys;
 import com.mtbs3d.minecrift.settings.VRSettings;
 import com.mtbs3d.minecrift.utils.KeyboardSimulator;
+import com.mtbs3d.minecrift.utils.MCReflection;
 import com.sun.jna.Memory;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
@@ -999,7 +1000,7 @@ public static boolean mrMovingCamActive;
 
 				if (pressedLMB || pressedRMB)
 				{
-					{mc.thePlayer.closeScreen();}			
+				//	{mc.thePlayer.closeScreen();}			
 				}
 			}
 		}
@@ -1846,6 +1847,16 @@ public static boolean mrMovingCamActive;
 			case EVREventType.EVREventType_VREvent_KeyboardClosed:
 				//'huzzah'
 				keyboardShowing = false;
+				if (mc.currentScreen instanceof GuiChat) {
+					GuiTextField field = (GuiTextField)MCReflection.getField(MCReflection.chatInputField, mc.currentScreen);
+					if (field != null) {
+						String s = field.getText().trim();
+						if (!s.isEmpty()) {
+							((GuiChat)mc.currentScreen).submitChatMessage(s);
+						}
+					}
+					mc.displayGuiScreen((GuiScreen)null);
+				}
 				break;
 			case EVREventType.EVREventType_VREvent_KeyboardCharInput:
 				byte[] inbytes = event.data.getPointer().getByteArray(0, 8);	
@@ -1857,18 +1868,9 @@ public static boolean mrMovingCamActive;
 				if (mc.currentScreen != null) { // experimental, needs testing
 					try {
 						for (char ch : str.toCharArray()) {
-							switch (ch) {
-							case '\r':
-							case '\n':
-							case '\t':
-							case '\b':
-								KeyboardSimulator.type(ch);
-								break;
-							default:
-								int[] codes = KeyboardSimulator.getCodes(ch);
-								mc.currentScreen.keyTypedPublic(ch, codes.length > 0 ? codes[codes.length - 1] : 0);
-								break;
-							}
+							int[] codes = KeyboardSimulator.getLWJGLCodes(ch);
+							mc.currentScreen.keyTypedPublic(ch, codes.length > 0 ? codes[codes.length - 1] : 0);
+							break;
 						}
 					} catch (Exception e) {
 						e.printStackTrace();

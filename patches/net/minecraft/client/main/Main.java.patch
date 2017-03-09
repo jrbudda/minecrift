@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/main/Main.java
++++ b/net/minecraft/client/main/Main.java
+@@ -77,8 +77,8 @@
+         ArgumentAcceptingOptionSpec var12 = var1.accepts("uuid").withRequiredArg();
+         ArgumentAcceptingOptionSpec var13 = var1.accepts("accessToken").withRequiredArg().required();
+         ArgumentAcceptingOptionSpec var14 = var1.accepts("version").withRequiredArg().required();
+-        ArgumentAcceptingOptionSpec var15 = var1.accepts("width").withRequiredArg().ofType(Integer.class).defaultsTo(Integer.valueOf(854), new Integer[0]);
+-        ArgumentAcceptingOptionSpec var16 = var1.accepts("height").withRequiredArg().ofType(Integer.class).defaultsTo(Integer.valueOf(480), new Integer[0]);
++        ArgumentAcceptingOptionSpec var15 = var1.accepts("width").withRequiredArg().ofType(Integer.class).defaultsTo(Integer.valueOf(1280), new Integer[0]);
++        ArgumentAcceptingOptionSpec var16 = var1.accepts("height").withRequiredArg().ofType(Integer.class).defaultsTo(Integer.valueOf(720), new Integer[0]);
+         ArgumentAcceptingOptionSpec var17 = var1.accepts("userProperties").withRequiredArg().required();
+         ArgumentAcceptingOptionSpec var18 = var1.accepts("assetIndex").withRequiredArg();
+         ArgumentAcceptingOptionSpec var19 = var1.accepts("userType").withRequiredArg().defaultsTo("legacy", new String[0]);

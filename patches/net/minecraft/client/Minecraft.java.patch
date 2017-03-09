@@ -1246,7 +1246,7 @@
 +	 * The minecriftVerString will be automatically updated by the build scripts, do not modify here.
 +	 * Modify minecriftversion.py in root minecrift dir.
 +	 */
-+    public final String minecriftVerString = "Vivecraft 1.7.10 jrbudda-37r1";
++    public final String minecriftVerString = "Vivecraft 1.7.10 jrbudda-38pre";
 +	private boolean trigger;
 +	/* end version */
 +	/** END MINECRIFT */
@@ -5157,11 +5157,11 @@
 +			this.reinitFramebuffers = true;
 +		}
 +
-+		if (!Display.isActive() && this.fullscreen)
-+		{
-+			this.toggleFullscreen();
-+			this.reinitFramebuffers = true;
-+		}
++//		if (!Display.isActive() && this.fullscreen)
++//		{
++//			this.toggleFullscreen();
++//			this.reinitFramebuffers = true;
++//		}
 +
 +		if (wasDisplayResized())
 +		{

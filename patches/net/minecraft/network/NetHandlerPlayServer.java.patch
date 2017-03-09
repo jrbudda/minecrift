@@ -102,6 +102,15 @@
                  {
                      this.setPlayerLocation(this.lastPosX, this.lastPosY, this.lastPosZ, var11, var12);
                      return;
+@@ -468,7 +472,7 @@
+                 double var11 = this.playerEntity.posZ - ((double)var6 + 0.5D);
+                 double var13 = var7 * var7 + var9 * var9 + var11 * var11;
+ 
+-                if (var13 > 36.0D)
++                if (var13 > 262144.0D)
+                 {
+                     return;
+                 }
 @@ -1129,20 +1133,20 @@
              {
                  var3 = var2.readItemStackFromBuffer();

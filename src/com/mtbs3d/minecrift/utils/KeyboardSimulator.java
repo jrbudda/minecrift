@@ -1,9 +1,15 @@
 package com.mtbs3d.minecrift.utils;
 
+import net.minecraft.client.Minecraft;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
+
 import static java.awt.event.KeyEvent.*;
 
 import java.awt.AWTException;
 import java.awt.Robot;
+
 
 public class KeyboardSimulator {
 	public static Robot robot;
@@ -12,6 +18,7 @@ public class KeyboardSimulator {
         try {
 			robot = new Robot();
 		} catch (AWTException e) {
+			e.printStackTrace();
 		}		
 	}
 
@@ -143,8 +150,114 @@ public class KeyboardSimulator {
 	        case ' ': return codes(VK_SPACE); 
         	case '\b': return codes(VK_BACK_SPACE); 
         	case '\r': return codes(VK_ENTER); 
-	        default:
-	            throw new IllegalArgumentException("Cannot type character " + character);
+        	default: return codes();
+	        //default: throw new IllegalArgumentException("Cannot type character " + character);
+        }
+    }
+    
+    public static int[] getLWJGLCodes(char character) {
+        switch (character) {
+	        case 'a': return codes(Keyboard.KEY_A);
+	        case 'b': return codes(Keyboard.KEY_B);
+	        case 'c': return codes(Keyboard.KEY_C);
+	        case 'd': return codes(Keyboard.KEY_D);
+	        case 'e': return codes(Keyboard.KEY_E);
+	        case 'f': return codes(Keyboard.KEY_F);
+	        case 'g': return codes(Keyboard.KEY_G);
+	        case 'h': return codes(Keyboard.KEY_H);
+	        case 'i': return codes(Keyboard.KEY_I);
+	        case 'j': return codes(Keyboard.KEY_J);
+	        case 'k': return codes(Keyboard.KEY_K);
+	        case 'l': return codes(Keyboard.KEY_L);
+	        case 'm': return codes(Keyboard.KEY_M);
+	        case 'n': return codes(Keyboard.KEY_N);
+	        case 'o': return codes(Keyboard.KEY_O);
+	        case 'p': return codes(Keyboard.KEY_P);
+	        case 'q': return codes(Keyboard.KEY_Q);
+	        case 'r': return codes(Keyboard.KEY_R);
+	        case 's': return codes(Keyboard.KEY_S);
+	        case 't': return codes(Keyboard.KEY_T);
+	        case 'u': return codes(Keyboard.KEY_U);
+	        case 'v': return codes(Keyboard.KEY_V);
+	        case 'w': return codes(Keyboard.KEY_W);
+	        case 'x': return codes(Keyboard.KEY_X);
+	        case 'y': return codes(Keyboard.KEY_Y);
+	        case 'z': return codes(Keyboard.KEY_Z);
+	        case 'A': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_A);
+	        case 'B': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_B);
+	        case 'C': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_C);
+	        case 'D': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_D);
+	        case 'E': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_E);
+	        case 'F': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_F);
+	        case 'G': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_G);
+	        case 'H': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_H);
+	        case 'I': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_I);
+	        case 'J': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_J);
+	        case 'K': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_K);
+	        case 'L': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_L);
+	        case 'M': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_M);
+	        case 'N': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_N);
+	        case 'O': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_O);
+	        case 'P': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_P);
+	        case 'Q': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_Q);
+	        case 'R': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_R);
+	        case 'S': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_S);
+	        case 'T': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_T);
+	        case 'U': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_U);
+	        case 'V': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_V);
+	        case 'W': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_W);
+	        case 'X': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_X);
+	        case 'Y': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_Y);
+	        case 'Z': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_Z);
+	        case '`': return codes(Keyboard.KEY_GRAVE);
+	        case '0': return codes(Keyboard.KEY_0);
+	        case '1': return codes(Keyboard.KEY_1);
+	        case '2': return codes(Keyboard.KEY_2);
+	        case '3': return codes(Keyboard.KEY_3);
+	        case '4': return codes(Keyboard.KEY_4);
+	        case '5': return codes(Keyboard.KEY_5);
+	        case '6': return codes(Keyboard.KEY_6);
+	        case '7': return codes(Keyboard.KEY_7);
+	        case '8': return codes(Keyboard.KEY_8);
+	        case '9': return codes(Keyboard.KEY_9);
+	        case '-': return codes(Keyboard.KEY_MINUS);
+	        case '=': return codes(Keyboard.KEY_EQUALS);
+	        case '~': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_B);
+	        case '!': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_1);
+	        case '@': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_2);
+	        case '#': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_3);
+	        case '$': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_4);
+	        case '%': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_5);
+	        case '^': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_6);
+	        case '&': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_7);
+	        case '*': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_8);
+	        case '(': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_9);
+	        case ')': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_0);
+	        case '_': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_MINUS);
+	        case '+': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_EQUALS);
+	        case '\t': return codes(Keyboard.KEY_TAB);
+	        case '\n': return codes(Keyboard.KEY_RETURN);
+	        case '[': return codes(Keyboard.KEY_LBRACKET);
+	        case ']': return codes(Keyboard.KEY_RBRACKET);
+	        case '\\': return codes(Keyboard.KEY_BACKSLASH);
+	        case '{': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_LBRACKET);
+	        case '}': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_RBRACKET);
+	        case '|': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_BACKSLASH);
+	        case ';': return codes(Keyboard.KEY_SEMICOLON);
+	        case ':': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_SEMICOLON);
+	        case '\'': return codes(Keyboard.KEY_APOSTROPHE);
+	        case '"': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_APOSTROPHE);
+	        case ',': return codes(Keyboard.KEY_COMMA);
+	        case '<': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_COMMA);
+	        case '.': return codes(Keyboard.KEY_PERIOD);
+	        case '>': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_PERIOD);
+	        case '/': return codes(Keyboard.KEY_SLASH);
+	        case '?': return codes(Keyboard.KEY_LSHIFT, Keyboard.KEY_SLASH);
+	        case ' ': return codes(Keyboard.KEY_SPACE);
+        	case '\b': return codes(Keyboard.KEY_BACK);
+        	case '\r': return codes(Keyboard.KEY_RETURN);
+        	default: return codes();
+	        //default: throw new IllegalArgumentException("Cannot type character " + character);
         }
     }
 
@@ -154,13 +267,12 @@ public class KeyboardSimulator {
 
     private static void doType(int[] keyCodes, int offset, int length) {
     	try {
-			
-        if (length == 0) {
-            return;
-        }
-        robot.keyPress(keyCodes[offset]);
-        doType(keyCodes, offset + 1, length - 1);
-        robot.keyRelease(keyCodes[offset]);
+	        if (length == 0) {
+	            return;
+	        }
+	        robot.keyPress(keyCodes[offset]);
+	        doType(keyCodes, offset + 1, length - 1);
+	        robot.keyRelease(keyCodes[offset]);
 		} catch (Exception e) {
 			System.out.println("Cannot type keycode: " + keyCodes[offset]);
 		}
