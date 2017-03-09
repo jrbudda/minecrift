@@ -38,4 +38,4 @@ void main(void) {
 		discard; // Throw out the fragment to save some GPU processing
 		//out_Color = vec4(1, 0, 1, 1);
 	}
-}
+};
