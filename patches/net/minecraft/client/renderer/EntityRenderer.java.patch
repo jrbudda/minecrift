@@ -98,7 +98,7 @@
  import net.minecraft.util.MathHelper;
  import net.minecraft.util.MouseFilter;
  import net.minecraft.util.MovingObjectPosition;
-@@ -61,2593 +104,5112 @@
+@@ -61,2593 +104,5114 @@
  import net.minecraft.world.World;
  import net.minecraft.world.WorldProvider;
  import net.minecraft.world.biome.BiomeGenBase;
@@ -4746,6 +4746,7 @@
 +		int mouseX = 0;
 +		int mouseY = 0;
 +		final ScaledResolution var15 = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
++		GL11.glDisable(GL11.GL_STENCIL_TEST);
 +	
 +		if (this.mc.showSplashScreen)
 +		{
@@ -4919,6 +4920,7 @@
 +		this.mc.getFramebuffer().bindFramebufferTexture();
 +		this.mc.getFramebuffer().genMipMaps();
 +		this.mc.getFramebuffer().unbindFramebufferTexture();
++		GL11.glEnable(GL11.GL_STENCIL_TEST);
 +		
 +	}
 +

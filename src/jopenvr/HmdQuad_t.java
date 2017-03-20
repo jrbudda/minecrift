@@ -8,7 +8,7 @@ import java.util.List;
  * a tool written by <a href="http://ochafik.com/">Olivier Chafik</a> that <a href="http://code.google.com/p/jnaerator/wiki/CreditsAndLicense">uses a few opensource projects.</a>.<br>
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
-public class HmdQuad_t extends Structure {
+public class HmdQuad_t extends AlignedStructure {
 	/** struct vr::HmdVector3_t[4] */
 	public HmdVector3_t[] vCorners = new HmdVector3_t[4];
 	public HmdQuad_t() {
