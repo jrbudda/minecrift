@@ -35,20 +35,6 @@
      "META-INF/"
     ]
    }, 
-   "name": "de.fruitfly.ovr:JRiftLibrary:0.8.0.0.1", 
-   "natives": {
-    "windows": "natives-windows", 
-    "osx": "natives-osx", 
-    "linux": "natives-linux"
-   }
-  }, 
-  {
-   "url": "http://vivecraft.org/jar/", 
-   "extract": {
-    "exclude": [
-     "META-INF/"
-    ]
-   }, 
    "name": "net.aib42.mumblelink:JMumbleLibrary:1.11", 
    "natives": {
     "windows": "natives-windows", 
