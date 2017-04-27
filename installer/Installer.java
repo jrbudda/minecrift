@@ -65,9 +65,9 @@ public class Installer extends JPanel  implements PropertyChangeListener
     static private File targetDir;
     private String[] forgeVersions = null;
     private boolean forgeVersionInstalled = false;
-    private static final String FULL_FORGE_VERSION = MINECRAFT_VERSION + "-" + FORGE_VERSION + "-" + MINECRAFT_VERSION;
+    private static final String FULL_FORGE_VERSION = MINECRAFT_VERSION + "-" + FORGE_VERSION;
     private String forge_url = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/" + FULL_FORGE_VERSION + "/forge-" + FULL_FORGE_VERSION + "-installer.jar";
-    private File forgeInstaller = new File(tempDir + "/" + FULL_FORGE_VERSION + ".jar");
+    private File forgeInstaller = new File(tempDir + "/forge-" + FULL_FORGE_VERSION + "-installer.jar");
     private JTextField selectedDirText;
     private JLabel infoLabel;
     private JDialog dialog;
@@ -83,6 +83,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
     private JComboBox forgeVersion;
     private JCheckBox useHydra;
     private JCheckBox useHrtf;
+	private JComboBox ramAllocation;
     private final boolean QUIET_DEV = false;
 	private File releaseNotes = null;
     private static String releaseNotePathAddition = "";
@@ -315,14 +316,15 @@ public class Installer extends JPanel  implements PropertyChangeListener
                     } catch (Exception e) { }
                 }
             }
-            if (success) {
+              if (success) {
                 if (!checkMD5(fo, md5)){
-                    JOptionPane.showMessageDialog(null, "Bad md5 for " + fo.getName() + "!" + " actual: " + GetMd5(fo).toLowerCase(),"Error downloading", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Bad md5 for " + fo.getName() + "!" + " actual: " + GetMd5(fo).toLowerCase(),"Error downloading", JOptionPane.ERROR_MESSAGE);
                     fo.delete();
                     success = false;
                 }
-            }
 
+
+			}
             return success;
         }
 
@@ -331,7 +333,8 @@ public class Installer extends JPanel  implements PropertyChangeListener
 			if(b == null) return true;
 			return GetMd5(a).equalsIgnoreCase(b);
 		}
-		
+
+
         private String GetMd5(File fo)
         {
             if (!fo.exists())
@@ -377,6 +380,46 @@ public class Installer extends JPanel  implements PropertyChangeListener
         // Shamelessly ripped from Forge ClientInstall
         private boolean installForge(File target)
         {
+        	try {
+        		JOptionPane.showMessageDialog(null, "The Forge installer will launch. In it, please ensure \"Install client\" is selected and the correct directory is specified (default unless you changed it).", "Forge Installation", JOptionPane.INFORMATION_MESSAGE);
+        		final Process proc = new ProcessBuilder(isWindows ? "javaw" : "java", "-jar", target.getAbsolutePath()).start();
+        		new Thread("Forge Installer Stdout") { // needed otherwise subprocess blocks
+        			@Override
+        			public void run() {
+        				try {
+	        				BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+	        				String line;
+	        				while ((line = br.readLine()) != null) {
+	        					System.out.println(line);
+	        				}
+        				} catch (Exception e) {
+        					e.printStackTrace();
+        				}
+        			}
+        		}.start();
+        		new Thread("Forge Installer Stderr") { // same
+        			@Override
+        			public void run() {
+        				try {
+	        				BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+	        				String line;
+	        				while ((line = br.readLine()) != null) {
+	        					System.err.println(line);
+	        				}
+        				} catch (Exception e) {
+        					e.printStackTrace();
+        				}
+        			}
+        		}.start();
+        		proc.waitFor();
+        	} catch (Exception ex) {
+        		ex.printStackTrace();
+        		JOptionPane.showMessageDialog(null, "Error occurred launching Forge installer: " + ex.getClass().getName() + ": " + ex.getMessage() + "\nYou will need to install Forge " + FULL_FORGE_VERSION + " manually.", "Error", JOptionPane.ERROR_MESSAGE);
+        		return false;
+        	}
+        	
+        	return true;
+        	
 /*            File versionRootDir = new File(target,"versions");
             File versionTarget = new File(versionRootDir,MINECRAFT_VERSION);
             if (!versionTarget.mkdirs() && !versionTarget.isDirectory())
@@ -552,7 +595,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
                 return false;
             }
  */
-            return true;
+
 
 
 //            return success;
@@ -565,12 +608,12 @@ public class Installer extends JPanel  implements PropertyChangeListener
 				String minecriftVersionName = "vivecraft-" + version + mod;
 				s+=		minecriftVersionName;
 				File tar = new File(targetDir, "versions" + File.separator + minecriftVersionName + File.separator +  minecriftVersionName + ".jar");
-				s+= " " + MC_MD5 + " " + GetMd5(tar);
+				s+=MC_MD5 + " " + GetMd5(tar);
 				if(checkMD5(tar, MC_MD5)) return true;
 				
 				if(mc_jar == null){
 					File vanilla = new File(targetDir, "versions" + File.separator + MINECRAFT_VERSION + File.separator + MINECRAFT_VERSION+".jar");
-					s+= " " + MC_MD5 + " " + GetMd5(vanilla);
+					s+=MC_MD5 + " " + GetMd5(vanilla);
 					if(checkMD5(vanilla, MC_MD5)) mc_jar = vanilla;
 				}
 
@@ -581,7 +624,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
 					if (!mc_jar.exists() || !checkMD5(mc_jar, MC_MD5)) {
 
 						if (!downloadFile(mc_url, mc_jar, MC_MD5)) {
-							finalMessage += " Error: Failed to download " + MINECRAFT_VERSION + ".jar from " + mc_url;
+							JOptionPane.showMessageDialog(null, " Error: Failed to download " + MINECRAFT_VERSION + ".jar from " + mc_url, "Warning", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}
 					}
@@ -593,14 +636,16 @@ public class Installer extends JPanel  implements PropertyChangeListener
 			tar.getParentFile().mkdirs();
 			return copyInputStreamToFile(src, tar);
 
+					
             } catch (Exception e) {
-                finalMessage += " Error: "+e.getLocalizedMessage();
+				JOptionPane.showMessageDialog(null, " Error: "+e.getLocalizedMessage(), "Warning", JOptionPane.ERROR_MESSAGE);
 				return false;
             }
 
 
 
-        }
+
+	}
 
         private boolean ExtractVersion() {
             if( jar_id != null )
@@ -657,6 +702,25 @@ public class Installer extends JPanel  implements PropertyChangeListener
                         }
                         ver_json.close();
 
+						//modify json args if needed
+							try {
+								int jsonIndentSpaces = 2;
+								String profileName = getMinecraftProfileName(useForge.isSelected(), useShadersMod.isSelected());
+								File fileJson = ver_json_file;
+								String json = readAsciiFile(fileJson);
+								JSONObject root = new JSONObject(json);
+								String args = (String)root.get("minecraftArguments");
+								args += " --test";
+								root.put("minecraftArguments", args);
+								FileWriter fwJson = new FileWriter(fileJson);
+								fwJson.write(root.toString(jsonIndentSpaces));
+								fwJson.flush();
+								fwJson.close();
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+							}
+
                         // Extract new lib
                         File lib_dir = new File(targetDir,"libraries/com/mtbs3d/minecrift/"+version);
                         lib_dir.mkdirs();
@@ -670,10 +734,11 @@ public class Installer extends JPanel  implements PropertyChangeListener
                         //Create empty version jar file
                         //All code actually lives in libraries/
 
-                        //ZipOutputStream null_jar = new ZipOutputStream(new FileOutputStream(new File (ver_dir, jar_id+".jar")));
-                        //null_jar.putNextEntry(new ZipEntry("Classes actually in libraries directory"));
-                        //null_jar.closeEntry();
-                        //null_jar.close();
+						//1/2017 - dont do this anymore - better errors.
+                     //   ZipOutputStream null_jar = new ZipOutputStream(new FileOutputStream(new File (ver_dir, jar_id+".jar")));
+                     //   null_jar.putNextEntry(new ZipEntry("Classes actually in libraries directory"));
+                     //   null_jar.closeEntry();
+                     //   null_jar.close();
                         return ver_json_file.exists() && ver_file.exists();
                     } catch (Exception e) {
                         finalMessage += " Error: "+e.getLocalizedMessage();
@@ -748,6 +813,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
 		return true;
         }
 
+		
 		private boolean installFile(String osFolder, String resource){
 			File win32_dir = new File (targetDir, osFolder);
 			win32_dir.mkdirs();
@@ -761,6 +827,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
 			return true;		
 		}
 
+		
         // VIVE END - install openVR dll
 
         private void sleep(int millis)
@@ -994,7 +1061,15 @@ public class Installer extends JPanel  implements PropertyChangeListener
             }
             
             monitor.setProgress(50);
+            monitor.setNote("Checking for base game...");
 			
+     
+            if(!SetupMinecraftAsLibrary())
+            {
+            JOptionPane.showMessageDialog(null,
+                                         "Could not locate or download base game. The Mincraft Launcher will attempt to download it.",
+                                         "Warning!",JOptionPane.WARNING_MESSAGE);
+            }
             // VIVE START - install openVR
             monitor.setProgress(52);
             monitor.setNote("Installing OpenVR...");
@@ -1018,22 +1093,22 @@ public class Installer extends JPanel  implements PropertyChangeListener
                 installedForge = installForge(forgeInstaller);
             }
             monitor.setProgress(75);
-            monitor.setNote("Extracting correct Vivecraft version...");
-            finalMessage = "Failed: Couldn't extract Vivecraft. Try redownloading this installer.";
+            monitor.setNote("Extracting correct Minecrift version...");
+            finalMessage = "Failed: Couldn't extract Minecrift. Try redownloading this installer.";
             if(!ExtractVersion())
             {
                 monitor.close();
                 return null;
             }
-			
-			monitor.setNote("Checking for base game...");
-			if(!SetupMinecraftAsLibrary())
-            {
-            JOptionPane.showMessageDialog(null,
-                                         "Could not locate or download base game. The Mincraft Launcher will attempt to download it.",
-                                         "Warning!",JOptionPane.WARNING_MESSAGE);
-            }
-			
+
+
+
+
+
+
+
+
+
             if(useHrtf.isSelected())
             {
                 monitor.setProgress(85);
@@ -1105,10 +1180,11 @@ public class Installer extends JPanel  implements PropertyChangeListener
         {
             int option = JOptionPane.showOptionDialog(
                                          null,
-                                         "Please ensure you have closed the Minecraft launcher before proceeding.\n" +
-                                         "Also, if installing with Forge please ensure you have installed Forge " + FORGE_VERSION + " first.",
-                                         "Important!",
+                                         "Please ensure you have closed the Minecraft launcher before proceeding.\n" 
+                                         //"Also, if installing with Forge please ensure you have installed Forge " + FORGE_VERSION + " first.",
 
+
+                                         ,"Important!",
                                          JOptionPane.OK_CANCEL_OPTION,
                                          JOptionPane.WARNING_MESSAGE, null, null, null);
             
@@ -1175,17 +1251,22 @@ public class Installer extends JPanel  implements PropertyChangeListener
             }
             catch (Exception e) {}
 
+			java.text.DateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
             if (prof == null) {
                 prof = new JSONObject();
                 prof.put("name", profileName);
-                prof.put("javaArgs", "-Xmx2G -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:-UseAdaptiveSizePolicy -Xmn256M -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true");
+
                 prof.put("useHopperCrashService", false);
                 prof.put("launcherVisibilityOnGameClose", "keep the launcher open");
-				prof.put("launcherVisibilityOnGameClose", "keep the launcher open");
+
+                prof.put("created", dateFormat.format(new java.util.Date()));
                 profiles.put(profileName, prof);
             }
+
             prof.put("lastVersionId", minecriftVer + mod);
+			prof.put("javaArgs", "-Xmx" + ramAllocation.getSelectedItem() + "G -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:-UseAdaptiveSizePolicy -Xmn256M -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true");
             root.put("selectedProfile", profileName);
+            prof.put("lastUsed", dateFormat.format(new java.util.Date()));
 
             FileWriter fwJson = new FileWriter(fileJson);
             fwJson.write(root.toString(jsonIndentSpaces));
@@ -1366,7 +1447,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
         forgePanel.setLayout( new BoxLayout(forgePanel, BoxLayout.X_AXIS));
         //Create forge: no/yes buttons
         useForge = new JCheckBox();
-		useForge.setSelected(true); //and on that day, hundreds of clicks were saved.
+
         AbstractAction actf = new updateActionF();
         actf.putValue(AbstractAction.NAME, "Install Vivecraft with Forge " + FORGE_VERSION);
         useForge.setAction(actf);
@@ -1382,6 +1463,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
         //Add "yes" and "which version" to the forgePanel
         useForge.setAlignmentX(LEFT_ALIGNMENT);
         forgeVersion.setAlignmentX(LEFT_ALIGNMENT);
+        forgePanel.setAlignmentX(LEFT_ALIGNMENT);
         forgePanel.add(useForge);
         //forgePanel.add(forgeVersion);
 		
@@ -1434,12 +1516,35 @@ public class Installer extends JPanel  implements PropertyChangeListener
                         "</html>");
         useHrtf.setAlignmentX(LEFT_ALIGNMENT);
 
-        //Add option panels option panel
-        forgePanel.setAlignmentX(LEFT_ALIGNMENT);
+
+		
+        JPanel ramPanel = new JPanel();
+        ramPanel.setLayout( new BoxLayout(ramPanel, BoxLayout.X_AXIS));
+        ramPanel.setAlignmentX(LEFT_ALIGNMENT);
+        ramPanel.setAlignmentY(TOP_ALIGNMENT);
+
+		Integer[] rams = {1,2,4,6,8};
+
+		ramAllocation = new JComboBox(rams);
+		ramAllocation.setSelectedIndex(1);
+        ramAllocation.setToolTipText(
+                "<html>" +
+                "Select the amount of Ram, in GB to allocate to the Vivecraft profile." +
+                "At least 2GB is recommened. More than 1GB of ram requires 64 bit PC and java." +
+                "</html>");
+		ramAllocation.setAlignmentX(LEFT_ALIGNMENT);
+		ramAllocation.setMaximumSize( ramAllocation.getPreferredSize() );
+
+		JLabel ram = new JLabel("         Profile Ram Allocation (GB)");
+		ram.setAlignmentX(LEFT_ALIGNMENT);
         
+		ramPanel.add(ram);
+        ramPanel.add(ramAllocation);
+
         optPanel.add(forgePanel);
         optPanel.add(useShadersMod);
         optPanel.add(createProfile);
+		optPanel.add(ramPanel);
         optPanel.add(useHrtf);
         this.add(optPanel);
 
@@ -1454,7 +1559,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
         
         
         this.add(Box.createVerticalGlue());
-        JLabel github = linkify("Vivecraft is open source. find it on Github","https://github.com/jrbudda/minecrift/releases","Vivecraft Github");
+        JLabel github = linkify("Vivecraft is open source. find it on Github","https://github.com/jrbudda/minecrift","Vivecraft 1.7.10 Github");
         JLabel wiki = linkify("Vivecraft home page","http://www.vivecraft.org","Vivecraft Home");
         JLabel donate = linkify("If you think Vivecraft is awesome, please consider donating.","https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JVBJLN5HJJS52&lc=US&item_name=jrbudda&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)","jrbudda's Paypal");
         JLabel optifine = linkify("Vivecraft includes OptiFine for performance. Consider donating to them as well.","http://optifine.net/donate.php","http://optifine.net/donate.php");
@@ -1493,6 +1598,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
     	}
     	out+="</html>";
     	instructions.setText(out);
+		ramAllocation.setEnabled(createProfile.isSelected());
     	
     }
     
