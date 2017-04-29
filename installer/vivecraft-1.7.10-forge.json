@@ -254,5 +254,6 @@
   "mainClass": "net.minecraft.launchwrapper.Launch",
   "minimumLauncherVersion": 14,
   "assets": "1.7.10",
+  "inheritsFrom": "1.7.10",
   "jar": "1.7.10"
 }

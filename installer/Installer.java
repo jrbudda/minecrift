@@ -55,7 +55,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
     private static final String OF_JSON_NAME      = "1.7.10_HD_U_D1";
     private static final String OF_MD5            = "57c724fe8335c82aef8d54c101043e60";
     private static final String OF_VERSION_EXT    = ".jar";
-    private static final String FORGE_VERSION     = "10.13.4.1614";
+    private static final String FORGE_VERSION     = "10.13.4.1614-1.7.10";
     /* END OF DO NOT RENAME */
 
     private String mc_url = "https://s3.amazonaws.com/Minecraft.Download/versions/" + MINECRAFT_VERSION + "/" + MINECRAFT_VERSION +".jar";
@@ -322,8 +322,8 @@ public class Installer extends JPanel  implements PropertyChangeListener
                     fo.delete();
                     success = false;
                 }
-
-
+			} else {
+        		JOptionPane.showMessageDialog(null, "Could not download file: " + surl, "Download File", JOptionPane.INFORMATION_MESSAGE);
 			}
             return success;
         }
@@ -1086,6 +1086,8 @@ public class Installer extends JPanel  implements PropertyChangeListener
                 monitor.setProgress(55);
                 monitor.setNote("Downloading Forge " + FULL_FORGE_VERSION + "...");
                 downloadedForge = downloadFile(forge_url, forgeInstaller);
+				if(!downloadedForge)
+        		JOptionPane.showMessageDialog(null, "Could not download Forge. Please exit this installer and download it manually", "Forge Installation", JOptionPane.WARNING_MESSAGE);
             }
             if (downloadedForge && useForge.isSelected() && !forgeVersionInstalled) {
                 monitor.setProgress(65);
@@ -1100,14 +1102,6 @@ public class Installer extends JPanel  implements PropertyChangeListener
                 monitor.close();
                 return null;
             }
-
-
-
-
-
-
-
-
 
             if(useHrtf.isSelected())
             {
@@ -1466,6 +1460,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
         forgePanel.setAlignmentX(LEFT_ALIGNMENT);
         forgePanel.add(useForge);
         //forgePanel.add(forgeVersion);
+		useForge.setSelected(true); //and on that day, hundreds of clicks were saved.
 		
         // Profile creation / update support
         createProfile = new JCheckBox("", true);
@@ -1608,7 +1603,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
         {
             targetDir = targetDir.getCanonicalFile();
             if( targetDir.exists() ) {
-                File ForgeDir = new File( targetDir, "libraries"+File.separator+"net"+File.separator+"minecraftforge"+File.separator+"forge");
+                File ForgeDir = new File(targetDir, "libraries"+File.separator+"net"+File.separator+"minecraftforge"+File.separator+"forge");
                 if( ForgeDir.isDirectory() ) {
                     forgeVersions = ForgeDir.list();
                     if (forgeVersions != null && forgeVersions.length > 0) {
