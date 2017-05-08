@@ -295,7 +295,8 @@ public static boolean mrMovingCamActive;
 
 		mc = Minecraft.getMinecraft();
 		// look in .minecraft first for openvr_api.dll
-		File minecraftDir = Utils.getWorkingDirectory();
+		File minecraftDir = Utils.getWorkingDirectory(); // misleading name, actually the .minecraft directory
+		File workingDir = new File(System.getProperty("user.dir"));
 		
 		String osname = System.getProperty("os.name").toLowerCase();
 		String osarch= System.getProperty("os.arch").toLowerCase();
@@ -320,11 +321,13 @@ public static boolean mrMovingCamActive;
 		}
 		
 		
-		File openVRDir = new File( minecraftDir, osFolder );
-		String openVRPath = openVRDir.getPath();
-		System.out.println( "Adding OpenVR search path: "+openVRPath);
+		String openVRPath = new File(minecraftDir, osFolder).getPath();
+		System.out.println("Adding OpenVR search path: " + openVRPath);
+		NativeLibrary.addSearchPath("openvr_api", openVRPath);
 
-		NativeLibrary.addSearchPath("openvr_api", openVRPath);		
+		String openVRPath2 = new File(workingDir, osFolder).getPath();
+		System.out.println("Adding OpenVR search path: " + openVRPath2);
+		NativeLibrary.addSearchPath("openvr_api", openVRPath2);	
 
 		if(jopenvr.JOpenVRLibrary.VR_IsHmdPresent() == 0){
 			initStatus =  "VR Headset not detected.";
@@ -1847,7 +1850,7 @@ public static boolean mrMovingCamActive;
 			case EVREventType.EVREventType_VREvent_KeyboardClosed:
 				//'huzzah'
 				keyboardShowing = false;
-				if (mc.currentScreen instanceof GuiChat) {
+				if (mc.currentScreen instanceof GuiChat && !mc.vrSettings.seated) {
 					GuiTextField field = (GuiTextField)MCReflection.getField(MCReflection.chatInputField, mc.currentScreen);
 					if (field != null) {
 						String s = field.getText().trim();
@@ -2171,7 +2174,7 @@ public static boolean mrMovingCamActive;
 			guiPos_World = new Vector3f(
 					(float) (0 + mc.vrPlayer.getRoomOriginPos_World().xCoord),
 					(float) (1.3f + mc.vrPlayer.getRoomOriginPos_World().yCoord),
-					(float) ((playArea != null ? -playArea[1] / 2 : 0) - 0.3f + mc.vrPlayer.getRoomOriginPos_World().zCoord));
+					(float) ((playArea != null ? -playArea[1] / 2 : 1.5f) - 0.3f + mc.vrPlayer.getRoomOriginPos_World().zCoord));
 			
 			
 			guiRotationPose = new Matrix4f();
