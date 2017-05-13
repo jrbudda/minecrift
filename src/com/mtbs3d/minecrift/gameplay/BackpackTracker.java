@@ -18,8 +18,7 @@ public class BackpackTracker {
 	float mouthtoEyeDistance=0.0f;
 	float threshold=0.25f;
 	public Item[] items = new Item[2];
-	public boolean pressed;
-	public boolean wasIn;
+	public boolean[] wasIn = new boolean[2];
 
 	public boolean isActive(EntityPlayerSP p){
 		if(Minecraft.getMinecraft().vrSettings.seated)
@@ -41,33 +40,34 @@ public void doProcess(Minecraft minecraft, EntityPlayerSP player){
 
 	Vec3 hmdPos=provider.getHMDPos_Room();
 
-	int c = 0;
+	for(int c=0; c<2; c++) {
+		Vec3 controllerPos = MCOpenVR.controllerHistory[c].averagePosition(0.333).add(provider.getCustomControllerVector(c, new Vec3(0, 0, -0.1)));
+		controllerPos = controllerPos.add(minecraft.roomScale.getControllerDir_Room(c).scale(0.1));
 
-	Vec3 controllerPos=MCOpenVR.controllerHistory[c].averagePosition(0.333).add(provider.getCustomControllerVector(c,new Vec3(0,0,-0.1)));
-	controllerPos = controllerPos.add(minecraft.roomScale.getControllerDir_Room(c).scale(0.1));
+		if (
+				(Math.abs(hmdPos.yCoord - controllerPos.yCoord) < 0.25)
+						&& controllerPos.zCoord > hmdPos.zCoord
+						&& ((controllerPos.zCoord - hmdPos.zCoord) < 0.5)
+				) {
+			// Only run once per zone entrance
+			if (!wasIn[c]) {
+				wasIn[c] = true;
 
-	if(
-			(Math.abs(hmdPos.yCoord - controllerPos.yCoord) < 0.25)
-			&& controllerPos.zCoord > hmdPos.zCoord
-			&& ((controllerPos.zCoord - hmdPos.zCoord) < 0.5)
-    ){
-		// Only run once per zone entrance
-		if(!wasIn) {
-			wasIn = true;
+				provider.triggerHapticPulse(c,1500);
 
-			pressed = Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed();
+				boolean pressed = Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed();
 
-			// If we came in pressing
-			if (pressed) {
-				this.items[c] = player.getHeldItem().getItem();
-			} else {
-			    player.inventory.setCurrentItem(this.items[c], 0, false, player.capabilities.isCreativeMode);
+				// If we came in pressing
+				if (pressed) {
+					this.items[c] = player.getHeldItem().getItem();
+				} else {
+					player.inventory.setCurrentItem(this.items[c], 0, false, player.capabilities.isCreativeMode);
+				}
 			}
-
+		} else {
+			// Reset state
+			wasIn[c] = false;
 		}
-	} else {
-		// Reset state
-		wasIn = false;
 	}
 }
 
