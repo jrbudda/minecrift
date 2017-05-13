@@ -19,6 +19,7 @@ public class BackpackTracker {
 	float threshold=0.25f;
 	public Item[] items = new Item[2];
 	public boolean[] wasIn = new boolean[2];
+	public boolean[] wasPressed = new boolean[2];
 
 	public boolean isActive(EntityPlayerSP p){
 		if(Minecraft.getMinecraft().vrSettings.seated)
@@ -49,24 +50,25 @@ public void doProcess(Minecraft minecraft, EntityPlayerSP player){
 						&& controllerPos.zCoord > hmdPos.zCoord
 						&& ((controllerPos.zCoord - hmdPos.zCoord) < 0.5)
 				) {
+			wasIn[c] = true;
+			if(!wasPressed[c]) {
+				wasPressed[c] = Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed();
+			}
+		} else {
 			// Only run once per zone entrance
-			if (!wasIn[c]) {
-				wasIn[c] = true;
-
+			if (wasIn[c]) {
 				provider.triggerHapticPulse(c,1500);
 
-				boolean pressed = Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed();
-
 				// If we came in pressing
-				if (pressed) {
+				if (wasPressed[c]) {
 					this.items[c] = player.getHeldItem().getItem();
 				} else {
 					player.inventory.setCurrentItem(this.items[c], 0, false, player.capabilities.isCreativeMode);
 				}
 			}
-		} else {
 			// Reset state
 			wasIn[c] = false;
+			wasPressed[c] = false;
 		}
 	}
 }
