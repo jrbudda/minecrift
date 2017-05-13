@@ -62,10 +62,13 @@ public void doProcess(Minecraft minecraft, EntityPlayerSP player){
 			if (wasIn[c]) {
 				// If we pressed while in the zone
 				if (wasPressed[c]) {
-					this.items[c] = player.getHeldItem().getItem();
+					ItemStack heldStack = player.getHeldItem();
+					this.items[c] = (heldStack == null ? null : heldStack.getItem());
 				} else {
-					player.inventory.setCurrentItem(this.items[c], 0, false, player.capabilities.isCreativeMode);
-					provider.triggerHapticPulse(c,1500);
+					if(this.items[c] != null) {
+						player.inventory.setCurrentItem(this.items[c], 0, false, player.capabilities.isCreativeMode);
+						provider.triggerHapticPulse(c, 1500);
+					}
 				}
 			}
 			// Reset state
