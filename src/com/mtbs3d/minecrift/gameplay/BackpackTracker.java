@@ -53,17 +53,19 @@ public void doProcess(Minecraft minecraft, EntityPlayerSP player){
 			wasIn[c] = true;
 			if(!wasPressed[c]) {
 				wasPressed[c] = Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed();
+				if(wasPressed[c]) {
+					provider.triggerHapticPulse(c,1500);
+				}
 			}
 		} else {
 			// Only run once per zone entrance
 			if (wasIn[c]) {
-				provider.triggerHapticPulse(c,1500);
-
-				// If we came in pressing
+				// If we pressed while in the zone
 				if (wasPressed[c]) {
 					this.items[c] = player.getHeldItem().getItem();
 				} else {
 					player.inventory.setCurrentItem(this.items[c], 0, false, player.capabilities.isCreativeMode);
+					provider.triggerHapticPulse(c,1500);
 				}
 			}
 			// Reset state
