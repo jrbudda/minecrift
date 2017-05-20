@@ -234,24 +234,6 @@
     {
       "name": "de.fruitfly.ovr:JRift:0.8.0.0.1",
    "url": "http://vivecraft.org/jar/"
-    },
-    {
-      "name": "net.aib42.mumblelink:JMumble:1.11",
-   "url": "http://vivecraft.org/jar/"
-    }, 
-    {
-      "name": "net.aib42.mumblelink:JMumbleLibrary:1.11",
-   "url": "http://vivecraft.org/jar/", 
-      "natives": {
-        "linux": "natives-linux",
-        "windows": "natives-windows",
-        "osx": "natives-osx"
-      },
-      "extract": {
-        "exclude": [
-          "META-INF/"
-        ]
-      }
     }
 
   ],

@@ -26,24 +26,6 @@
   {
    "url": "http://vivecraft.org/jar/", 
    "name": "de.fruitfly.ovr:JRift:0.8.0.0.1"
-  }, 
-  {
-   "url": "http://vivecraft.org/jar/", 
-   "name": "net.aib42.mumblelink:JMumble:1.11"
-  }, 
-  {
-   "url": "http://vivecraft.org/jar/", 
-   "extract": {
-    "exclude": [
-     "META-INF/"
-    ]
-   }, 
-   "name": "net.aib42.mumblelink:JMumbleLibrary:1.11", 
-   "natives": {
-    "windows": "natives-windows", 
-    "osx": "natives-osx", 
-    "linux": "natives-linux"
-   }
   }
  ], 
  "mainClass": "net.minecraft.launchwrapper.Launch", 
