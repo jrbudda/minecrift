@@ -6,6 +6,7 @@ import com.mtbs3d.minecrift.control.ViveButtons;
 import com.mtbs3d.minecrift.render.QuaternionHelper;
 import com.mtbs3d.minecrift.settings.VRHotkeys;
 import com.mtbs3d.minecrift.settings.VRSettings;
+import com.mtbs3d.minecrift.utils.InputInjector;
 import com.mtbs3d.minecrift.utils.KeyboardSimulator;
 import com.mtbs3d.minecrift.utils.MCReflection;
 import com.sun.jna.Memory;
@@ -1872,7 +1873,9 @@ public static boolean mrMovingCamActive;
 					try {
 						for (char ch : str.toCharArray()) {
 							int[] codes = KeyboardSimulator.getLWJGLCodes(ch);
-							mc.currentScreen.keyTypedPublic(ch, codes.length > 0 ? codes[codes.length - 1] : 0);
+							int code = codes.length > 0 ? codes[codes.length - 1] : 0;
+							if (InputInjector.isSupported()) InputInjector.typeKey(code, ch);
+							else mc.currentScreen.keyTypedPublic(ch, code);
 							break;
 						}
 					} catch (Exception e) {
@@ -2174,7 +2177,7 @@ public static boolean mrMovingCamActive;
 			guiPos_World = new Vector3f(
 					(float) (0 + mc.vrPlayer.getRoomOriginPos_World().xCoord),
 					(float) (1.3f + mc.vrPlayer.getRoomOriginPos_World().yCoord),
-					(float) ((playArea != null ? -playArea[1] / 2 : 1.5f) - 0.3f + mc.vrPlayer.getRoomOriginPos_World().zCoord));
+					(float) ((playArea != null ? -playArea[1] / 2 : -1.5f) - 0.3f + mc.vrPlayer.getRoomOriginPos_World().zCoord));
 			
 			
 			guiRotationPose = new Matrix4f();

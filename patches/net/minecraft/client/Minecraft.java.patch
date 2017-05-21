@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
-@@ -1,40 +1,110 @@
+@@ -1,40 +1,109 @@
  package net.minecraft.client;
  
 -import com.google.common.collect.Iterables;
@@ -113,7 +113,6 @@
 +import de.fruitfly.ovr.structs.Sizei;
 +import de.fruitfly.ovr.structs.Vector3f;
 +import io.netty.util.concurrent.GenericFutureListener;
-+import net.aib42.mumblelink.MumbleLink;
  import net.minecraft.block.Block;
  import net.minecraft.block.material.Material;
  import net.minecraft.client.audio.MusicTicker;
@@ -122,7 +121,7 @@
  import net.minecraft.client.entity.EntityClientPlayerMP;
  import net.minecraft.client.gui.FontRenderer;
  import net.minecraft.client.gui.GuiChat;
-@@ -68,6 +138,8 @@
+@@ -68,6 +137,8 @@
  import net.minecraft.client.renderer.RenderGlobal;
  import net.minecraft.client.renderer.Tessellator;
  import net.minecraft.client.renderer.WorldRenderer;
@@ -131,7 +130,7 @@
  import net.minecraft.client.renderer.entity.RenderManager;
  import net.minecraft.client.renderer.texture.DynamicTexture;
  import net.minecraft.client.renderer.texture.TextureManager;
-@@ -97,6 +169,7 @@
+@@ -97,6 +168,7 @@
  import net.minecraft.client.settings.GameSettings;
  import net.minecraft.client.settings.KeyBinding;
  import net.minecraft.client.shader.Framebuffer;
@@ -139,7 +138,7 @@
  import net.minecraft.client.stream.IStream;
  import net.minecraft.client.stream.NullStream;
  import net.minecraft.client.stream.TwitchStream;
-@@ -127,6 +200,8 @@
+@@ -127,6 +199,8 @@
  import net.minecraft.profiler.Profiler;
  import net.minecraft.server.MinecraftServer;
  import net.minecraft.server.integrated.IntegratedServer;
@@ -148,7 +147,7 @@
  import net.minecraft.stats.AchievementList;
  import net.minecraft.stats.IStatStringFormat;
  import net.minecraft.stats.StatFileWriter;
-@@ -142,6 +217,7 @@
+@@ -142,6 +216,7 @@
  import net.minecraft.util.Session;
  import net.minecraft.util.Timer;
  import net.minecraft.util.Util;
@@ -156,7 +155,7 @@
  import net.minecraft.world.EnumDifficulty;
  import net.minecraft.world.WorldProviderEnd;
  import net.minecraft.world.WorldProviderHell;
-@@ -150,2988 +226,4966 @@
+@@ -150,2988 +225,4962 @@
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
@@ -1180,7 +1179,6 @@
 +	public Method fieldResizedMethod = null;
 +	public IStereoProvider stereoProvider;
 +	public VRSettings vrSettings;
-+	public MumbleLink mumbleLink;
 +	public long lastIntegratedServerLaunchCheck = 0;
 +	public boolean integratedServerLaunchInProgress = false;
 +	public boolean lastEnableVsync = true;
@@ -6005,9 +6003,6 @@
 +			} catch (NullPointerException what) {} // I don't know
 +		}
 +		//}
-+		if( mumbleLink != null ) {
-+			mumbleLink.updateMumble((float)hmdPos.xCoord, (float)hmdPos.yCoord, (float)hmdPos.zCoord, (float)hmdDir.xCoord, (float)hmdDir.yCoord, (float)hmdDir.zCoord, (float)up.xCoord, (float)up.yCoord, (float)up.zCoord);
-+		}
 +	}
 +	
 +	
