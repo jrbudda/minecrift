@@ -15,12 +15,9 @@ import java.util.Random;
  * Created by cincodenada on 13-May-17.
  */
 public class BackpackTracker {
-	float mouthtoEyeDistance=0.0f;
-	float threshold=0.25f;
-	public Item[] items = new Item[2];
 	public boolean[] wasIn = new boolean[2];
-	public boolean[] wasPressed = new boolean[2];
-
+	public int previousSlot = -1;
+	
 	public boolean isActive(EntityPlayerSP p){
 		if(Minecraft.getMinecraft().vrSettings.seated)
 			return false;
@@ -30,52 +27,46 @@ public class BackpackTracker {
 		return true;
 	}
 
-private Random r = new Random();
-
 	
-public void doProcess(Minecraft minecraft, EntityPlayerSP player){
-	if(!isActive(player)) {
-		return;
-	}
-	IRoomscaleAdapter provider = minecraft.roomScale;
-
-	Vec3 hmdPos=provider.getHMDPos_Room();
-
-	for(int c=0; c<2; c++) {
-		Vec3 controllerPos = MCOpenVR.controllerHistory[c].averagePosition(0.333).add(provider.getCustomControllerVector(c, new Vec3(0, 0, -0.1)));
-		controllerPos = controllerPos.add(minecraft.roomScale.getControllerDir_Room(c).scale(0.1));
-
-		if (
-				(Math.abs(hmdPos.yCoord - controllerPos.yCoord) < 0.25)
-						&& controllerPos.zCoord > hmdPos.zCoord
-						&& ((controllerPos.zCoord - hmdPos.zCoord) < 0.5)
-				) {
-			wasIn[c] = true;
-			if(!wasPressed[c]) {
-				wasPressed[c] = Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed();
-				if(wasPressed[c]) {
-					provider.triggerHapticPulse(c,1500);
-				}
-			}
-		} else {
-			// Only run once per zone entrance
-			if (wasIn[c]) {
-				// If we pressed while in the zone
-				if (wasPressed[c]) {
-					ItemStack heldStack = player.getHeldItem();
-					this.items[c] = (heldStack == null ? null : heldStack.getItem());
-				} else {
-					if(this.items[c] != null) {
-						player.inventory.setCurrentItem(this.items[c], 0, false, player.capabilities.isCreativeMode);
-						provider.triggerHapticPulse(c, 1500);
-					}
-				}
-			}
-			// Reset state
-			wasIn[c] = false;
-			wasPressed[c] = false;
+	private Vec3 down = Vec3.createVectorHelper(0, -1, 0);
+	
+	public void doProcess(Minecraft minecraft, EntityPlayerSP player){
+		if(!isActive(player)) {
+			return;
 		}
-	}
+		IRoomscaleAdapter provider = minecraft.roomScale;
+
+		Vec3 hmdPos=provider.getHMDPos_Room();
+
+		for(int c=0; c<1; c++) { //just main for 1710, no dual wielding
+			Vec3 controllerPos = provider.getControllerPos_Room(c);//.add(provider.getCustomControllerVector(c, new Vec3(0, 0, -0.1)));
+			Vec3 controllerDir = minecraft.roomScale.getControllerDir_World(c);
+			Vec3 hmddir = provider.getHMDDir_World();
+			Vec3 hmdpos = provider.getHMDPos_Room();
+			Vec3 delta = hmdPos.subtractProperly(controllerPos);
+			double dot = controllerDir.dotProduct(down);
+			double dotDelta = delta.dotProduct(hmddir);
+
+			if ( 
+					((hmdPos.yCoord - controllerPos.yCoord) > 0.05) && //controller below hmd
+					(dot > .8) && // pointing approx down
+					(dotDelta > 0) // behind head
+					){
+				if(!wasIn[c]){
+					if(player.inventory.currentItem != 0){
+						previousSlot = player.inventory.currentItem;
+						player.inventory.currentItem = 0;	
+					} else {
+						player.inventory.currentItem = previousSlot;
+						previousSlot = -1;
+					}
+					provider.triggerHapticPulse(c, 1500);
+					wasIn[c] = true;
+				}
+			} else {
+				wasIn[c] = false;
+			}
+		}
 }
 
 }
