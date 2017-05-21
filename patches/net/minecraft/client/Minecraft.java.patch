@@ -85,6 +85,7 @@
 +import com.mtbs3d.minecrift.api.IRoomscaleAdapter;
 +import com.mtbs3d.minecrift.api.IStereoProvider;
 +import com.mtbs3d.minecrift.control.VRControllerButtonMapping;
++import com.mtbs3d.minecrift.gameplay.BackpackTracker;
 +import com.mtbs3d.minecrift.gameplay.BowTracker;
 +import com.mtbs3d.minecrift.gameplay.ClimbTracker;
 +import com.mtbs3d.minecrift.gameplay.EatingTracker;
@@ -1028,6 +1029,7 @@
 +	// VIVE START - teleport movement
 +	public OpenVRPlayer vrPlayer; 
 +	public IRoomscaleAdapter roomScale;
++	public BackpackTracker backpackTracker = new BackpackTracker();
 +	public BowTracker bowTracker = new BowTracker();
 +	public SwimTracker swimTracker = new SwimTracker();
 +	public EatingTracker autoFood=new EatingTracker();
