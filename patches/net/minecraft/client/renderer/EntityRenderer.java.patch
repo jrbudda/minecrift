@@ -4407,7 +4407,7 @@
 +					eye = Vec3.createVectorHelper(mc.vrSettings.vrFixedCamposX, mc.vrSettings.vrFixedCamposY, mc.vrSettings.vrFixedCamposZ);
 +				}
 +			}
-+			Vector3f guipos = MCOpenVR.guiPos_World;
++			Vector3f guipos = MCOpenVR.guiPos_Room;
 +			Matrix4f guirot = MCOpenVR.guiRotationPose; 
 +			Vec3 guiLocal = Vec3.createVectorHelper(0, 0, 0);		
 +	
@@ -4561,7 +4561,7 @@
 +				Vec3 pos = posAvg.add(Vec3.createVectorHelper(dir.xCoord * dist, dir.yCoord * dist, dir.zCoord * dist));
 +				guipos = new Vector3f((float)pos.xCoord, (float)pos.yCoord, (float)pos.zCoord);
 +				guirot = Matrix4f.rotationY(-(yawAvg + (float)Math.PI / 2)); // don't ask
-+				MCOpenVR.guiPos_World = guipos;
++				MCOpenVR.guiPos_Room = guipos;
 +				MCOpenVR.guiRotationPose = guirot;
 +			}
 +			

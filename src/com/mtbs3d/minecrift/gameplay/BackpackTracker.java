@@ -47,11 +47,10 @@ public class BackpackTracker {
 			double dot = controllerDir.dotProduct(down);
 			double dotDelta = delta.dotProduct(hmddir);
 
-			if ( 
-					((hmdPos.yCoord - controllerPos.yCoord) > 0.05) && //controller below hmd
-					(dot > .8) && // pointing approx down
-					(dotDelta > 0) // behind head
-					){
+			boolean zone = ((Math.abs(hmdPos.yCoord - controllerPos.yCoord)) < 0.25) && //controller below hmd
+					(dotDelta > 0); // behind head
+			
+			if (zone){
 				if(!wasIn[c]){
 					if(player.inventory.currentItem != 0){
 						previousSlot = player.inventory.currentItem;

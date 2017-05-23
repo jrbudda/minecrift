@@ -566,7 +566,7 @@
 +            if(!this.capabilities.isFlying && !this.inWater) addFactor = VRSettings.getInertiaAddFactor(inertiaFactor);
 +            
 +            float yAdd = 1f;
-+            if(this.capabilities.isFlying) yAdd = 3f; //HACK
++            if(this.capabilities.isFlying) yAdd = 5f; //HACK
 +            
 +            this.motionX = this.motionX + (mX * addFactor);
 +            this.motionZ = this.motionZ + (mZ * addFactor);
