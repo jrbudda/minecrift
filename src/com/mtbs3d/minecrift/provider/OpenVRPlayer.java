@@ -10,6 +10,8 @@ import de.fruitfly.ovr.util.BufferUtil;
 import io.netty.util.concurrent.GenericFutureListener;
 import jopenvr.OpenVRUtil;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLadder;
+import net.minecraft.block.BlockVine;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.block.material.Material;
@@ -182,6 +184,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
     
 	public void checkandUpdateRotateScale(boolean onFrame, float nano){
 		Minecraft mc = Minecraft.getMinecraft();
+		if(mc.thePlayer == null || mc.thePlayer.initFromServer == false) return;
 		if(mc.currentScreen!=null) return;
 		if(!onFrame) {
 			if(this.wfCount > 0){
@@ -1077,7 +1080,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 		//jrbudda require arc hitting top of block.	unless ladder or vine.
 		//	System.out.println(testClimb.getUnlocalizedName() + " " + collision.typeOfHit + " " + collision.sideHit);
 			   				   			   
-			if ( testClimb == Blocks.ladder || testClimb == Blocks.vine) {
+			if(testClimb instanceof BlockLadder|| testClimb instanceof BlockVine){
 			            Vec3 dest = Vec3.createVectorHelper(collision.blockX+0.5, collision.blockY + 0.5, collision.blockZ+0.5);
 	            		Block playerblock = player.worldObj.getBlock((int)player.posX, (int)player.boundingBox.minY -1, (int)player.posZ);
 	            		if(playerblock == testClimb) dest.yCoord-=1;
@@ -1364,7 +1367,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         				{
         					if(canact){
         						mc.playerController.attackEntity(player, hitEntity);
-        						this.triggerHapticPulse(0, 1000);
+        						MCOpenVR.triggerHapticPulse(0, 1000);
         						lastWeaponSolid = true;
         					}
         					inAnEntity = true;
@@ -1397,7 +1400,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         							}
         						}
         					} else {
-        						if(canact && (!mc.vrSettings.realisticClimbEnabled || block != Blocks.ladder)) {
+        						if(canact && (!mc.vrSettings.realisticClimbEnabled || !(block instanceof BlockLadder))) {
         							int p = 3;
         							if(item instanceof ItemHoe){
         								Minecraft.getMinecraft().playerController.onPlayerRightClick(player, player.worldObj, is, bx, by, bz, col.sideHit, col.hitVec);
@@ -1430,7 +1433,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 
         								}
         							}
-        							this.triggerHapticPulse(0, 1000);
+        							MCOpenVR.triggerHapticPulse(0, 1000);
         							//   System.out.println("Hit block speed =" + speed + " mot " + mot + " thresh " + speedthresh) ;            				
         							lastWeaponSolid = true;
         						}
@@ -1604,11 +1607,6 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 		return Vec3.createVectorHelper(0, 1, 0);
 	}
 	
-
-	@Override
-	public void triggerHapticPulse(int controller, int strength) {
-		MCOpenVR.triggerHapticPulse(controller, strength);
-	}
 
 	@Override
 	public FloatBuffer getHMDMatrix_World() {
@@ -1787,6 +1785,12 @@ public class OpenVRPlayer implements IRoomscaleAdapter
 		}
 	}
     // VIVE END - function to allow damaging blocks immediately
+
+	public Vec3 getHMDDir_Room() {
+		Vector3f v3 = MCOpenVR.headDirection;
+		Vec3 out = Vec3.createVectorHelper(v3.x, v3.y, v3.z);
+		return out;
+	}
 
 
 

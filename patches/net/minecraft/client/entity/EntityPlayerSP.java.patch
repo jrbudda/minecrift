@@ -429,7 +429,7 @@
          this.worldObj.playSound(this.posX, this.posY - (double)this.yOffset, this.posZ, name, volume, pitch, false);
      }
  
-@@ -662,4 +853,290 @@
+@@ -662,4 +853,292 @@
      }
  
      protected void sendHorseJump() {}
@@ -619,6 +619,8 @@
 +        OpenVRPlayer.get().snapRoomOriginToPlayerEntity(this, true, false, 1);
 +      
 +		if(initFromServer == false){
++			this.setLocationAndAngles(x, y, z, yaw, pitch);
++			mc.entityRenderer.interpolatedPlayerPos = Vec3.createVectorHelper(x,y,z);
 +            initFromServer = true;    
 +        }
 +    }

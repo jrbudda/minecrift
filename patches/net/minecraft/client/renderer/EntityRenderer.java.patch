@@ -98,7 +98,7 @@
  import net.minecraft.util.MathHelper;
  import net.minecraft.util.MouseFilter;
  import net.minecraft.util.MovingObjectPosition;
-@@ -61,2593 +104,5114 @@
+@@ -61,2593 +104,5124 @@
  import net.minecraft.world.World;
  import net.minecraft.world.WorldProvider;
  import net.minecraft.world.biome.BiomeGenBase;
@@ -2107,8 +2107,9 @@
 +
 +			if (this.mc.theWorld == null || mc.currentScreen instanceof GuiWinGame) {
 +				this.mc.mcProfiler.startSection("renderGui");
-+					if(!mc.bowTracker.isDrawing)
-+						renderGuiLayer(par1);
++	            if(!mc.bowTracker.isDrawing){				
++	            	renderGuiLayer(par1);  
++	            }
 +				this.mc.mcProfiler.endSection();
 +			}
 +			
@@ -2736,8 +2737,17 @@
 +			/** END MINECRIFT SHADERS MOD **/
 +			
 +		this.mc.mcProfiler.endStartSection("renderGui");
-+			if(!mc.bowTracker.isDrawing)
++			if(!mc.bowTracker.isDrawing){
 +				renderGuiLayer(par1);
++            	if(mc.currentScreen !=null && !mc.vrSettings.hudOcclusion){
++            		RenderHelper.enableStandardItemLighting();
++            		this.enableLightmap(par1);
++            		this.renderHand(par1,0);
++            		this.renderLeftHand(par1);
++    				RenderHelper.disableStandardItemLighting();
++    				this.disableLightmap(par1);
++            	}
++			}
 +			
 +		this.mc.mcProfiler.endSection();
 +

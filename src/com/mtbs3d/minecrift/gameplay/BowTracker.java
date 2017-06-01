@@ -149,8 +149,8 @@ public class BowTracker {
 
 		if(isDrawing && !pressed && lastpressed && getDrawPercent() > 0.0) {
 			//fire!
-			provider.triggerHapticPulse(0, 500); 	
-			provider.triggerHapticPulse(1, 3000); 	
+			MCOpenVR.triggerHapticPulse(0, 500); 	
+			MCOpenVR.triggerHapticPulse(1, 3000); 	
 			NetworkHelper.getVivecraftClientPacket(PacketDiscriminators.DRAW, ByteBuffer.allocate(4).putFloat((float) getDrawPercent()).array());
 			Minecraft.getMinecraft().playerController.onStoppedUsingItem(player); //server
 			isDrawing = false;     	
@@ -161,8 +161,8 @@ public class BowTracker {
 		}
 		
 		if (!isDrawing && canDraw && !lastcanDraw) {
-			provider.triggerHapticPulse(1, 800);
-			provider.triggerHapticPulse(0, 800); 	
+			MCOpenVR.triggerHapticPulse(1, 800);
+			MCOpenVR.triggerHapticPulse(0, 800); 	
 			//notch     	    	
 		}
 		
@@ -180,13 +180,13 @@ public class BowTracker {
 			double drawperc=getDrawPercent();
 			int hapstep=(int)(drawperc*4*4*3);
 			if ( hapstep % 2 == 0 && lasthapStep!= hapstep) {
-				provider.triggerHapticPulse(0, hap);
+				MCOpenVR.triggerHapticPulse(0, hap);
 				if(drawperc==1)
-					provider.triggerHapticPulse(1,hap);
+					MCOpenVR.triggerHapticPulse(1,hap);
 			}
 
 			if(isCharged() && hapcounter %4==0){
-				provider.triggerHapticPulse(1,200);
+				MCOpenVR.triggerHapticPulse(1,200);
 			}
 			
 			//else if(drawperc==1 && hapcounter % 8 == 0){

@@ -57,7 +57,6 @@ public interface IRoomscaleAdapter  {
 	public Vec3 getRoomOriginPos_World(); //degrees
 	public Vec3 getRoomOriginUpDir_World(); //what do you do
 	
-	public void triggerHapticPulse(int controller, int duration);
 	public Vec3 getControllerPos_Room(int i);
 	public Vec3 getControllerPos_World(int c);
 	public Vec3 getControllerDir_World(int c);

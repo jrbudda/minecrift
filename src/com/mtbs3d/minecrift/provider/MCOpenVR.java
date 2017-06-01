@@ -479,7 +479,7 @@ public class MCOpenVR
 			vrOverlay.read();					
 			System.out.println("OpenVR Overlay initialized OK");
 		} else {
-			if (getError() == 7) {
+			if (getError() != 0) {
 				System.out.println("VROverlay init failed: " + jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
 				vrOverlay = null;
 			} else {
@@ -497,7 +497,7 @@ public class MCOpenVR
 			vrSettings.read();					
 			System.out.println("OpenVR Settings initialized OK");
 		} else {
-			if (getError() == 7) {
+			if (getError() != 0) {
 				System.out.println("VRSettings init failed: " + jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
 				vrSettings = null;
 			} else {
@@ -594,7 +594,7 @@ public class MCOpenVR
 			vrRenderModels.read();			
 			System.out.println("OpenVR RenderModels initialized OK");
 		} else {
-			if (getError() == 7) {
+			if (getError() != 0) {
 				System.out.println("VRRenderModels init failed: " + jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
 				vrRenderModels = null;
 			} else {
@@ -610,7 +610,7 @@ public class MCOpenVR
 			vrChaperone.read();
 			System.out.println("OpenVR chaperone initialized.");
 		} else {
-			if (getError() == 7) {
+			if (getError() != 0) {
 				System.out.println("VRChaperone init failed: " + jopenvr.JOpenVRLibrary.VR_GetVRInitErrorAsEnglishDescription(getError()).getString(0));
 				vrChaperone = null;
 			} else {
@@ -732,7 +732,7 @@ public class MCOpenVR
 		//all that maths for this.
 		if(box != mc.thePlayer.inventory.currentItem){
 			mc.thePlayer.inventory.currentItem = box;	
-			vrsystem.TriggerHapticPulse.apply(controllerDeviceIndex[0], 0, (short) 750);
+			triggerHapticPulse(0, 750);
 		}
 	}
 
@@ -756,9 +756,10 @@ public class MCOpenVR
 
 				keyboardShowing = 0 == ret; //0 = no error, > 0 see EVROverlayError	
 
-
 				if (ret != 0) {
-					System.out.println("VR Overlay Error: " + vrOverlay.GetOverlayErrorNameFromEnum.apply(ret).getString(0));
+					String err =  vrOverlay.GetOverlayErrorNameFromEnum.apply(ret).getString(0);
+					System.out.println("VR Overlay Error: " + err);
+					if(err.equalsIgnoreCase("VROverlayError_KeyboardAlreadyInUse")) keyboardShowing = true;
 				}
 
 				if (!Display.isActive()) mc.printChatMessage("Warning: Game window is not in focus, VR keyboard will not function.");
@@ -790,7 +791,7 @@ public class MCOpenVR
 
 		Vector3f controllerPos = new Vector3f();
 		//OpenVRUtil.convertMatrix4ftoTranslationVector(controllerPose[0]);
-		Vec3 con = mc.vrPlayer.getControllerPos_World(0);
+		Vec3 con = mc.entityRenderer.getControllerRenderPos(0);
 		controllerPos.x	= (float) con.xCoord;
 		controllerPos.y	= (float) con.yCoord;
 		controllerPos.z	= (float) con.zCoord;
@@ -1992,7 +1993,7 @@ public class MCOpenVR
 	private static void changeHotbar(int dir){
 		mc.thePlayer.inventory.changeCurrentItem(dir);
 		short duration = 250;
-		vrsystem.TriggerHapticPulse.apply(controllerDeviceIndex[1], 0, duration);
+		triggerHapticPulse( mc.vrSettings.vrReverseHands ? 0: 1, 250);
 	}
 
 	private static void updatePose()
@@ -2174,7 +2175,7 @@ public class MCOpenVR
 			mc.vrSettings.vrWorldRotation = 0;
 			mc.vrPlayer.worldRotationRadians = (float) Math.toRadians( mc.vrSettings.vrWorldRotation);
 			float[] playArea = getPlayAreaSize();
-			Vector3f guiPos_World = new Vector3f(
+			guiPos_Room = new Vector3f(
 					(float) (0 + mc.vrPlayer.getRoomOriginPos_World().xCoord),
 					(float) (1.3f + mc.vrPlayer.getRoomOriginPos_World().yCoord),
 					(float) ((playArea != null ? -playArea[1] / 2 : -1.5f) - 0.3f + mc.vrPlayer.getRoomOriginPos_World().zCoord));
@@ -2331,7 +2332,7 @@ public class MCOpenVR
 	}
 
 
-	static void triggerHapticPulse(int controller, int strength) {
+	public static void triggerHapticPulse(int controller, int strength) {
 		if (controllerDeviceIndex[controller]==-1)
 			return;
 		vrsystem.TriggerHapticPulse.apply(controllerDeviceIndex[controller], 0, (short)strength);

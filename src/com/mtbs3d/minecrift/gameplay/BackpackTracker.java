@@ -41,7 +41,7 @@ public class BackpackTracker {
 		for(int c=0; c<1; c++) { //just main for 1710, no dual wielding
 			Vec3 controllerPos = provider.getControllerPos_Room(c);//.add(provider.getCustomControllerVector(c, new Vec3(0, 0, -0.1)));
 			Vec3 controllerDir = minecraft.roomScale.getControllerDir_World(c);
-			Vec3 hmddir = provider.getHMDDir_World();
+			Vec3 hmddir = minecraft.vrPlayer.getHMDDir_Room();
 			Vec3 hmdpos = provider.getHMDPos_Room();
 			Vec3 delta = hmdPos.subtractProperly(controllerPos);
 			double dot = controllerDir.dotProduct(down);
@@ -59,7 +59,7 @@ public class BackpackTracker {
 						player.inventory.currentItem = previousSlot;
 						previousSlot = -1;
 					}
-					provider.triggerHapticPulse(c, 1500);
+					MCOpenVR.triggerHapticPulse(c, 1500);
 					wasIn[c] = true;
 				}
 			} else {

@@ -6,6 +6,8 @@ import com.mtbs3d.minecrift.api.IRoomscaleAdapter;
 import com.mtbs3d.minecrift.provider.MCOpenVR;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLadder;
+import net.minecraft.block.BlockVine;
 import net.minecraft.block.material.Material;
 
 import net.minecraft.client.Minecraft;
@@ -67,7 +69,7 @@ public class ClimbTracker {
 	        int bz = (int) MathHelper.floor_double(controllerPos.zCoord);
 	        
 			Block b = minecraft.theWorld.getBlock(bx, by, bz);
-			if(b == Blocks.ladder || b ==Blocks.vine){
+			if(b instanceof BlockLadder|| b instanceof BlockVine){
 				int meta = minecraft.theWorld.getBlockMetadata(bx,  by,  bz);
 				Vec3 cpos = Vec3.createVectorHelper(controllerPos.xCoord - bx, controllerPos.yCoord - by, controllerPos.zCoord - bz);
 
@@ -90,25 +92,25 @@ public class ClimbTracker {
 
 
 		if(!ok[0] && c0Latched){
-			minecraft.vrPlayer.triggerHapticPulse(0, 200);
+			MCOpenVR.triggerHapticPulse(0, 200);
 		}
 
 		if(ok[0] && !c0Latched){
 			latchStart[0] = minecraft.roomScale.getControllerPos_World(0);
 			latchStartBodyY[0] = player.posY;
 			latchStartController = 0;
-			minecraft.vrPlayer.triggerHapticPulse(0, 1000);
+			MCOpenVR.triggerHapticPulse(0, 1000);
 		}
 
 		if(!ok[1] && c1Latched){
-			minecraft.vrPlayer.triggerHapticPulse(1, 200);
+			MCOpenVR.triggerHapticPulse(1, 200);
 		}
 
 		if(ok[1] && !c1Latched){
 			latchStart[1] = minecraft.roomScale.getControllerPos_World(1);
 			latchStartBodyY[1] = player.posY;
 			latchStartController = 1;
-			minecraft.vrPlayer.triggerHapticPulse(1, 1000);
+			MCOpenVR.triggerHapticPulse(1, 1000);
 		}
 
 		c0Latched = ok[0];
