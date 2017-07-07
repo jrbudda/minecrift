@@ -98,7 +98,7 @@
  import net.minecraft.util.MathHelper;
  import net.minecraft.util.MouseFilter;
  import net.minecraft.util.MovingObjectPosition;
-@@ -61,2593 +104,5124 @@
+@@ -61,2593 +104,5126 @@
  import net.minecraft.world.World;
  import net.minecraft.world.WorldProvider;
  import net.minecraft.world.biome.BiomeGenBase;
@@ -4715,7 +4715,7 @@
 +						if(mc.currentPass == renderPass.Third){
 +							GL11.glEnable(GL11.GL_DEPTH_TEST);
 +						}
-+			
++						
 +						//Render framebuffer onto world projection
 +						ScaledResolution s = new ScaledResolution(mc, this.mc.guiFramebuffer.framebufferWidth, this.mc.guiFramebuffer.framebufferHeight);
 +						drawSizedQuad(s.getScaledWidth(), s.getScaledHeight(), 1.5f); //this.mc.vrSettings.hudScale);
@@ -4799,11 +4799,13 @@
 +					if (Reflector.ForgeGuiIngame_renderCrosshairs.exists()) {
 +						Reflector.ForgeGuiIngame_renderCrosshairs.setValue(false);
 +						Reflector.ForgeGuiIngame_renderHelmet.setValue(false);
++						if(this.getClass().getName().equals("com.bioxx.tfc.Render.EntityRendererTFC"))
++							Reflector.ForgeGuiIngame_renderCrosshairs.setValue(true);
 +					}
 +					/** END MINECRIFT FORGE **/
 +					//Draw in game HUD overlay
 +					GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
-+
++					
 +					Object fmlCommonHandler = null;
 +					if (Reflector.FMLCommonHandler_instance.exists()) {
 +						fmlCommonHandler = Reflector.call(Reflector.FMLCommonHandler_instance, new Object[0]);
@@ -4813,8 +4815,8 @@
 +							Reflector.callVoid(fmlCommonHandler, Reflector.FMLCommonHandler_onRenderTickStart, new Object[]{renderPartialTicks});
 +						}
 +					}
-+					
 +					//Render HUD elements
++
 +					this.mc.ingameGUI.renderGameOverlay(renderPartialTicks, this.mc.currentScreen != null, 0, 0);
 +
 +					mc.guiAchievement.updateAchievementWindow();
