@@ -33,7 +33,10 @@ public class Installer extends JPanel  implements PropertyChangeListener
     private String tempDir = System.getProperty("java.io.tmpdir");
 
     private static final boolean ALLOW_FORGE_INSTALL = true; 
-    private static final boolean ALLOW_HYDRA_INSTALL = false;  // TODO: Change to true once Hydra is fixed up
+    private static final boolean ALLOW_HYDRA_INSTALL = false; 
+    private static final boolean ALLOW_KATVR_INSTALL = false; 
+    private static final boolean ALLOW_KIOSK_INSTALL = false; 
+    private static final boolean ALLOW_HRTF_INSTALL = true; 
 	private static final boolean ALLOW_SHADERSMOD_INSTALL = true;  
 
     private static final boolean NEEDS_2010_REDIST = false;
@@ -57,6 +60,12 @@ public class Installer extends JPanel  implements PropertyChangeListener
     private static final String OF_VERSION_EXT    = ".jar";
     private static final String FORGE_VERSION     = "10.13.4.1614-1.7.10";
     /* END OF DO NOT RENAME */
+
+	private static final String DEFAULT_PROFILE_NAME = "ViveCraft " + MINECRAFT_VERSION;
+	private static final String DEFAULT_PROFILE_NAME_FORGE = "ViveCraft-Forge " + MINECRAFT_VERSION;
+	private static final String GITHUB_LINK = "https://github.com/jrbudda/minecrift";
+	private static final String HOMEPAGE_LINK = "http://www.vivecraft.org";
+	private static final String DONATION_LINK = "https://www.patreon.com/jrbudda";
 
     private String mc_url = "https://s3.amazonaws.com/Minecraft.Download/versions/" + MINECRAFT_VERSION + "/" + MINECRAFT_VERSION +".jar";
 
@@ -83,6 +92,8 @@ public class Installer extends JPanel  implements PropertyChangeListener
     private JComboBox forgeVersion;
     private JCheckBox useHydra;
     private JCheckBox useHrtf;
+    private JCheckBox katvr;
+    private JCheckBox kiosk;
 	private JComboBox ramAllocation;
     private final boolean QUIET_DEV = false;
 	private File releaseNotes = null;
@@ -97,7 +108,12 @@ public class Installer extends JPanel  implements PropertyChangeListener
 	private  final String smcVanillaMD5  = "4797D91A1F3752EF47242637901199CB";
     private  final String smcForgeMD5   = "F66374AEA8DDA5F3B7CCB20C230375D7";
 	
-    
+	private JTextField txtCustomProfileName;
+	private JTextField txtCustomGameDir;
+	private JCheckBox chkCustomProfileName;
+	private JCheckBox chkCustomGameDir;  
+
+
     static private final String forgeNotFound = "Forge not found..." ;
 
     private String userHomeDir;
@@ -334,7 +350,6 @@ public class Installer extends JPanel  implements PropertyChangeListener
 			return GetMd5(a).equalsIgnoreCase(b);
 		}
 
-
         private String GetMd5(File fo)
         {
             if (!fo.exists())
@@ -419,186 +434,6 @@ public class Installer extends JPanel  implements PropertyChangeListener
         	}
         	
         	return true;
-        	
-/*            File versionRootDir = new File(target,"versions");
-            File versionTarget = new File(versionRootDir,MINECRAFT_VERSION);
-            if (!versionTarget.mkdirs() && !versionTarget.isDirectory())
-            {
-                versionTarget.delete();
-                versionTarget.mkdirs();
-            }
-
-            File librariesDir = new File(target, "libraries");
-            List<JsonNode> libraries = VersionInfo.getVersionInfo().getArrayNode("libraries");
-            monitor.setMaximum(libraries.size() + 3);
-            int progress = 3;
-
-            File versionJsonFile = new File(versionTarget,VersionInfo.getVersionTarget()+".json");
-
-            if (!VersionInfo.isInheritedJson())
-            {
-                File clientJarFile = new File(versionTarget, VersionInfo.getVersionTarget()+".jar");
-                File minecraftJarFile = VersionInfo.getMinecraftFile(versionRootDir);
-
-                try
-                {
-                    boolean delete = false;
-                    monitor.setNote("Considering minecraft client jar");
-                    monitor.setProgress(1);
-
-                    if (!minecraftJarFile.exists())
-                    {
-                        minecraftJarFile = File.createTempFile("minecraft_client", ".jar");
-                        delete = true;
-                        monitor.setNote(String.format("Downloading minecraft client version %s", VersionInfo.getMinecraftVersion()));
-                        String clientUrl = String.format(DownloadUtils.VERSION_URL_CLIENT.replace("{MCVER}", VersionInfo.getMinecraftVersion()));
-                        System.out.println("  Temp File: " + minecraftJarFile.getAbsolutePath());
-
-                        if (!DownloadUtils.downloadFileEtag("minecraft server", minecraftJarFile, clientUrl))
-                        {
-                            minecraftJarFile.delete();
-                            JOptionPane.showMessageDialog(null, "Downloading minecraft failed, invalid e-tag checksum.\n" +
-                                            "Try again, or use the official launcher to run Minecraft " +
-                                            VersionInfo.getMinecraftVersion() + " first.",
-                                    "Error downloading", JOptionPane.ERROR_MESSAGE);
-                            return false;
-                        }
-                        monitor.setProgress(2);
-                    }
-
-                    if (VersionInfo.getStripMetaInf())
-                    {
-                        monitor.setNote("Copying and filtering minecraft client jar");
-                        copyAndStrip(minecraftJarFile, clientJarFile);
-                        monitor.setProgress(3);
-                    }
-                    else
-                    {
-                        monitor.setNote("Copying minecraft client jar");
-                        Files.copy(minecraftJarFile, clientJarFile);
-                        monitor.setProgress(3);
-                    }
-
-                    if (delete)
-                    {
-                        minecraftJarFile.delete();
-                    }
-                }
-                catch (IOException e1)
-                {
-                    JOptionPane.showMessageDialog(null, "You need to run the version "+VersionInfo.getMinecraftVersion()+" manually at least once", "Error", JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-            }
-
-            File targetLibraryFile = VersionInfo.getLibraryPath(librariesDir);
-            grabbed = Lists.newArrayList();
-            List<Artifact> bad = Lists.newArrayList();
-            progress = DownloadUtils.downloadInstalledLibraries("clientreq", librariesDir, monitor, libraries, progress, grabbed, bad);
-
-            monitor.close();
-            if (bad.size() > 0)
-            {
-                String list = Joiner.on("\n").join(bad);
-                JOptionPane.showMessageDialog(null, "These libraries failed to download. Try again.\n"+list, "Error downloading", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            if (!targetLibraryFile.getParentFile().mkdirs() && !targetLibraryFile.getParentFile().isDirectory())
-            {
-                if (!targetLibraryFile.getParentFile().delete())
-                {
-                    JOptionPane.showMessageDialog(null, "There was a problem with the launcher version data. You will need to clear "+targetLibraryFile.getAbsolutePath()+" manually", "Error", JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-                else
-                {
-                    targetLibraryFile.getParentFile().mkdirs();
-                }
-            }
-
-
-            JsonRootNode versionJson = JsonNodeFactories.object(VersionInfo.getVersionInfo().getFields());
-
-            try
-            {
-                BufferedWriter newWriter = Files.newWriter(versionJsonFile, Charsets.UTF_8);
-                PrettyJsonFormatter.fieldOrderPreservingPrettyJsonFormatter().format(versionJson,newWriter);
-                newWriter.close();
-            }
-            catch (Exception e)
-            {
-                JOptionPane.showMessageDialog(null, "There was a problem writing the launcher version data,  is it write protected?", "Error", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            try
-            {
-                VersionInfo.extractFile(targetLibraryFile);
-            }
-            catch (IOException e)
-            {
-                JOptionPane.showMessageDialog(null, "There was a problem writing the system library file", "Error", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            JdomParser parser = new JdomParser();
-            JsonRootNode jsonProfileData;
-
-            try
-            {
-                jsonProfileData = parser.parse(Files.newReader(launcherProfiles, Charsets.UTF_8));
-            }
-            catch (InvalidSyntaxException e)
-            {
-                JOptionPane.showMessageDialog(null, "The launcher profile file is corrupted. Re-run the minecraft launcher to fix it!", "Error", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-            catch (Exception e)
-            {
-                throw Throwables.propagate(e);
-            }
-
-
-
-
-            HashMap<JsonStringNode, JsonNode> profileCopy = Maps.newHashMap(jsonProfileData.getNode("profiles").getFields());
-            HashMap<JsonStringNode, JsonNode> rootCopy = Maps.newHashMap(jsonProfileData.getFields());
-            if(profileCopy.containsKey(JsonNodeFactories.string(VersionInfo.getProfileName())))
-            {
-                HashMap<JsonStringNode, JsonNode> forgeProfileCopy = Maps.newHashMap(profileCopy.get(JsonNodeFactories.string(VersionInfo.getProfileName())).getFields());
-                forgeProfileCopy.put(JsonNodeFactories.string("name"), JsonNodeFactories.string(VersionInfo.getProfileName()));
-                forgeProfileCopy.put(JsonNodeFactories.string("lastVersionId"), JsonNodeFactories.string(VersionInfo.getVersionTarget()));
-            }
-            else
-            {
-                JsonField[] fields = new JsonField[] {
-                        JsonNodeFactories.field("name", JsonNodeFactories.string(VersionInfo.getProfileName())),
-                        JsonNodeFactories.field("lastVersionId", JsonNodeFactories.string(VersionInfo.getVersionTarget())),
-                };
-                profileCopy.put(JsonNodeFactories.string(VersionInfo.getProfileName()), JsonNodeFactories.object(fields));
-            }
-            JsonRootNode profileJsonCopy = JsonNodeFactories.object(profileCopy);
-            rootCopy.put(JsonNodeFactories.string("profiles"), profileJsonCopy);
-
-            jsonProfileData = JsonNodeFactories.object(rootCopy);
-
-            try
-            {
-                BufferedWriter newWriter = Files.newWriter(launcherProfiles, Charsets.UTF_8);
-                PrettyJsonFormatter.fieldOrderPreservingPrettyJsonFormatter().format(jsonProfileData,newWriter);
-                newWriter.close();
-            }
-            catch (Exception e)
-            {
-                JOptionPane.showMessageDialog(null, "There was a problem writing the launch profile,  is it write protected?", "Error", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
- */
-
-
-
-//            return success;
         }
 
         private boolean SetupMinecraftAsLibrary() {
@@ -617,12 +452,10 @@ public class Installer extends JPanel  implements PropertyChangeListener
 					if(checkMD5(vanilla, MC_MD5)) mc_jar = vanilla;
 				}
 
-
 				if(mc_jar == null){
 					// Download the minecraft jar (we don't wont to require that it has previously been downloaded in Minecraft)
 					mc_jar = new File(tempDir + File.separator + MINECRAFT_VERSION + ".jar");
 					if (!mc_jar.exists() || !checkMD5(mc_jar, MC_MD5)) {
-
 						if (!downloadFile(mc_url, mc_jar, MC_MD5)) {
 							JOptionPane.showMessageDialog(null, " Error: Failed to download " + MINECRAFT_VERSION + ".jar from " + mc_url, "Warning", JOptionPane.ERROR_MESSAGE);
 							return false;
@@ -635,16 +468,11 @@ public class Installer extends JPanel  implements PropertyChangeListener
 			InputStream src = new FileInputStream(mc_jar);
 			tar.getParentFile().mkdirs();
 			return copyInputStreamToFile(src, tar);
-
 					
             } catch (Exception e) {
 				JOptionPane.showMessageDialog(null, " Error: "+e.getLocalizedMessage(), "Warning", JOptionPane.ERROR_MESSAGE);
 				return false;
             }
-
-
-
-
 	}
 
         private boolean ExtractVersion() {
@@ -705,12 +533,12 @@ public class Installer extends JPanel  implements PropertyChangeListener
 						//modify json args if needed
 							try {
 								int jsonIndentSpaces = 2;
-								String profileName = getMinecraftProfileName(useForge.isSelected(), useShadersMod.isSelected());
 								File fileJson = ver_json_file;
 								String json = readAsciiFile(fileJson);
 								JSONObject root = new JSONObject(json);
 								String args = (String)root.get("minecraftArguments");
-								args += " --test";
+								if(katvr.isSelected()) args += " --katvr";
+								if(kiosk.isSelected()) args += " --kiosk";
 								root.put("minecraftArguments", args);
 								FileWriter fwJson = new FileWriter(fileJson);
 								fwJson.write(root.toString(jsonIndentSpaces));
@@ -731,14 +559,6 @@ public class Installer extends JPanel  implements PropertyChangeListener
                         }
                         ver_jar.close();
 
-                        //Create empty version jar file
-                        //All code actually lives in libraries/
-
-						//1/2017 - dont do this anymore - better errors.
-                     //   ZipOutputStream null_jar = new ZipOutputStream(new FileOutputStream(new File (ver_dir, jar_id+".jar")));
-                     //   null_jar.putNextEntry(new ZipEntry("Classes actually in libraries directory"));
-                     //   null_jar.closeEntry();
-                     //   null_jar.close();
                         return ver_json_file.exists() && ver_file.exists();
                     } catch (Exception e) {
                         finalMessage += " Error: "+e.getLocalizedMessage();
@@ -782,7 +602,6 @@ public class Installer extends JPanel  implements PropertyChangeListener
         
         // VIVE START - install openVR dlls
         private boolean InstallOpenVR() {
-
 		
 			String osname = System.getProperty("os.name").toLowerCase();
 			String osarch= System.getProperty("os.arch").toLowerCase();
@@ -791,11 +610,20 @@ public class Installer extends JPanel  implements PropertyChangeListener
 			String resource = "win32/openvr_api.dll";
 				
 			if (osname.contains("windows")){	
-
 				installFile(osFolder, resource);
-					osFolder = "win64";
-					resource = "win64/openvr_api.dll";
-					installFile(osFolder, resource);
+
+				osFolder = "win64";
+				resource = "win64/openvr_api.dll";
+				installFile(osFolder, resource);
+
+				if(katvr.isSelected()){
+				installFile("katvr", "katvr/WalkerBase.dll");
+				installFile("katvr", "katvr/msvcp120d.dll");
+				installFile("katvr", "katvr/msvcp140d.dll");
+				installFile("katvr", "katvr/msvcr120d.dll");
+				installFile("katvr", "katvr/vcruntime140d.dll");
+				installFile("katvr", "katvr/ucrtbased.dll");
+				}
 			}
 			else if( osname.contains("linux")){
 				osFolder = "linux32";
@@ -812,21 +640,18 @@ public class Installer extends JPanel  implements PropertyChangeListener
 			}	
 		return true;
         }
-
 		
 		private boolean installFile(String osFolder, String resource){
 			File win32_dir = new File (targetDir, osFolder);
 			win32_dir.mkdirs();
-
-
 			InputStream openvrdll = Installer.class.getResourceAsStream(resource);
 			File dll_out = new File (targetDir, resource);
-			if (!copyInputStreamToFile(openvrdll, dll_out))
+			if (!copyInputStreamToFile(openvrdll, dll_out)){
 				return false;
-				
+			}
+
 			return true;		
 		}
-
 		
         // VIVE END - install openVR dll
 
@@ -1102,7 +927,6 @@ public class Installer extends JPanel  implements PropertyChangeListener
                 monitor.close();
                 return null;
             }
-
             if(useHrtf.isSelected())
             {
                 monitor.setProgress(85);
@@ -1113,6 +937,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
                 }
             }
             boolean profileCreated = false;
+            finalMessage = "Failed: Couldn't setup profile!";
             if (createProfile.isSelected())
             {
                 monitor.setProgress(95);
@@ -1176,8 +1001,6 @@ public class Installer extends JPanel  implements PropertyChangeListener
                                          null,
                                          "Please ensure you have closed the Minecraft launcher before proceeding.\n" 
                                          //"Also, if installing with Forge please ensure you have installed Forge " + FORGE_VERSION + " first.",
-
-
                                          ,"Important!",
                                          JOptionPane.OK_CANCEL_OPTION,
                                          JOptionPane.WARNING_MESSAGE, null, null, null);
@@ -1233,6 +1056,9 @@ public class Installer extends JPanel  implements PropertyChangeListener
         try {
             int jsonIndentSpaces = 2;
             String profileName = getMinecraftProfileName(useForge.isSelected(), useShadersMod.isSelected());
+			if(chkCustomProfileName.isSelected() && txtCustomProfileName.getText().trim() != ""){
+				profileName = txtCustomProfileName.getText();
+			}
             File fileJson = new File(mcBaseDirFile, "launcher_profiles.json");
             String json = readAsciiFile(fileJson);
             JSONObject root = new JSONObject(json);
@@ -1243,16 +1069,15 @@ public class Installer extends JPanel  implements PropertyChangeListener
             try {
                 prof = (JSONObject) profiles.get(profileName);
             }
-            catch (Exception e) {}
-
+            catch (Exception e) {
+				//this is normal if doesnt exist.
+			}
 			java.text.DateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
             if (prof == null) {
                 prof = new JSONObject();
                 prof.put("name", profileName);
-
                 prof.put("useHopperCrashService", false);
                 prof.put("launcherVisibilityOnGameClose", "keep the launcher open");
-
                 prof.put("created", dateFormat.format(new java.util.Date()));
                 profiles.put(profileName, prof);
             }
@@ -1261,6 +1086,9 @@ public class Installer extends JPanel  implements PropertyChangeListener
 			prof.put("javaArgs", "-Xmx" + ramAllocation.getSelectedItem() + "G -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:-UseAdaptiveSizePolicy -Xmn256M -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true");
             root.put("selectedProfile", profileName);
             prof.put("lastUsed", dateFormat.format(new java.util.Date()));
+			if(chkCustomGameDir.isSelected() && txtCustomGameDir.getText().trim() != ""){
+				prof.put("gameDir", txtCustomGameDir.getText());
+			}
 
             FileWriter fwJson = new FileWriter(fileJson);
             fwJson.write(root.toString(jsonIndentSpaces));
@@ -1301,6 +1129,38 @@ public class Installer extends JPanel  implements PropertyChangeListener
         }
     }
 
+    private class GameDirSelectAction extends AbstractAction
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            JFileChooser dirChooser = new JFileChooser();
+            dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            dirChooser.setFileHidingEnabled(false);
+            dirChooser.ensureFileIsVisible(targetDir);
+            dirChooser.setSelectedFile(targetDir);
+            int response = dirChooser.showOpenDialog(Installer.this);
+            switch (response)
+            {
+                case JFileChooser.APPROVE_OPTION:
+                    txtCustomGameDir.setText(dirChooser.getSelectedFile().toString());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private class updateTxtEnabled extends AbstractAction
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+			txtCustomProfileName.setEditable(chkCustomProfileName.isSelected());
+        }
+    }
+
+
     private class updateActionF extends AbstractAction
     {
         @Override
@@ -1319,7 +1179,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
         }
     }
     
-        private class updateActionP extends AbstractAction
+    private class updateActionP extends AbstractAction
     {
         @Override
         public void actionPerformed(ActionEvent e)
@@ -1327,10 +1187,12 @@ public class Installer extends JPanel  implements PropertyChangeListener
         	updateInstructions();
         }
     }
-    
-    
-    public Installer(File targetDir)
+     
+    public Installer(File target)
     {
+		this.setMaximumSize(new Dimension(640,780));
+		this.setPreferredSize(new Dimension(640,780));
+		targetDir = target;
         ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -1342,7 +1204,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
             image = ImageIO.read(Installer.class.getResourceAsStream("logo.png"));
             ImageIcon icon = new ImageIcon(image);
             JLabel logoLabel = new JLabel(icon);
-            logoLabel.setAlignmentX(CENTER_ALIGNMENT);
+            logoLabel.setAlignmentX(LEFT_ALIGNMENT);
             logoLabel.setAlignmentY(CENTER_ALIGNMENT);
             logoLabel.setSize(image.getWidth(), image.getHeight());
             if (!QUIET_DEV)	// VIVE - hide oculus logo
@@ -1382,38 +1244,44 @@ public class Installer extends JPanel  implements PropertyChangeListener
         }
 
         JLabel tag = new JLabel("Welcome! This will install Vivecraft "+ version);
-        tag.setAlignmentX(CENTER_ALIGNMENT);
+        tag.setAlignmentX(LEFT_ALIGNMENT);
         tag.setAlignmentY(CENTER_ALIGNMENT);
         logoSplash.add(tag);
         
         logoSplash.add(Box.createRigidArea(new Dimension(5,20)));
         tag = new JLabel("Select path to minecraft. (The default here is almost always what you want.)");
-        tag.setAlignmentX(CENTER_ALIGNMENT);
+        tag.setAlignmentX(LEFT_ALIGNMENT);
         tag.setAlignmentY(CENTER_ALIGNMENT);
         logoSplash.add(tag);
 
-        logoSplash.setAlignmentX(CENTER_ALIGNMENT);
+        logoSplash.setAlignmentX(LEFT_ALIGNMENT);
         logoSplash.setAlignmentY(TOP_ALIGNMENT);
-        this.add(logoSplash);
 
+        this.add(logoSplash);
 
         JPanel entryPanel = new JPanel();
         entryPanel.setLayout(new BoxLayout(entryPanel,BoxLayout.X_AXIS));
-        
-        Installer.targetDir = targetDir;
+        entryPanel.setAlignmentX(LEFT_ALIGNMENT);
+        entryPanel.setAlignmentY(TOP_ALIGNMENT);
+
         selectedDirText = new JTextField();
         selectedDirText.setEditable(false);
         selectedDirText.setToolTipText("Path to minecraft");
-        selectedDirText.setColumns(30);
-        entryPanel.add(selectedDirText);
+        selectedDirText.setAlignmentX(LEFT_ALIGNMENT);
+        selectedDirText.setAlignmentY(TOP_ALIGNMENT);
+		selectedDirText.setMaximumSize(new Dimension(400,20));
+
         JButton dirSelect = new JButton();
+		dirSelect.setMaximumSize(new Dimension(20,20));
         dirSelect.setAction(new FileSelectAction());
         dirSelect.setText("...");
         dirSelect.setToolTipText("Select an alternative minecraft directory");
+        dirSelect.setAlignmentX(LEFT_ALIGNMENT);
+        dirSelect.setAlignmentY(TOP_ALIGNMENT);
+
+        entryPanel.add(selectedDirText);
         entryPanel.add(dirSelect);
 
-        entryPanel.setAlignmentX(LEFT_ALIGNMENT);
-        entryPanel.setAlignmentY(TOP_ALIGNMENT);
         infoLabel = new JLabel();
         infoLabel.setHorizontalTextPosition(JLabel.LEFT);
         infoLabel.setVerticalTextPosition(JLabel.TOP);
@@ -1423,25 +1291,24 @@ public class Installer extends JPanel  implements PropertyChangeListener
 
         fileEntryPanel = new JPanel();
         fileEntryPanel.setLayout(new BoxLayout(fileEntryPanel,BoxLayout.Y_AXIS));
-        fileEntryPanel.add(infoLabel);
-        fileEntryPanel.add(entryPanel);
-        
-        fileEntryPanel.setAlignmentX(CENTER_ALIGNMENT);
+        fileEntryPanel.setAlignmentX(LEFT_ALIGNMENT);
         fileEntryPanel.setAlignmentY(TOP_ALIGNMENT);
+
+        fileEntryPanel.add(entryPanel);
+        fileEntryPanel.add(infoLabel);
+
         this.add(fileEntryPanel);
+
         this.add(Box.createVerticalStrut(5));
 
-        JPanel optPanel = new JPanel();
-        optPanel.setLayout( new BoxLayout(optPanel, BoxLayout.Y_AXIS));
-        optPanel.setAlignmentX(LEFT_ALIGNMENT);
-        optPanel.setAlignmentY(TOP_ALIGNMENT);
 
-        //Add forge options
+
+        //Forge Options
+
         JPanel forgePanel = new JPanel();
         forgePanel.setLayout( new BoxLayout(forgePanel, BoxLayout.X_AXIS));
         //Create forge: no/yes buttons
         useForge = new JCheckBox();
-
         AbstractAction actf = new updateActionF();
         actf.putValue(AbstractAction.NAME, "Install Vivecraft with Forge " + FORGE_VERSION);
         useForge.setAction(actf);
@@ -1450,8 +1317,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
             useForge.setEnabled(false);
         useForge.setToolTipText(
                 "<html>" +
-                "If checked, installs Vivecraft with Forge support. The correct version of Forge<br>" +
-                "(as displayed) must already be installed.<br>" +
+                "If checked, installs Vivecraft with Forge support.<br>" +
                 "</html>");
 
         //Add "yes" and "which version" to the forgePanel
@@ -1460,9 +1326,8 @@ public class Installer extends JPanel  implements PropertyChangeListener
         forgePanel.setAlignmentX(LEFT_ALIGNMENT);
         forgePanel.add(useForge);
         //forgePanel.add(forgeVersion);
-		useForge.setSelected(true); //and on that day, hundreds of clicks were saved.
 		
-        // Profile creation / update support
+		//Create Profile
         createProfile = new JCheckBox("", true);
 		AbstractAction actp = new updateActionP();
         actp.putValue(AbstractAction.NAME, "Create Vivecraft launcher profile");
@@ -1471,33 +1336,11 @@ public class Installer extends JPanel  implements PropertyChangeListener
         createProfile.setSelected(true);
         createProfile.setToolTipText(
                 "<html>" +
-                "If checked, if a Vivecraft profile doesn't already exist within the Minecraft launcher<br>" +
-                "one is added. Then the profile is selected, and this Vivecraft version is set as the<br>" +
-                "current version.<br>" +
+                "Creates or updates a Minecraft Launcher profile for Vivecraft with the selected settings.<br>" +
+                "You should typically leave this checked." +
                 "</html>");
 
-		useShadersMod = new JCheckBox();
-        useShadersMod.setAlignmentX(LEFT_ALIGNMENT);
-        if (!ALLOW_SHADERSMOD_INSTALL)
-			useShadersMod.setEnabled(false);
-        AbstractAction acts = new updateActionSM();
-        acts.putValue(AbstractAction.NAME, "Install Vivecraft with ShadersMod 2.3.29");
-        useShadersMod.setAction(acts);
-        useShadersMod.setToolTipText(
-                "<html>" +
-                "If checked, sets the vivecraft profile to use ShadersMod <br>" +
-                "support." +
-                "</html>");
-
-        useHydra = new JCheckBox("Razer Hydra support",false);
-        useHydra.setAlignmentX(LEFT_ALIGNMENT);
-        if (!ALLOW_HYDRA_INSTALL)
-            useHydra.setEnabled(false);
-        useHydra.setToolTipText(
-                "<html>" +
-                "If checked, installs the additional Razor Hydra native library required for Razor Hydra<br>" +
-                "support." +
-                "</html>");
+		//Binaural Audio
 
         useHrtf = new JCheckBox("Enable binaural audio (Only needed once per PC)", false);
         useHrtf.setToolTipText(
@@ -1511,7 +1354,20 @@ public class Installer extends JPanel  implements PropertyChangeListener
                         "</html>");
         useHrtf.setAlignmentX(LEFT_ALIGNMENT);
 
+		//ShadersMod
 
+		useShadersMod = new JCheckBox();
+        useShadersMod.setAlignmentX(LEFT_ALIGNMENT);
+        AbstractAction acts = new updateActionSM();
+        acts.putValue(AbstractAction.NAME, "Install Vivecraft with ShadersMod 2.3.29");
+        useShadersMod.setAction(acts);
+        useShadersMod.setToolTipText(
+                "<html>" +
+                "If checked, sets the vivecraft profile to use ShadersMod <br>" +
+                "support." +
+                "</html>");
+
+		//RAM Allocation
 		
         JPanel ramPanel = new JPanel();
         ramPanel.setLayout( new BoxLayout(ramPanel, BoxLayout.X_AXIS));
@@ -1524,39 +1380,121 @@ public class Installer extends JPanel  implements PropertyChangeListener
 		ramAllocation.setSelectedIndex(1);
         ramAllocation.setToolTipText(
                 "<html>" +
-                "Select the amount of Ram, in GB to allocate to the Vivecraft profile." +
+                "Select the amount of Ram, in GB to allocate to the Vivecraft profile.<br>" +
                 "At least 2GB is recommened. More than 1GB of ram requires 64 bit PC and java." +
                 "</html>");
 		ramAllocation.setAlignmentX(LEFT_ALIGNMENT);
-		ramAllocation.setMaximumSize( ramAllocation.getPreferredSize() );
+		ramAllocation.setMaximumSize( new Dimension((int)ramAllocation.getPreferredSize().getWidth(), 20));
 
-		JLabel ram = new JLabel("         Profile Ram Allocation (GB)");
+
+		JLabel ram = new JLabel("         Profile Ram Allocation (GB) ");
 		ram.setAlignmentX(LEFT_ALIGNMENT);
         
 		ramPanel.add(ram);
         ramPanel.add(ramAllocation);
 
-        optPanel.add(forgePanel);
-        optPanel.add(useShadersMod);
-        optPanel.add(createProfile);
-		optPanel.add(ramPanel);
-        optPanel.add(useHrtf);
-        this.add(optPanel);
+		//Custom Profile
+
+        JPanel namePanel = new JPanel();
+        namePanel.setLayout( new BoxLayout(namePanel, BoxLayout.X_AXIS));
+        namePanel.setAlignmentX(LEFT_ALIGNMENT);
+        namePanel.setAlignmentY(TOP_ALIGNMENT);
+
+		txtCustomProfileName = new JTextField();
+		txtCustomProfileName.setAlignmentX(LEFT_ALIGNMENT);
+		txtCustomProfileName.setMaximumSize(new Dimension(250,20));
+		txtCustomProfileName.setEditable(false);
+
+		chkCustomProfileName = new JCheckBox();
+		chkCustomProfileName.setAlignmentX(LEFT_ALIGNMENT);
+		AbstractAction u = new updateTxtEnabled();
+        u.putValue(AbstractAction.NAME, "Custom Profile Name");
+		chkCustomProfileName.setAction(u);
+        chkCustomProfileName.setToolTipText(
+                "<html>" +
+                "Enter a custom name for this profile</html>");
+
+    	namePanel.add(Box.createRigidArea(new Dimension(36,20)));
+		namePanel.add(chkCustomProfileName);
+        namePanel.add(txtCustomProfileName);
+
+		// Custom Game Dir
+
+        JPanel gameDirPanel = new JPanel();
+        gameDirPanel.setLayout( new BoxLayout(gameDirPanel, BoxLayout.X_AXIS));
+        gameDirPanel.setAlignmentX(LEFT_ALIGNMENT);
+        gameDirPanel.setAlignmentY(TOP_ALIGNMENT);
+
+		txtCustomGameDir= new JTextField();
+		txtCustomGameDir.setAlignmentX(LEFT_ALIGNMENT);
+		txtCustomGameDir.setMaximumSize(new Dimension(400,20));
+		txtCustomGameDir.setEditable(false);
+
+		chkCustomGameDir = new JCheckBox("Modpack Directory");
+		chkCustomGameDir.setAlignmentX(LEFT_ALIGNMENT);
+        chkCustomGameDir.setToolTipText(
+                "<html>" +
+                "Points the profile at a different game directory.<br>" +
+                "Select this to use Vivecraft with a modpack.<br>" +
+				"The game directory should contain the 'mods' " +
+				"directory of the desired pack." +
+				"</html>");
+        
+        JButton gdirSelect = new JButton();
+        gdirSelect.setAction(new GameDirSelectAction());
+        gdirSelect.setText("...");
+		gdirSelect.setMaximumSize(new Dimension(20,20));
+        gdirSelect.setToolTipText("Select a modpack directory");
+        entryPanel.add(gdirSelect);
+
+		gameDirPanel.add(Box.createRigidArea(new Dimension(36,20)));
+		gameDirPanel.add(chkCustomGameDir);
+        gameDirPanel.add(txtCustomGameDir);
+        gameDirPanel.add(gdirSelect);
+
+		// KATVR
+
+		katvr = new JCheckBox("KATVR Driver", false);
+        katvr.setToolTipText(
+                "<html>" +
+                "If checked, install the drivers needed for KATVR Treadmill<br>" +
+                "DO NOT select this unless you have the KATVR runtime installed.</html>");
+		katvr.setAlignmentX(LEFT_ALIGNMENT);
+
+
+		kiosk = new JCheckBox("Kiosk Mode", false);
+        kiosk.setToolTipText(
+                "<html>" +
+                "If checked, disables use of in-game menu via controller" +
+                "</html>");
+		kiosk.setAlignmentX(LEFT_ALIGNMENT);
+
+        this.add(forgePanel);
+		if(ALLOW_SHADERSMOD_INSTALL) this.add(useShadersMod);
+        this.add(createProfile);
+		this.add(ramPanel);
+		this.add(namePanel);
+		this.add(gameDirPanel);
+        if(ALLOW_HRTF_INSTALL)this.add(useHrtf);
+		this.add(new JLabel("         "));
+		if(ALLOW_KATVR_INSTALL||ALLOW_KIOSK_INSTALL) this.add(new JLabel("Advanced Options"));
+		if(ALLOW_KIOSK_INSTALL) this.add(kiosk);
+		if(ALLOW_KATVR_INSTALL) this.add(katvr);
 
         this.add(Box.createRigidArea(new Dimension(5,20))); 
-        
+      
         instructions = new JLabel("",SwingConstants.CENTER);
         instructions.setAlignmentX(CENTER_ALIGNMENT);
         instructions.setAlignmentY(TOP_ALIGNMENT);
         instructions.setForeground(Color.RED);
         instructions.setPreferredSize(new Dimension(20, 40));
-         this.add(instructions);
+        this.add(instructions);
         
         
         this.add(Box.createVerticalGlue());
-        JLabel github = linkify("Vivecraft is open source. find it on Github","https://github.com/jrbudda/minecrift","Vivecraft 1.7.10 Github");
-        JLabel wiki = linkify("Vivecraft home page","http://www.vivecraft.org","Vivecraft Home");
-        JLabel donate = linkify("If you think Vivecraft is awesome, please consider donating.","https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JVBJLN5HJJS52&lc=US&item_name=jrbudda&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)","jrbudda's Paypal");
+        JLabel github = linkify("Vivecraft is open source. find it on Github",GITHUB_LINK,"Vivecraft Github");
+        JLabel wiki = linkify("Vivecraft home page",HOMEPAGE_LINK,"Vivecraft Home");
+        JLabel donate = linkify("If you think Vivecraft is awesome, please consider supporting us on Patreon",DONATION_LINK,"jrbudda's Patreon");
         JLabel optifine = linkify("Vivecraft includes OptiFine for performance. Consider donating to them as well.","http://optifine.net/donate.php","http://optifine.net/donate.php");
 
         github.setAlignmentX(CENTER_ALIGNMENT);
@@ -1573,28 +1511,26 @@ public class Installer extends JPanel  implements PropertyChangeListener
         this.add( wiki );
         this.add( donate );
         this.add( optifine );
-
-        this.setAlignmentX(LEFT_ALIGNMENT);
         updateFilePath();
 		updateInstructions();
     }
-
 
     private void updateInstructions(){
 	String out = "<html>";
 		if(createProfile.isSelected()){
 			out += "Please make sure the Minecraft Launcher is not running.";
+			if(chkCustomProfileName.isSelected() == false){
+				txtCustomProfileName.setText(getMinecraftProfileName(useForge.isSelected(), useShadersMod.isSelected()));
+			}
 		}
+		ramAllocation.setSelectedIndex(1);
     	if (useForge.isSelected()){
+			ramAllocation.setSelectedIndex(2);
 			out += "<br>Please make sure Forge has been installed first.";
-    	}
-    	if (useForge.isSelected() && useShadersMod.isSelected()){
-    	//	out += "Please make sure that ShadersModCore is NOT in your Forge mods folder!";
     	}
     	out+="</html>";
     	instructions.setText(out);
 		ramAllocation.setEnabled(createProfile.isSelected());
-    	
     }
     
     private void updateFilePath()
@@ -1603,7 +1539,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
         {
             targetDir = targetDir.getCanonicalFile();
             if( targetDir.exists() ) {
-                File ForgeDir = new File(targetDir, "libraries"+File.separator+"net"+File.separator+"minecraftforge"+File.separator+"forge");
+                File ForgeDir = new File( targetDir, "libraries"+File.separator+"net"+File.separator+"minecraftforge"+File.separator+"forge");
                 if( ForgeDir.isDirectory() ) {
                     forgeVersions = ForgeDir.list();
                     if (forgeVersions != null && forgeVersions.length > 0) {
@@ -1712,15 +1648,8 @@ public class Installer extends JPanel  implements PropertyChangeListener
 
     private String getMinecraftProfileName(boolean usingForge, boolean sm)
     {
-        if(!usingForge) {
-			if(sm)
-				return "ViveCraft-ShadersMod " + MINECRAFT_VERSION;
-			else
-				return "ViveCraft " + MINECRAFT_VERSION;
-        } else if(sm)
-				return "ViveCraft-SM-Forge " + MINECRAFT_VERSION;
-			else
-				return "ViveCraft-Forge " + MINECRAFT_VERSION;
+        if(!usingForge)	return DEFAULT_PROFILE_NAME;
+        else return DEFAULT_PROFILE_NAME_FORGE;
     }
 
     public static String readAsciiFile(File file)

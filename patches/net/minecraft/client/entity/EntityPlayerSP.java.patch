@@ -429,7 +429,7 @@
          this.worldObj.playSound(this.posX, this.posY - (double)this.yOffset, this.posZ, name, volume, pitch, false);
      }
  
-@@ -662,4 +853,292 @@
+@@ -662,4 +853,294 @@
      }
  
      protected void sendHorseJump() {}
@@ -532,6 +532,7 @@
 +        		if(this.capabilities.isFlying || this.inWater){
 +        			switch (mc.vrSettings.vrFreeMoveMode){
 +        			case VRSettings.FREEMOVE_CONTROLLER:
++        			case VRSettings.FREEMOVE_JOYPAD:
 +        				directionVec.rotateAroundX(con.getControllerOffhandPitch_World() * PIOVER180);		   
 +        				break;
 +        			case VRSettings.FREEMOVE_HMD:
@@ -546,6 +547,7 @@
 +        		
 +    			switch (mc.vrSettings.vrFreeMoveMode){
 +    			case VRSettings.FREEMOVE_CONTROLLER:
++    			case VRSettings.FREEMOVE_JOYPAD:
 +    				directionVec.rotateAroundY(-con.getControllerOffhandYaw_World() * PIOVER180);	
 +    				break;
 +    			case VRSettings.FREEMOVE_HMD:

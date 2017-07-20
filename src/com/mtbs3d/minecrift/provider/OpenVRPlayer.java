@@ -258,9 +258,8 @@ public class OpenVRPlayer implements IRoomscaleAdapter
        }
              
         if (getFreeMoveMode()) {
-        		if(player.movementInput.moveForward ==0) doPlayerMoveInRoom(player);
-        	      NetworkHelper.sendVRPlayerPositions(this);
-
+        	if(player.movementInput.moveForward ==0 && player.movementInput.moveStrafe == 0) doPlayerMoveInRoom(player);
+        	
 			  return; //let mc handle look direction movement
 			// controller vs gaze movement is handled in Entity.java > moveFlying
           }
@@ -272,7 +271,7 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         boolean doTeleport = false;
         Vec3 dest = null;
 
-        if (player.movementInput.moveForward != 0 && !player.isRiding()) //holding down Ltrigger
+        if ((player.movementInput.moveForward != 0 || player.movementInput.moveStrafe != 0) && !player.isRiding()) //holding down Ltrigger
         {
             dest = movementTeleportDestination;
 
@@ -481,7 +480,6 @@ public class OpenVRPlayer implements IRoomscaleAdapter
         {
 			doPlayerMoveInRoom(player);
         }
-	      NetworkHelper.sendVRPlayerPositions(this);
 
         mc.mcProfiler.endSection();
     }

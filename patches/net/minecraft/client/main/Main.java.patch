@@ -1,6 +1,15 @@
 --- a/net/minecraft/client/main/Main.java
 +++ b/net/minecraft/client/main/Main.java
-@@ -77,8 +77,8 @@
+@@ -23,6 +23,8 @@
+ 
+ public class Main
+ {
++	public static boolean kiosk;
++	public static boolean katvr;
+     private static final java.lang.reflect.Type field_152370_a = new ParameterizedType()
+     {
+         private static final String __OBFID = "CL_00000828";
+@@ -77,8 +79,8 @@
          ArgumentAcceptingOptionSpec var12 = var1.accepts("uuid").withRequiredArg();
          ArgumentAcceptingOptionSpec var13 = var1.accepts("accessToken").withRequiredArg().required();
          ArgumentAcceptingOptionSpec var14 = var1.accepts("version").withRequiredArg().required();

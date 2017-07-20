@@ -14,13 +14,13 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
             VRSettings.VrOptions.WEAPON_COLLISION,
             VRSettings.VrOptions.REALISTIC_JUMP,
             VRSettings.VrOptions.ANIMAL_TOUCHING,
-            VRSettings.VrOptions.ALLOW_MODE_SWITCH,
             VRSettings.VrOptions.REALISTIC_SNEAK,
             VRSettings.VrOptions.BCB_ON,
             VRSettings.VrOptions.REALISTIC_CLIMB,
             VRSettings.VrOptions.WALK_MULTIPLIER,
-            VRSettings.VrOptions.REALISTIC_SWIM,
-            VRSettings.VrOptions.DUMMY
+            VRSettings.VrOptions.REALISTIC_ROW,
+            VRSettings.VrOptions.ALLOW_MODE_SWITCH,
+            VRSettings.VrOptions.REALISTIC_SWIM
     };
 
     static VRSettings.VrOptions[] teleportSettings = new VRSettings.VrOptions[]
@@ -33,10 +33,10 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
     static VRSettings.VrOptions[] freeMoveSettings = new VRSettings.VrOptions[]
     {
     		VRSettings.VrOptions.FREEMOVE_MODE,
-            VRSettings.VrOptions.WALK_UP_BLOCKS,
             VRSettings.VrOptions.MOVEMENT_MULTIPLIER,
             VRSettings.VrOptions.INERTIA_FACTOR,
-            VRSettings.VrOptions.FOV_REDUCTION
+            VRSettings.VrOptions.FOV_REDUCTION,
+
     };
     
     public GuiLocomotionSettings(GuiScreen guiScreen, VRSettings guivrSettings) {
@@ -54,11 +54,11 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
         this.buttonList.add(new GuiButtonEx(ID_GENERIC_DONE, this.width / 2 - 155  + 160, this.height -25,150,20, "Done"));
         VRSettings.VrOptions[] buttons = locomotionSettings;
         addButtons(buttons,0);
+        mc.vrSettings.vrFreeMove = mc.vrPlayer.getFreeMoveMode();
         GuiSmallButtonEx mode = new GuiSmallButtonEx(VRSettings.VrOptions.MOVE_MODE.returnEnumOrdinal(), this.width / 2 - 68, this.height / 6 + 102,VRSettings.VrOptions.MOVE_MODE, this.guivrSettings.getKeyBinding(VRSettings.VrOptions.MOVE_MODE));
         mode.setEventHandler(this);
         this.buttonList.add(mode);
-        mc.vrSettings.vrFreeMove = mc.vrPlayer.getFreeMoveMode();
-        if(mc.vrSettings.vrFreeMove)
+        if(mc.vrPlayer.getFreeMoveMode())
         	addButtons(freeMoveSettings,134);
         else
         	addButtons(teleportSettings,134);        
@@ -164,9 +164,10 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
             {
                 vr.inertiaFactor = VRSettings.INERTIA_NORMAL;
                 vr.movementSpeedMultiplier = 1f;
-                vr.simulateFalling = false;
+                vr.simulateFalling = true;
                 //jrbudda//
                 vr.weaponCollision = true;
+                vr.animaltouching = true;
                 vr.vrAllowCrawling = false;
                 vr.vrAllowLocoModeSwotch = true;
                 vr.vrFreeMove = false;
@@ -181,7 +182,7 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                 vr.realisticRowEnabled = true;
                 vr.vehicleRotation = false;
                 vr.useFOVReduction = false;
-                vr.animaltouching = true;
+                vr.walkUpBlocks = true;
                 //end jrbudda
                 
                 Minecraft.getMinecraft().gameSettings.viewBobbing = true;
@@ -243,12 +244,6 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                             "Defaults to 0.33 (1.0 is standard Minecraft movement",
                             "speed)."
                     } ;
-                case ANIMAL_TOUCHING:
-                    return new String[] {
-                            "If enabled, touching a passive mob (animal) without a",
-                            "weapon will right-click (interact) instead of attacking.",
-                            "Turn off for Piggy Slapping, Josh.",
-                    } ;
                 case WALK_UP_BLOCKS:
                     return new String[] {
                             "Allows you to set the ability to walk up blocks without",
@@ -281,11 +276,17 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                             "If enabled, you can swing your pickaxe at blocks to",
                             "mine them, or your sword at enemies to hit them."
                     } ;
+                case ANIMAL_TOUCHING:
+                    return new String[] {
+                            "If enabled, touching a passive mob (animal) without a",
+                            "weapon will right-click (interact) instead of attacking.",
+                            "Turn off for Piggy Slapping, Josh.",
+                    } ;
                 // VIVE END - new options
                     //JRBUDDA
                 case ALLOW_MODE_SWITCH:
                     return new String[] {
-                            "Allows the use of the Right Grip button to switch between",
+                            "Allows the use of the Pick Block button to switch between",
                             "Teleport and Free Move mode."
                     } ;
                 case ALLOW_CRAWLING:
@@ -305,14 +306,15 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                     } ;
                 case BCB_ON:
                     return new String[] {
-                            "Shows your body position as a blue dot on the gound.",
-                            "This is your Blue Circle Buddy (tm).",
-                            "Do not lose your Blue Circle Buddy."
+                            "Shows your body position as a square shadow on the ground.",
+                            "This is your Square Shadow Buddy (tm).",
+                            "Do not lose your Square Shadow Buddy."
                     };
                 case REALISTIC_JUMP:
                     return new String[]{
                             "If turned on, once you jump in real life",
-                            "Your player will also jump"
+                            "Your player will also jump. Also enables",
+                            "Jump Boots."
                     };
                 case REALISTIC_SNEAK:
                     return new String[]{
@@ -322,7 +324,7 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                 case REALISTIC_CLIMB:
                     return new String[]{
                             "If turned on, allow climbing ladders and vines",
-                            "by touching them."
+                            "by touching them. Also enables Climb Claws."
                     };
                 case REALISTIC_SWIM:
                     return new String[]{
@@ -345,7 +347,9 @@ public class GuiLocomotionSettings extends BaseGuiSettings implements GuiEventEx
                             "Controller: Uses left controller direction, max speed",
                             "HMD: Uses head direction, max speed",
                             "Run In Place: Use average controllers direction. Speed based",
-                            "on controller motion."
+                            "on controller motion.",
+                            "Joy/Pad: Uses the left touchpad or joystick for all motion.",
+                            "Overrides all 4 movement direction keybinds."
                             
                     } ;
                 case VEHICLE_ROTATION:

@@ -47,7 +47,7 @@
 +        float pitch = shooter.rotationPitch;
 +     
 +     
-+        if (shooter instanceof EntityPlayer)
++        if (shooter.getEntityId() == Minecraft.getMinecraft().thePlayer.getEntityId())
 +        {
 +        	
 +            Vec3 aimSource = Minecraft.getMinecraft().roomScale.getControllerPos_World(1);
