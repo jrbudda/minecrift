@@ -33,6 +33,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
     private String tempDir = System.getProperty("java.io.tmpdir");
 
     private static final boolean ALLOW_FORGE_INSTALL = true; 
+    private static final boolean DEFAULT_FORGE_INSTALL = true; 
     private static final boolean ALLOW_HYDRA_INSTALL = false; 
     private static final boolean ALLOW_KATVR_INSTALL = false; 
     private static final boolean ALLOW_KIOSK_INSTALL = false; 
@@ -161,7 +162,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
                 }
 
                 // Need to attempt download...
-                success = downloadFile("http://optifine.net/download.php?f=OptiFine_" + OF_FILE_NAME + OF_VERSION_EXT, fo);
+                success = downloadFile("http://vivecraft.org/jar/Optifine/OptiFine-" + OF_FILE_NAME + OF_VERSION_EXT, fo);
 
                 // Check (potentially) downloaded optifine md5
                 optOnDiskMd5 = GetMd5(fo);
@@ -993,6 +994,8 @@ public class Installer extends JPanel  implements PropertyChangeListener
         emptyFrame.setLocationRelativeTo(null);
         dialog = optionPane.createDialog(emptyFrame, "Vivecraft Installer");
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		dialog.setResizable(true);
+		dialog.setSize(620,748);
         dialog.setVisible(true);
         String str =  ((String)optionPane.getValue());
         if (str !=null && ((String)optionPane.getValue()).equalsIgnoreCase("Install"))
@@ -1088,6 +1091,8 @@ public class Installer extends JPanel  implements PropertyChangeListener
             prof.put("lastUsed", dateFormat.format(new java.util.Date()));
 			if(chkCustomGameDir.isSelected() && txtCustomGameDir.getText().trim() != ""){
 				prof.put("gameDir", txtCustomGameDir.getText());
+			} else {
+				prof.remove("gameDir");
 			}
 
             FileWriter fwJson = new FileWriter(fileJson);
@@ -1190,8 +1195,6 @@ public class Installer extends JPanel  implements PropertyChangeListener
      
     public Installer(File target)
     {
-		this.setMaximumSize(new Dimension(640,780));
-		this.setPreferredSize(new Dimension(640,780));
 		targetDir = target;
         ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -1202,11 +1205,10 @@ public class Installer extends JPanel  implements PropertyChangeListener
             // Read png
             BufferedImage image;
             image = ImageIO.read(Installer.class.getResourceAsStream("logo.png"));
-            ImageIcon icon = new ImageIcon(image);
+            ImageIcon icon = new ImageIcon(image.getScaledInstance(500, 200,  java.awt.Image.SCALE_SMOOTH));
             JLabel logoLabel = new JLabel(icon);
             logoLabel.setAlignmentX(LEFT_ALIGNMENT);
             logoLabel.setAlignmentY(CENTER_ALIGNMENT);
-            logoLabel.setSize(image.getWidth(), image.getHeight());
             if (!QUIET_DEV)	// VIVE - hide oculus logo
 	            logoSplash.add(logoLabel);
         } catch (IOException e) {
@@ -1312,6 +1314,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
         AbstractAction actf = new updateActionF();
         actf.putValue(AbstractAction.NAME, "Install Vivecraft with Forge " + FORGE_VERSION);
         useForge.setAction(actf);
+		useForge.setSelected(DEFAULT_FORGE_INSTALL);
         forgeVersion = new JComboBox();
         if (!ALLOW_FORGE_INSTALL)
             useForge.setEnabled(false);
