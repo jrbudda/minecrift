@@ -72,6 +72,8 @@ def create_install(mcp_dir):
                 #if cur_file in {'MinecriftClassTransformer.class','MinecriftForgeTweaker.class','MinecriftClassTransformer$Stage.class','MinecriftClassTransformer$1.class','MinecriftClassTransformer$2.class','MinecriftClassTransformer$3.class','MinecriftClassTransformer$4.class'}:
                 if cur_file in {'abt.class','abu.class','abv.class', 'abw.class', 'abx.class', 'aby.class', 'abz.class', 'aca.class', 'acb.class', 'acc.class', 'acd.class', 'ace.class', 'acf.class'}: #skip CreativeTabs
                     continue
+                if cur_file in {'bgt.class','bgu.class','bgv.class','bgw.class'}: #skip Main inner classes
+                    continue
                 in_file= os.path.join(abs_path,cur_file)
                 arcname =  arc_path + cur_file
                 zipout.write(in_file, arcname)
