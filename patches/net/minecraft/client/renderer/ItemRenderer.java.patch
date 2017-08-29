@@ -651,7 +651,7 @@
 +	    		
 +	    	}
 +	    	
-+	    	if(!MCOpenVR.isVive){
++	    	if(!MCOpenVR.isVive()){
 +	    		GL11.glRotatef(39.4f, 1, 0, 0);
 +	    	}
 +    	
@@ -710,7 +710,7 @@
 +		
 +		    					if(mc.bowTracker.isDrawing){ //here there be dragons
 +
-+		    				    	if(!MCOpenVR.isVive){
++		    				    	if(!MCOpenVR.isVive()){
 +		    				    		GL11.glRotatef(-39.4f, 1, 0, 0);
 +		    				    	}
 +		    						
@@ -905,7 +905,7 @@
 +	
 +	    	}
 +	
-+	    	if(!MCOpenVR.isVive){
++	    	if(!MCOpenVR.isVive()){
 +	    		GL11.glRotatef(-39.4f, 1, 0, 0);
 +	    	}
 +    	

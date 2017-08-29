@@ -114,7 +114,7 @@ public class GuiMinecriftSettings extends BaseGuiSettings implements GuiEventEx
     		int height = var8.getHeight(this.height);
     		VrOptions o = VrOptions.getEnumOptions(var8.getOrdinal());
     		
-    		if(o==VrOptions.RESET_ORIGIN && (!guivrSettings.seated && MCOpenVR.isVive)) continue;
+    		if(o==VrOptions.RESET_ORIGIN && (!guivrSettings.seated && MCOpenVR.isVive())) continue;
     		
     		if(o==null || o.getEnumBoolean() ){
       			GuiSmallButtonEx button = new GuiSmallButtonEx(var8.getOrdinal(), width, height, var8._e, var8.getButtonText());

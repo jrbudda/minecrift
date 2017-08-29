@@ -35,8 +35,8 @@ public class GuiVRControlsList extends GuiListExtended
         
         ArrayList<VRControllerButtonMapping> bindings = new ArrayList<VRControllerButtonMapping>();
         for (VRControllerButtonMapping vb : mc.vrSettings.buttonMappings) {
-			if(MCOpenVR.isVive && vb.Button.name().startsWith("BUTTON")) bindings.add(vb);
-			if(!MCOpenVR.isVive && vb.Button.name().startsWith("OCULUS")) bindings.add(vb); 
+			if(MCOpenVR.isVive() && vb.Button.name().startsWith("BUTTON")) bindings.add(vb);
+			if(!MCOpenVR.isVive() && vb.Button.name().startsWith("OCULUS")) bindings.add(vb); 
 		}
        
         this.listEntries = new GuiListExtended.IGuiListEntry[bindings.size()];

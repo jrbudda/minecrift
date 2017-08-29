@@ -184,6 +184,7 @@ public class VRSettings
     public boolean useCrosshairOcclusion = false;
 	public boolean crosshairScalesWithDistance = false;
 	public boolean seatedHudAltMode = true;
+	public int forceHardwareDetection = 0; // 0 = off, 1 = vive, 2 = oculus
 
     //
      	
@@ -614,6 +615,10 @@ public class VRSettings
                     
                     if(optionTokens[0].equals("fovReduction")){
                         this.useFOVReduction=optionTokens[1].equals("true");
+                    }
+                    
+                    if(optionTokens[0].equals("forceHardwareDetection")){
+                        this.forceHardwareDetection=Integer.parseInt(optionTokens[1]);
                     }
 
                     if (optionTokens[0].startsWith("BUTTON_") || optionTokens[0].startsWith("OCULUS_"))
@@ -1390,6 +1395,7 @@ public class VRSettings
             var5.println("manualCalibration:" + this.manualCalibration);
             var5.println("vehicleRotation:" + this.vehicleRotation);
             var5.println("fovReduction:" + this.useFOVReduction);
+            var5.println("forceHardwareDetection:" + this.forceHardwareDetection);
 
             if (vrQuickCommands == null) vrQuickCommands = getQuickCommandsDefaults(); //defaults
             
