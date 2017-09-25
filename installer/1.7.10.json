@@ -185,7 +185,7 @@
     },
     {
       "name": "de.fruitfly.ovr:JRiftLibrary:0.8.0.0.1",
-	    "url": "http://repo.minecraft-vr.com/",
+	    "url": "http://vivecraft.org/jar/",
       "natives": {
         "linux": "natives-linux",
         "windows": "natives-windows",
@@ -199,7 +199,7 @@
     }, 
     {
       "name": "net.aib42.mumblelink:JMumbleLibrary:1.11",
-	    "url": "http://repo.minecraft-vr.com/",
+	    "url": "http://vivecraft.org/jar/",
       "natives": {
         "linux": "natives-linux",
         "windows": "natives-windows",
@@ -213,7 +213,7 @@
     },
     {
       "name": "com.sixense:SixenseJavaLibrary:062612.0",
-	    "url": "http://repo.minecraft-vr.com/",
+	    "url": "https://github.com/mabrowning/minecrift-repo/raw/gh-pages/",
       "natives": {
         "linux": "natives-linux",
         "windows": "natives-windows",
