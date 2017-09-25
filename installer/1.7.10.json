@@ -108,10 +108,6 @@
       "url": "http://vivecraft.org/jar/"
     },
     {
-      "name": "net.aib42.mumblelink:JMumble:1.11",
-      "url": "http://vivecraft.org/jar/"
-    },    
-    {
       "name": "org.lwjgl.lwjgl:lwjgl-platform:2.9.1",
       "natives": {
         "linux": "natives-linux",
@@ -186,34 +182,6 @@
     {
       "name": "de.fruitfly.ovr:JRiftLibrary:0.8.0.0.1",
 	    "url": "http://vivecraft.org/jar/",
-      "natives": {
-        "linux": "natives-linux",
-        "windows": "natives-windows",
-        "osx": "natives-osx"
-      },
-      "extract": {
-        "exclude": [
-          "META-INF/"
-        ]
-      }
-    }, 
-    {
-      "name": "net.aib42.mumblelink:JMumbleLibrary:1.11",
-	    "url": "http://vivecraft.org/jar/",
-      "natives": {
-        "linux": "natives-linux",
-        "windows": "natives-windows",
-        "osx": "natives-osx"
-      },
-      "extract": {
-        "exclude": [
-          "META-INF/"
-        ]
-      }
-    },
-    {
-      "name": "com.sixense:SixenseJavaLibrary:062612.0",
-	    "url": "https://github.com/mabrowning/minecrift-repo/raw/gh-pages/",
       "natives": {
         "linux": "natives-linux",
         "windows": "natives-windows",
