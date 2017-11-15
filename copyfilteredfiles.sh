@@ -1,2 +1,2 @@
 #!/bin/bash
-python copyfilteredfiles.py $@
+python2 copyfilteredfiles.py $@

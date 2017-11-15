@@ -1,2 +1,2 @@
 #!/bin/bash
-python applychanges.py $@
+python2 applychanges.py $@

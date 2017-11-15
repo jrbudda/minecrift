@@ -1,2 +1,2 @@
 #!/bin/bash
-python getchanges.py $@
+python2 getchanges.py $@

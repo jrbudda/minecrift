@@ -1,2 +1,2 @@
 #!/bin/bash
-python create_install.py $@
+python2 create_install.py $@

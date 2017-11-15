@@ -1,2 +1,2 @@
 #!/bin/bash
-python getchanges.py -p "mcppatches/patches"
+python2 getchanges.py -p "mcppatches/patches"
