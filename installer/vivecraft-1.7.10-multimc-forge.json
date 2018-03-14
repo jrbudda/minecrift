@@ -1,0 +1,41 @@
+{
+	"+tweakers": [
+	"optifine.OptiFineTweaker",
+	"shadersmodcore.loading.SMCTweaker",
+	"com.mtbs3d.minecrift.tweaker.MinecriftVanillaTweaker"
+	],
+	"libraries": [
+	{
+		"name": "org.json:json:20140107",
+		"url": "http://central.maven.org/maven2/"
+	},
+	{
+		"name": "com.sun:jna:4.2.1",
+		"url": "http://vivecraft.org/jar/"
+	},
+	{
+		"name": "de.fruitfly.ovr:JRift:0.8.0.0.1",
+		"url": "http://vivecraft.org/jar/"
+	},
+	{
+		"name": "org.ow2.asm:asm-all:5.2",
+		"url": "http://files.minecraftforge.net/maven/"
+	},
+	{
+		"name": "net.minecraft:launchwrapper:1.12"
+	},
+	{
+		"name": "shadersmodcore:ShadersModCore:2.3.29mc1.7.10-f",
+		"MMC-hint": "local"
+	},
+	{
+		"name": "optifine:OptiFine:$OFVERSION",
+		"MMC-hint": "local"
+	}
+	],
+	"mainClass": "net.minecraft.launchwrapper.Launch",
+	"name": "Vivecraft",
+	"releaseTime": "2017-09-21T12:32:20+00:00",
+	"uid": "vivecraft",
+	"version": "4"
+}

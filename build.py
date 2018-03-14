@@ -44,16 +44,21 @@ def zipmerge( target_file, source_file ):
     #os.remove( target_file )
     shutil.copy( out_filename, target_file )
 
-def process_json( addon, version ):
+def process_json(addon, version, mcversion, forgeversion, ofversion):
     json_id = "vivecraft-"+version+addon
     lib_id = "com.mtbs3d:minecrift:"+version
     time = datetime.datetime(1979,6,1).strftime("%Y-%m-%dT%H:%M:%S-05:00")
     with  open(os.path.join("installer","vivecraft-" + mc_version + addon + ".json"),"rb") as f:
-        json_obj = json.load(f)
+        s=f.read()
+        s=s.replace("$MCVERSION", mcversion)
+        s=s.replace("$FORGEVERSION", forgeversion)
+        s=s.replace("$OFVERSION", ofversion)
+        s=s.replace("$VERSION", version+addon)
+        json_obj = json.loads(s)
         json_obj["id"] = json_id
         json_obj["time"] = time
         json_obj["releaseTime"] = time
-        json_obj["libraries"].insert(0,{"name":lib_id}) #Insert at beginning
+        json_obj["libraries"].insert(0,{"name":lib_id, "MMC-hint":"local"}) #Insert at beginning
         #json_obj["libraries"].append({"name":"net.minecraft:Minecraft:"+mc_version}) #Insert at end
         return json.dumps( json_obj, indent=1 )
 
@@ -66,16 +71,23 @@ def create_install(mcp_dir):
     #continue
     in_mem_zip = StringIO.StringIO()
     with zipfile.ZipFile( in_mem_zip,'w', zipfile.ZIP_DEFLATED) as zipout:
+        vanilla = os.listdir(reobf)
         for abs_path, _, filelist in os.walk(reobf, followlinks=True):
             arc_path = os.path.relpath( abs_path, reobf ).replace('\\','/').replace('.','')+'/'
             for cur_file in fnmatch.filter(filelist, '*.class'):
                 #if cur_file in {'MinecriftClassTransformer.class','MinecriftForgeTweaker.class','MinecriftClassTransformer$Stage.class','MinecriftClassTransformer$1.class','MinecriftClassTransformer$2.class','MinecriftClassTransformer$3.class','MinecriftClassTransformer$4.class'}:
+                flg = False
                 if cur_file in {'abt.class','abu.class','abv.class', 'abw.class', 'abx.class', 'aby.class', 'abz.class', 'aca.class', 'acb.class', 'acc.class', 'acd.class', 'ace.class', 'acf.class'}: #skip CreativeTabs
                     continue
                 if cur_file in {'bgt.class','bgu.class','bgv.class','bgw.class'}: #skip Main inner classes
                     continue
+
+                if cur_file in vanilla: #these misbehave when loaded in this jar, do some magic.
+                    flg = True
                 in_file= os.path.join(abs_path,cur_file)
                 arcname =  arc_path + cur_file
+                #if flg:
+                #    arcname =  arc_path + cur_file.replace('.class', '.clazz')
                 zipout.write(in_file, arcname)
         print "Checking Assets..."
         for a, b, c in os.walk(assets):
@@ -109,7 +121,7 @@ def create_install(mcp_dir):
     replacelineinfile( installer_java_file, "private static final String OF_JSON_NAME",      "    private static final String OF_JSON_NAME      = \"%s\";\n" % of_json_name );
     replacelineinfile( installer_java_file, "private static final String OF_MD5",            "    private static final String OF_MD5            = \"%s\";\n" % of_file_md5 );
     replacelineinfile( installer_java_file, "private static final String OF_VERSION_EXT",    "    private static final String OF_VERSION_EXT    = \"%s\";\n" % of_file_extension );
-    replacelineinfile( installer_java_file, "private static final String FORGE_VERSION",     "    private static final String FORGE_VERSION     = \"%s\";\n" % forge_version );
+    replacelineinfile( installer_java_file, "private static String FORGE_VERSION",     "    private static String FORGE_VERSION     = \"%s\";\n" % forge_version );
 
     # Build installer.java
     print "Recompiling Installer.java..."
@@ -133,10 +145,14 @@ def create_install(mcp_dir):
                     install_out.write(os.path.join(dirName,afile), os.path.join(relpath,afile))
             
         # Add json files
-        install_out.writestr( "version.json", process_json("", version))
-        install_out.writestr( "version-forge.json", process_json("-forge", version))
-        install_out.writestr( "version-shadersmod.json", process_json("-shadersmod", version))
-        install_out.writestr( "version-forge-shadersmod.json", process_json("-forge-shadersmod", version))	
+        install_out.writestr("version.json", process_json("", version,minecrift_version_num,"",of_file_name ))
+        install_out.writestr("version-forge.json", process_json("-forge", version,minecrift_version_num,forge_version,of_file_name ))
+        install_out.writestr("version-shadersmod.json", process_json("", version,minecrift_version_num,"",of_file_name ))
+        install_out.writestr("version-forge-shadersmod", process_json("-forge", version,minecrift_version_num,forge_version,of_file_name ))        
+        install_out.writestr("version-multimc.json", process_json("-multimc", version,minecrift_version_num,"",of_file_name ))
+        install_out.writestr("version-multimc-forge.json", process_json("-multimc-forge", version,minecrift_version_num,"",of_file_name ))
+
+
         
         # Add release notes
         install_out.write("CHANGES.md", "release_notes.txt")
