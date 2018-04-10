@@ -147,8 +147,8 @@ def create_install(mcp_dir):
         # Add json files
         install_out.writestr("version.json", process_json("", version,minecrift_version_num,"",of_file_name ))
         install_out.writestr("version-forge.json", process_json("-forge", version,minecrift_version_num,forge_version,of_file_name ))
-        install_out.writestr("version-shadersmod.json", process_json("", version,minecrift_version_num,"",of_file_name ))
-        install_out.writestr("version-forge-shadersmod", process_json("-forge", version,minecrift_version_num,forge_version,of_file_name ))        
+        install_out.writestr("version-shadersmod.json", process_json("-shadersmod", version,minecrift_version_num,"",of_file_name ))
+        install_out.writestr("version-forge-shadersmod.json", process_json("-forge-shadersmod", version,minecrift_version_num,forge_version,of_file_name ))        
         install_out.writestr("version-multimc.json", process_json("-multimc", version,minecrift_version_num,"",of_file_name ))
         install_out.writestr("version-multimc-forge.json", process_json("-multimc-forge", version,minecrift_version_num,"",of_file_name ))
 
