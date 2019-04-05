@@ -536,7 +536,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
 
 			//check for multimc
 			for(File f : targetDir.listFiles()){
-				if(f.getName().equalsIgnoreCase("multimc.exe")){
+				if(f.getName().equalsIgnoreCase("multimc.exe") || (f.getName().equalsIgnoreCase("multimc") && f.isFile()) || f.getName().equalsIgnoreCase("multimc.cfg")){
 					ArrayList<File> ilist = new ArrayList<File>();
 					File insts = new File(targetDir, "instances");
 					for(File inst : insts.listFiles()){
@@ -548,7 +548,11 @@ public class Installer extends JPanel  implements PropertyChangeListener
 					if(sel !=null){
 						mmcinst = sel;
 						isMultiMC = true;
+					} else {
+						finalMessage = "Install Cancelled. ";
+					    return null;
 					}
+					break; // don't ask multiple times
 				}
 			}
 			//
@@ -602,7 +606,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
 				}
 			}
 
-			if(useShadersMod.isSelected()){
+			if(useShadersMod.isSelected() || isMultiMC){
 				finalMessage = "Failed: Couldn't download ShadersMod. ";
 				monitor.setNote("Checking ShadersModCore");
 				monitor.setProgress(42);
@@ -611,7 +615,7 @@ public class Installer extends JPanel  implements PropertyChangeListener
 
 				for (int i = 1; i <= 3; i++)
 				{
-					if (downloadSMC(useForge.isSelected()))
+					if (downloadSMC(useForge.isSelected() && !isMultiMC))
 					{
 						// Got it!
 						downloadedSMC = true;
@@ -778,6 +782,8 @@ public class Installer extends JPanel  implements PropertyChangeListener
 
 			try {
 				File fod = new File(targetDir,OF_LIB_PATH+OF_JSON_NAME);
+				if(isMultiMC)
+					fod = new File(mmcinst,"libraries");
 				fod.mkdirs();
 				File fo = new File(fod,"OptiFine-"+OF_JSON_NAME+".jar");
 
@@ -850,12 +856,16 @@ public class Installer extends JPanel  implements PropertyChangeListener
 				  url = smcVanillaURL; 
 				  goodmd5 = smcVanillaMD5;
 			  }
-	  
+	  		
+
+					
             boolean success = true;
             boolean deleted = false;
 
             try {
                 File fod = new File(targetDir,dir);
+				if(isMultiMC)
+					fod = new File(mmcinst,"libraries");
                 fod.mkdirs();
                 File fo = new File(fod,file);
 
@@ -1128,8 +1138,6 @@ public class Installer extends JPanel  implements PropertyChangeListener
                 InputStream version_json;
 				if(isMultiMC) {
 					String filename = "version-multimc.json";
-					if(useForge.isSelected()) filename = "version-multimc-forge.json";
-					
 					version_json = Installer.class.getResourceAsStream(filename);
 				}
 				else if(useForge.isSelected() /*&& forgeVersion.getSelectedItem() != forgeNotFound*/ ) 
@@ -1230,6 +1238,8 @@ public class Installer extends JPanel  implements PropertyChangeListener
 
                         // Extract new lib
                         File lib_dir = new File(targetDir,"libraries/com/mtbs3d/minecrift/"+version);
+						if(isMultiMC)
+							lib_dir = new File(mmcinst,"libraries");
                         lib_dir.mkdirs();
                         File ver_file = new File (lib_dir, "minecrift-"+version+".jar");
                         FileOutputStream ver_jar = new FileOutputStream(ver_file);

@@ -936,6 +936,7 @@ public class MCOpenVR
 
 			if (controllerDeviceIndex[RIGHT_CONTROLLER] != -1)
 			{
+				InputInjector.mouseMoveEvent(mouseX, mouseY); // Needs to be called first, since it only puts an event if delta != 0
 				Mouse.setCursorPosition(mouseX, mouseY);
 				controllerMouseValid = true;
 
