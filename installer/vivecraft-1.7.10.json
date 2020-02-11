@@ -10,7 +10,7 @@
    "name": "org.ow2.asm:asm-all:5.0.3"
   }, 
   {
-   "url": "http://central.maven.org/maven2/", 
+   "url": "http://vivecraft.org/jar/", 
    "name": "org.json:json:20140107"
   }, 
   {

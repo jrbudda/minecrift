@@ -7,7 +7,7 @@
 	"libraries": [
 	{
 		"name": "org.json:json:20140107",
-		"url": "http://central.maven.org/maven2/"
+		"url": "http://vivecraft.org/jar/"
 	},
 	{
 		"name": "com.sun:jna:4.2.1",

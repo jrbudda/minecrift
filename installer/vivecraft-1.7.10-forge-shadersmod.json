@@ -229,7 +229,7 @@
     },
     {
       "name": "org.json:json:20140107",
-      "url":  "http://central.maven.org/maven2/"
+      "url":  "http://vivecraft.org/jar/"
     },
     {
       "name": "de.fruitfly.ovr:JRift:0.8.0.0.1",
