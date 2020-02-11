@@ -30,31 +30,35 @@ def create_patch( target_dir, src_file, mod_file, label, patch_file ):
         with open( patch_file, 'wb') as out:
             out.write( stdout.replace('\r\n','\n').replace('\r','\n') )
 
+def pythonisdumb(func, path, excinfo):
+    print path + str(excinfo)
+
 def main(mcp_dir, patch_dir = "patches", orig_dir = ".minecraft_orig"):
     new_src_dir    = os.path.join( base_dir , "src" )
     patch_base_dir = os.path.join( base_dir , patch_dir )
     patchsrc_base_dir = os.path.join( base_dir , "patchsrc" )
     assets_base_dir    = os.path.join(base_dir, "assets", "vivecraft" )
 
-    try:
-        shutil.rmtree( new_src_dir )
-        shutil.rmtree( patch_base_dir )
-        shutil.rmtree( patchsrc_base_dir )
-        shutil.rmtree( assets_base_dir )
+    try:       
+        shutil.rmtree( new_src_dir, onerror=pythonisdumb, ignore_errors=True)
+        shutil.rmtree( patch_base_dir, onerror=pythonisdumb, ignore_errors=True)    
+        shutil.rmtree( patchsrc_base_dir, onerror=pythonisdumb, ignore_errors=True)      
+        shutil.rmtree( assets_base_dir, onerror=pythonisdumb, ignore_errors=True)
+         
+        if not os.path.exists( new_src_dir ):
+            os.mkdir( new_src_dir )
+        
+        if not os.path.exists( patch_base_dir ):
+            os.mkdir( patch_base_dir )
+
+        if not os.path.exists( patchsrc_base_dir ):
+            os.mkdir( patchsrc_base_dir )
+
+        if not os.path.exists( assets_base_dir ):
+            os.makedirs( assets_base_dir )
+            
     except OSError as e:
-        pass
-    
-    if not os.path.exists( new_src_dir ):
-        os.mkdir( new_src_dir )
-    
-    if not os.path.exists( patch_base_dir ):
-        os.mkdir( patch_base_dir )
-
-    if not os.path.exists( patchsrc_base_dir ):
-        os.mkdir( patchsrc_base_dir )
-
-    if not os.path.exists( assets_base_dir ):
-        os.makedirs( assets_base_dir )
+        quit
 
     mod_src_dir = os.path.join( mcp_dir , "src", "minecraft" )
     assets_src_dir = os.path.join( mcp_dir , "src", "assets" )
