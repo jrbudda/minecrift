@@ -155,7 +155,7 @@
  import net.minecraft.world.EnumDifficulty;
  import net.minecraft.world.WorldProviderEnd;
  import net.minecraft.world.WorldProviderHell;
-@@ -150,2988 +226,4964 @@
+@@ -150,2988 +226,4958 @@
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
@@ -1246,7 +1246,7 @@
 +	 * The minecriftVerString will be automatically updated by the build scripts, do not modify here.
 +	 * Modify minecriftversion.py in root minecrift dir.
 +	 */
-+    public final String minecriftVerString = "Vivecraft 1.7.10 jrbudda-40r8";
++    public final String minecriftVerString = "Vivecraft 1.7.10 jrbudda-40r10";
 +	private boolean trigger;
 +	/* end version */
 +	/** END MINECRIFT */
@@ -5250,17 +5250,17 @@
 +				this.framebufferUndistorted = null;
 +			}
 +
-+			if (this.framebufferEye0 != null) {
-+				this.framebufferEye0.deleteFramebuffer();
-+				this.framebufferEye0 = null;
-+			}
++//			if (this.framebufferEye0 != null) {
++//				this.framebufferEye0.deleteFramebuffer();
++//				this.framebufferEye0 = null;
++//			}
++//			
++//			if (this.framebufferEye1 != null) {
++//				this.framebufferEye1.deleteFramebuffer();
++//				this.framebufferEye1 = null;
++//			}
 +			
-+			if (this.framebufferEye1 != null) {
-+				this.framebufferEye1.deleteFramebuffer();
-+				this.framebufferEye1 = null;
-+			}
-+			
-+			this.stereoProvider.deleteRenderTextures(); ///TODO should this do something.. ?
++			//this.stereoProvider.deleteRenderTextures(); 
 +
 +			if (this.guiFramebuffer != null) {
 +				this.guiFramebuffer.deleteFramebuffer();
@@ -5315,11 +5315,10 @@
 +			
 +			this.checkGLError("Mirror framebuffer setup");
 +
++
 +			int tex0 = -1, tex1 = -1;
 +
-+			if (this.stereoProvider.providesRenderTextures())
-+			{ //always true
-+				// Source render textures
++			if(this.framebufferEye0 == null) {
 +				RenderTextureSet renderTextures = this.stereoProvider.createRenderTexture(
 +						EyeTextureSize.w,
 +						EyeTextureSize.h);
@@ -5329,30 +5328,25 @@
 +				print("L Render texture resolution: " + EyeTextureSize.w + " x " + EyeTextureSize.h);
 +				print("Provider supplied render texture IDs:\n" + renderTextures.toString());
 +
-+			    tex0 = renderTextures.leftEyeTextureIds.get(0);
++				tex0 = renderTextures.leftEyeTextureIds.get(0);
 +				tex1 = renderTextures.rightEyeTextureIds.get(0);
 +
-+			}
-+			else
-+			{
-+				// Generate our textures
-+				//renderTexProvider.genTextureIds(GL11.GL_RGBA8, GL11.GL_RGBA, GL11.GL_INT, EyeTextureSize.w, EyeTextureSize.h, 1);
-+			}
-+			this.checkGLError("Render Texture setup");
++				this.checkGLError("Render Texture setup");
 +
-+			
-+			if (tex0 == -1 || tex1 == -1) {
-+				throw new Exception("Failed to create eye textures");
++				if (tex0 == -1 || tex1 == -1) {
++					throw new Exception("Failed to create eye textures");
++				}
++				
++				this.framebufferEye0 = new Framebuffer("L Eye", EyeTextureSize.w, EyeTextureSize.h, false,  false, false, 0, tex0);
++				print(this.framebufferEye0.toString());
++				this.checkGLError("Left Eye framebuffer setup");
 +			}
 +			
-+			
-+			this.framebufferEye0 = new Framebuffer("L Eye", EyeTextureSize.w, EyeTextureSize.h, false,  false, false, 0, tex0);
-+			print(this.framebufferEye0.toString());
-+			this.checkGLError("Left Eye framebuffer setup");
-+			
-+			this.framebufferEye1 = new Framebuffer("R Eye", EyeTextureSize.w, EyeTextureSize.h, false,  false, false,0, tex1);
-+			print(this.framebufferEye1.toString());
-+			this.checkGLError("Right Eye framebuffer setup");
++			if(this.framebufferEye1 == null) {
++				this.framebufferEye1 = new Framebuffer("R Eye", EyeTextureSize.w, EyeTextureSize.h, false,  false, false,0, tex1);
++				print(this.framebufferEye1.toString());
++				this.checkGLError("Right Eye framebuffer setup");
++			}
 +			
 +			this.displayFBWidth = (int) Math.ceil(EyeTextureSize.w * this.vrSettings.renderScaleFactor);
 +			this.displayFBHeight = (int) Math.ceil(EyeTextureSize.h * this.vrSettings.renderScaleFactor);

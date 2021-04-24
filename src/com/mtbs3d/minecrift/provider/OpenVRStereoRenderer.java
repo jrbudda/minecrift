@@ -123,6 +123,7 @@ public class OpenVRStereoRenderer implements IStereoProvider
 	@Override
 	public void deleteRenderTextures() {
 		if (LeftEyeTextureId > 0)	GL11.glDeleteTextures(LeftEyeTextureId);
+		if (RightEyeTextureId > 0)	GL11.glDeleteTextures(LeftEyeTextureId);
 	}
 
 	@Override
