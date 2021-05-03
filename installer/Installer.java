@@ -677,7 +677,15 @@ public class Installer extends JPanel  implements PropertyChangeListener
 							// Check for the currently required forge
 							for (String forgeVersion : forgeVersions) {
 								if (forgeVersion.contains(FORGE_VERSION)) {
-									forgeVersionInstalled = true;
+									File forgeVersionDir = new File(ForgeDir, forgeVersion);
+									if (forgeVersionDir.isDirectory()) {
+										for (File forgeVersionFile : forgeVersionDir.listFiles()) {
+											if (forgeVersionFile.length() > 512000) { // check for some realistically sized files because Mojang's launcher does stupid nonsense
+												forgeVersionInstalled = true;
+												break;
+											}
+										}
+									}
 									break;
 								}
 							}
