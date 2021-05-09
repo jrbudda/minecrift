@@ -126,7 +126,7 @@ def create_install(mcp_dir):
     # Build installer.java
     print "Recompiling Installer.java..."
     subprocess.Popen( 
-        cmdsplit("javac -source 1.6 -target 1.6 \"%s\"" % os.path.join(base_dir,installer_java_file)), 
+        cmdsplit("javac -source 1.8 -target 1.8 \"%s\"" % os.path.join(base_dir,installer_java_file)), 
             cwd=os.path.join(base_dir,"installer"),
             bufsize=-1).communicate()
 	
