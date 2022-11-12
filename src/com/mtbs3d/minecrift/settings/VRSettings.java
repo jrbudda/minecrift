@@ -1826,18 +1826,18 @@ public class VRSettings
     public String[] getQuickCommandsDefaults(){
     	
     	String[] out = new String[12];
-    	out[0] = "/gamemode 0";
-    	out[1] = "/gamemode 1";
+    	out[0] = "/gamemode survival";
+    	out[1] = "/gamemode creative";
     	out[2] = "/help";
     	out[3] = "/home";
     	out[4] = "/sethome";
     	out[5] = "/spawn";
-    	out[6] = "hi!";
-    	out[7] = "bye!";
-    	out[8] = "folow me!";
-    	out[9] = "take this!";
-    	out[10] = "thank you!";
-    	out[11] = "praise the sun!";
+    	out[6] = "Hi!";
+    	out[7] = "Bye!";
+    	out[8] = "Follow me!";
+    	out[9] = "Take this!";
+    	out[10] = "Thank you!";
+    	out[11] = "Praise the sun!";
 
     	return out;
     	
