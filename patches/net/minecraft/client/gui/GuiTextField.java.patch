@@ -1,13 +1,10 @@
 --- a/net/minecraft/client/gui/GuiTextField.java
 +++ b/net/minecraft/client/gui/GuiTextField.java
-@@ -1,18 +1,21 @@
- package net.minecraft.client.gui;
- 
-+import net.minecraft.client.Minecraft;
- import net.minecraft.client.renderer.Tessellator;
+@@ -4,15 +4,18 @@
  import net.minecraft.util.ChatAllowedCharacters;
  import org.lwjgl.opengl.GL11;
  
++import net.minecraft.client.Minecraft;
 +import com.mtbs3d.minecrift.provider.MCOpenVR;
 +
  public class GuiTextField extends Gui
@@ -31,24 +28,22 @@
          {
              this.setFocused(var4);
 +        }  else {
-+       	
++           
 +           // VIVE START - show keyboard
 +            MCOpenVR.setKeyboardOverlayShowing(true, this);
 +          // VIVE END - show keyboard
-+	
++    
          }
  
          if (this.isFocused && p_146192_3_ == 0)
-@@ -486,7 +495,8 @@
+@@ -486,6 +495,7 @@
  
              String var6 = this.fontRendererInstance.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.getWidth());
              this.setCursorPosition(this.fontRendererInstance.trimStringToWidth(var6, var5).length() + this.lineScrollOffset);
--        }
 +            
-+         }
+         }
      }
  
-     /**
 @@ -673,6 +683,18 @@
          }
  

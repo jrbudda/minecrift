@@ -1,17 +1,18 @@
 --- a/net/minecraft/client/renderer/tileentity/TileEntityMobSpawnerRenderer.java
 +++ b/net/minecraft/client/renderer/tileentity/TileEntityMobSpawnerRenderer.java
-@@ -13,10 +13,14 @@
+@@ -13,11 +13,15 @@
  
      public void renderTileEntityAt(TileEntityMobSpawner p_147500_1_, double p_147500_2_, double p_147500_4_, double p_147500_6_, float p_147500_8_)
      {
-+	try{
++    try{
          GL11.glPushMatrix();
          GL11.glTranslatef((float)p_147500_2_ + 0.5F, (float)p_147500_4_, (float)p_147500_6_ + 0.5F);
          func_147517_a(p_147500_1_.func_145881_a(), p_147500_2_, p_147500_4_, p_147500_6_, p_147500_8_);
          GL11.glPopMatrix();
-+		}
-+	catch (Throwable e) {} //stop crashing my game
-+		
      }
++    catch (Throwable e) {} //stop crashing my game
++        
++    }
  
      public static void func_147517_a(MobSpawnerBaseLogic p_147517_0_, double p_147517_1_, double p_147517_3_, double p_147517_5_, float p_147517_7_)
+     {

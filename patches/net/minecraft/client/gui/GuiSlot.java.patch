@@ -1,19 +1,17 @@
 --- a/net/minecraft/client/gui/GuiSlot.java
 +++ b/net/minecraft/client/gui/GuiSlot.java
-@@ -3,26 +3,28 @@
- import net.minecraft.client.Minecraft;
- import net.minecraft.client.renderer.OpenGlHelper;
+@@ -5,24 +5,26 @@
  import net.minecraft.client.renderer.Tessellator;
-+import net.minecraft.src.Reflector;
  import org.lwjgl.input.Mouse;
  import org.lwjgl.opengl.GL11;
++import net.minecraft.src.Reflector;
  
  public abstract class GuiSlot
  {
      private final Minecraft mc;
 -    protected int width;
 -    private int height;
-+	/** MINECRIFT FORGE **/
++    /** MINECRIFT FORGE **/
 +    public int width;
 +    public int height;
  
@@ -33,7 +31,7 @@
 -    protected final int slotHeight;
 -
 +    public final int slotHeight;
-+	/** END MINECRIFT FORGE **/
++    /** END MINECRIFT FORGE **/
      /** The buttonID of the button used to scroll up */
      private int scrollUpButtonID;
  
@@ -50,9 +48,9 @@
      private boolean showSelectionBox = true;
      private boolean hasListHeader;
 -    protected int headerPadding;
-+	/** MINECRIFT FORGE **/
++    /** MINECRIFT FORGE **/
 +    public int headerPadding;
-+	/** END MINECRIFT FORGE **/
++    /** END MINECRIFT FORGE **/
      private boolean enabled = true;
      private static final String __OBFID = "CL_00000679";
  
@@ -147,35 +145,22 @@
  
                      if (var7 != 0)
                      {
-@@ -346,16 +355,21 @@
+@@ -346,6 +355,10 @@
          GL11.glDisable(GL11.GL_LIGHTING);
          GL11.glDisable(GL11.GL_FOG);
          Tessellator var16 = Tessellator.instance;
--        this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
--        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
--        float var17 = 32.0F;
--        var16.startDrawingQuads();
--        var16.setColorOpaque_I(2105376);
--        var16.addVertexWithUV((double)this.left, (double)this.bottom, 0.0D, (double)((float)this.left / var17), (double)((float)(this.bottom + (int)this.amountScrolled) / var17));
--        var16.addVertexWithUV((double)this.right, (double)this.bottom, 0.0D, (double)((float)this.right / var17), (double)((float)(this.bottom + (int)this.amountScrolled) / var17));
--        var16.addVertexWithUV((double)this.right, (double)this.top, 0.0D, (double)((float)this.right / var17), (double)((float)(this.top + (int)this.amountScrolled) / var17));
--        var16.addVertexWithUV((double)this.left, (double)this.top, 0.0D, (double)((float)this.left / var17), (double)((float)(this.top + (int)this.amountScrolled) / var17));
--        var16.draw();
-+		if (Reflector.forgeExists()) {
-+			drawContainerBackground(var16);
-+		}
-+		else {
-+	        this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
-+	        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-+	        float var17 = 32.0F;
-+	        var16.startDrawingQuads();
-+	        var16.setColorOpaque_I(2105376);
-+	        var16.addVertexWithUV((double)this.left, (double)this.bottom, 0.0D, (double)((float)this.left / var17), (double)((float)(this.bottom + (int)this.amountScrolled) / var17));
-+	        var16.addVertexWithUV((double)this.right, (double)this.bottom, 0.0D, (double)((float)this.right / var17), (double)((float)(this.bottom + (int)this.amountScrolled) / var17));
-+	        var16.addVertexWithUV((double)this.right, (double)this.top, 0.0D, (double)((float)this.right / var17), (double)((float)(this.top + (int)this.amountScrolled) / var17));
-+	        var16.addVertexWithUV((double)this.left, (double)this.top, 0.0D, (double)((float)this.left / var17), (double)((float)(this.top + (int)this.amountScrolled) / var17));
-+	        var16.draw();
-+		}
++        if (Reflector.forgeExists()) {
++            drawContainerBackground(var16);
++        }
++        else {
+         this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
+         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+         float var17 = 32.0F;
+@@ -356,6 +369,7 @@
+         var16.addVertexWithUV((double)this.right, (double)this.top, 0.0D, (double)((float)this.right / var17), (double)((float)(this.top + (int)this.amountScrolled) / var17));
+         var16.addVertexWithUV((double)this.left, (double)this.top, 0.0D, (double)((float)this.left / var17), (double)((float)(this.top + (int)this.amountScrolled) / var17));
+         var16.draw();
++        }
          var9 = this.left + this.width / 2 - this.getListWidth() / 2 + 2;
          var10 = this.top + 4 - (int)this.amountScrolled;
  
@@ -215,19 +200,19 @@
 +        var16.addVertexWithUV((double)this.left, (double)this.top, 0.0D, (double)((float)this.left / var17), (double)((float)(this.top + (int)this.amountScrolled) / var17));
 +        var16.draw();
 +    }
-+	
-+	/** MINECRIFT ADDITIONS BELOW */
-+	
++    
++    /** MINECRIFT ADDITIONS BELOW */
++    
 +    public int publicGetSize() { return getSize(); }
 +    
 +    public int select( int item, boolean dblClick) {
 +        amountScrolled = item * slotHeight;
 +        bindAmountScrolled();
-+    	elementClicked(item, dblClick, mouseX, mouseY);
-+    	
-+    	if( !dblClick ) {
-+    		return (int)(this.top + 4 - this.amountScrolled + (item+0.5) * this.slotHeight + this.headerPadding);
-+    	}
-+    	return 0;
-+	};	
++        elementClicked(item, dblClick, mouseX, mouseY);
++        
++        if( !dblClick ) {
++            return (int)(this.top + 4 - this.amountScrolled + (item+0.5) * this.slotHeight + this.headerPadding);
++        }
++        return 0;
++    };
  }

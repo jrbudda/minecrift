@@ -1,21 +1,18 @@
 --- a/net/minecraft/entity/projectile/EntityFireball.java
 +++ b/net/minecraft/entity/projectile/EntityFireball.java
-@@ -1,9 +1,15 @@
- package net.minecraft.entity.projectile;
+@@ -13,6 +13,12 @@
+ import net.minecraft.util.Vec3;
+ import net.minecraft.world.World;
  
- import java.util.List;
-+
 +import de.fruitfly.ovr.structs.Matrix4f;
 +import de.fruitfly.ovr.structs.Vector3f;
- import net.minecraft.block.Block;
 +import net.minecraft.client.Minecraft;
 +import net.minecraft.client.entity.EntityPlayerSP;
- import net.minecraft.entity.Entity;
- import net.minecraft.entity.EntityLivingBase;
 +import net.minecraft.entity.player.EntityPlayer;
- import net.minecraft.nbt.NBTTagCompound;
- import net.minecraft.nbt.NBTTagList;
- import net.minecraft.util.AxisAlignedBB;
++
+ public abstract class EntityFireball extends Entity
+ {
+     private int field_145795_e = -1;
 @@ -59,12 +65,34 @@
          this.accelerationZ = p_i1760_12_ / var14 * 0.1D;
      }
@@ -37,13 +34,13 @@
 +        float pitch = shooter.rotationPitch;
 +     
 +        if (shooter.getEntityId() == Minecraft.getMinecraft().thePlayer.getEntityId())
-+        { 	
++        {
 +            Vec3 aimSource = Minecraft.getMinecraft().roomScale.getControllerPos_World(0);
 +            Vec3 controllerDirection = Minecraft.getMinecraft().roomScale.getControllerMainDir_World();
 +            spawnPosition.xCoord = aimSource.xCoord + controllerDirection.xCoord * 0.28f;
 +            spawnPosition.yCoord = aimSource.yCoord - controllerDirection.yCoord * 0.28f;
 +            spawnPosition.zCoord = aimSource.zCoord + controllerDirection.zCoord * 0.28f;
-+      	
++          
 +            yaw =  Minecraft.getMinecraft().roomScale.getControllerMainYaw_World();
 +            pitch = -Minecraft.getMinecraft().roomScale.getControllerMainPitch_World();
 +        }

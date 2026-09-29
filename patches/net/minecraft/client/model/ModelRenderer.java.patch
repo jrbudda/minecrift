@@ -1,16 +1,15 @@
 --- a/net/minecraft/client/model/ModelRenderer.java
 +++ b/net/minecraft/client/model/ModelRenderer.java
-@@ -1,7 +1,10 @@
- package net.minecraft.client.model;
+@@ -7,6 +7,9 @@
+ import net.minecraft.src.ModelSprite;
+ import org.lwjgl.opengl.GL11;
  
 +import java.nio.FloatBuffer;
- import java.util.ArrayList;
- import java.util.List;
-+
 +import com.mtbs3d.minecrift.render.GLUtils;
- import net.minecraft.client.renderer.GLAllocation;
- import net.minecraft.client.renderer.Tessellator;
- import net.minecraft.src.ModelSprite;
++
+ public class ModelRenderer
+ {
+     /** The size of the texture file's width in pixels. */
 @@ -46,6 +49,12 @@
      public List spriteList;
      public boolean mirrorV;
@@ -40,15 +39,14 @@
              GL11.glTranslatef(this.offsetX, this.offsetY, this.offsetZ);
              int var2;
  
-@@ -143,7 +159,23 @@
+@@ -143,8 +159,24 @@
                      {
                          for (var2 = 0; var2 < this.childModels.size(); ++var2)
                          {
--                            ((ModelRenderer)this.childModels.get(var2)).render(par1);
 +                            /** MINECRIFT **/
 +                            if (!baseModel.initialisedForVr) {
-+                                ((ModelRenderer)this.childModels.get(var2)).render(par1);
-+                            }
+                             ((ModelRenderer)this.childModels.get(var2)).render(par1);
+                         }
 +                            else
 +                            {
 +                                ModelRenderer child = ((ModelRenderer) this.childModels.get(var2));
@@ -62,18 +60,18 @@
 +                                }
 +                            }
 +                            /** END MINECRIFT **/
-                         }
++                        }
                      }
                  }
-@@ -156,7 +188,22 @@
+                 else
+@@ -156,8 +188,23 @@
                      {
                          for (var2 = 0; var2 < this.childModels.size(); ++var2)
                          {
--                            ((ModelRenderer)this.childModels.get(var2)).render(par1);
 +                            /** MINECRIFT **/
 +                            if (!baseModel.initialisedForVr) {
-+                                ((ModelRenderer)this.childModels.get(var2)).render(par1);
-+                            }
+                             ((ModelRenderer)this.childModels.get(var2)).render(par1);
+                         }
 +                            else {
 +                                ModelRenderer child = ((ModelRenderer) this.childModels.get(var2));
 +                                if (this.renderChildren) {
@@ -86,18 +84,18 @@
 +                                }
 +                            }
 +                            /** END MINECRIFT **/
-                         }
++                        }
                      }
  
-@@ -189,7 +236,22 @@
+                     GL11.glTranslatef(-this.rotationPointX * par1, -this.rotationPointY * par1, -this.rotationPointZ * par1);
+@@ -189,14 +236,36 @@
                  {
                      for (var2 = 0; var2 < this.childModels.size(); ++var2)
                      {
--                        ((ModelRenderer)this.childModels.get(var2)).render(par1);
 +                        /** MINECRIFT **/
 +                        if (!baseModel.initialisedForVr) {
-+                            ((ModelRenderer)this.childModels.get(var2)).render(par1);
-+                        }
+                         ((ModelRenderer)this.childModels.get(var2)).render(par1);
+                     }
 +                        else {
 +                            ModelRenderer child = ((ModelRenderer) this.childModels.get(var2));
 +                            if (this.renderChildren) {
@@ -110,10 +108,10 @@
 +                            }
 +                        }
 +                        /** END MINECRIFT **/
-                     }
++                    }
                  }
  
-@@ -197,6 +259,13 @@
+                 GL11.glPopMatrix();
              }
  
              GL11.glTranslatef(-this.offsetX, -this.offsetY, -this.offsetZ);

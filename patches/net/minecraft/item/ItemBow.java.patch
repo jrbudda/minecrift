@@ -1,12 +1,13 @@
 --- a/net/minecraft/item/ItemBow.java
 +++ b/net/minecraft/item/ItemBow.java
-@@ -1,5 +1,6 @@
- package net.minecraft.item;
- 
+@@ -9,6 +9,7 @@
+ import net.minecraft.init.Items;
+ import net.minecraft.util.IIcon;
+ import net.minecraft.world.World;
 +import net.minecraft.client.Minecraft;
- import net.minecraft.client.renderer.texture.IIconRegister;
- import net.minecraft.creativetab.CreativeTabs;
- import net.minecraft.enchantment.Enchantment;
+ 
+ public class ItemBow extends Item
+ {
 @@ -26,67 +27,68 @@
      /**
       * called when the player releases the use item button. Args: itemstack, world, entityplayer, itemInUseCount
@@ -25,7 +26,7 @@
 -            var7 = (var7 * var7 + var7 * 2.0F) / 3.0F;
  
 -            if ((double)var7 < 0.1D)
-+        	int shotStrPercent = this.getMaxItemUseDuration(bowItemStack) - inUseLength;
++            int shotStrPercent = this.getMaxItemUseDuration(bowItemStack) - inUseLength;
 +            float shotDamage = (float)shotStrPercent / 20.0F;
 +            shotDamage = (shotDamage * shotDamage + shotDamage * 2.0F) / 3.0F;
 +

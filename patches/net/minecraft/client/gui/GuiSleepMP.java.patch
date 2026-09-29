@@ -5,19 +5,19 @@
              if (!var3.isEmpty())
              {
 -                this.mc.thePlayer.sendChatMessage(var3);
-+            	this.submitChatMessage(var3); // Forge: fix vanilla not adding messages to the sent list while sleeping
++                this.submitChatMessage(var3); // Forge: fix vanilla not adding messages to the sent list while sleeping
              }
  
              this.inputField.setText("");
-@@ -56,6 +56,11 @@
-             super.actionPerformed(button);
+@@ -57,6 +57,11 @@
          }
      }
-+    
-+    public void onGuiClosed() {
-+    	this.wakeFromSleep();
-+    	super.onGuiClosed();
-+    }
  
++    public void onGuiClosed() {
++        this.wakeFromSleep();
++        super.onGuiClosed();
++    }
++
      private void wakeFromSleep()
      {
+         NetHandlerPlayClient var1 = this.mc.thePlayer.sendQueue;

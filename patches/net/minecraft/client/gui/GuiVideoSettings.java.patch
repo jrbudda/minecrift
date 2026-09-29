@@ -10,7 +10,7 @@
 +                    if (y == GameSettings.Options.FRAMERATE_LIMIT)
 +                        slider.enabled = false;
 +                    this.buttonList.add(slider);
-+    				/** END MINECRIFT */
++                    /** END MINECRIFT */
                  }
                  else
                  {

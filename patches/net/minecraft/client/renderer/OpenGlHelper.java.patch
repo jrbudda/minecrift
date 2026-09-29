@@ -1,18 +1,16 @@
 --- a/net/minecraft/client/renderer/OpenGlHelper.java
 +++ b/net/minecraft/client/renderer/OpenGlHelper.java
-@@ -18,8 +18,12 @@
- import org.lwjgl.opengl.GL14;
+@@ -19,6 +19,10 @@
  import org.lwjgl.opengl.GL20;
  import org.lwjgl.opengl.GL30;
+ import org.lwjgl.opengl.GLContext;
 +import org.lwjgl.opengl.GL41;
 +import org.lwjgl.opengl.GL44;
- import org.lwjgl.opengl.GLContext;
++
++
  
-+
-+
  public class OpenGlHelper
  {
-     public static boolean openGL21;
 @@ -35,31 +39,31 @@
       * units.
       */
@@ -72,7 +70,7 @@
  
          if (field_153215_z)
          {
-@@ -86,68 +90,50 @@
+@@ -86,19 +90,14 @@
              lightmapTexUnit = 33985;
          }
  
@@ -88,29 +86,23 @@
              field_153196_B = field_153196_B + "Using framebuffer objects because ";
 -
 -            if (var0.OpenGL30)
+-            {
+-                field_153196_B = field_153196_B + "OpenGL 3.0 is supported and separate blending is supported.\n";
+-                field_153212_w = 0;
+-                field_153198_e = 36160;
 +            field_153198_e = GL30.GL_FRAMEBUFFER;
-+            field_153199_f = 36161;
-+            field_153200_g = 36064;
-+            field_153201_h = 36096;
-+            field_153202_i = 36053;
-+            field_153203_j = 36054;
-+            field_153204_k = 36055;
-+            field_153205_l = 36059;
-+            field_153206_m = 36060;
+                 field_153199_f = 36161;
+                 field_153200_g = 36064;
+                 field_153201_h = 36096;
+@@ -107,47 +106,34 @@
+                 field_153204_k = 36055;
+                 field_153205_l = 36059;
+                 field_153206_m = 36060;
 +            
 +            if (capabilities.OpenGL30)
-             {
-                 field_153196_B = field_153196_B + "OpenGL 3.0 is supported and separate blending is supported.\n";
-                 field_153212_w = 0;
--                field_153198_e = 36160;
--                field_153199_f = 36161;
--                field_153200_g = 36064;
--                field_153201_h = 36096;
--                field_153202_i = 36053;
--                field_153203_j = 36054;
--                field_153204_k = 36055;
--                field_153205_l = 36059;
--                field_153206_m = 36060;
++            {
++                field_153196_B = field_153196_B + "OpenGL 3.0 is supported and separate blending is supported.\n";
++                field_153212_w = 0;
              }
 -            else if (var0.GL_ARB_framebuffer_object)
 +            else if (capabilities.GL_ARB_framebuffer_object)
@@ -242,25 +234,14 @@
      public static void func_153174_h(int p_153174_0_)
      {
          if (framebufferSupported)
-@@ -558,7 +548,8 @@
-             }
+@@ -559,6 +549,7 @@
          }
      }
--
-+    
+ 
 +    //glGenFramebuffer
      public static int func_153165_e()
      {
          if (!framebufferSupported)
-@@ -570,7 +561,7 @@
-             switch (field_153212_w)
-             {
-                 case 0:
--                    return GL30.glGenFramebuffers();
-+                       return GL30.glGenFramebuffers();
- 
-                 case 1:
-                     return ARBFramebufferObject.glGenFramebuffers();
 @@ -584,6 +575,7 @@
          }
      }
@@ -310,12 +291,12 @@
      public static boolean isFramebufferEnabled()
      {
 -        return Config.isFastRender() ? false : framebufferSupported && Minecraft.getMinecraft().gameSettings.fboEnable;
-+    	return fbo;
++        return fbo;
 +       // return Config.isFastRender() ? false : framebufferSupported && Minecraft.getMinecraft().gameSettings.fboEnable;
-     }
++    }
 +
-+	public static boolean func_153193_b() {
-+		// TODO Auto-generated method stub
-+		return isFramebufferEnabled();
-+	}
++    public static boolean func_153193_b() {
++        // TODO Auto-generated method stub
++        return isFramebufferEnabled();
+     }
  }

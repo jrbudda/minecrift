@@ -1,51 +1,20 @@
 --- a/net/minecraft/client/renderer/RenderGlobal.java
 +++ b/net/minecraft/client/renderer/RenderGlobal.java
-@@ -1,6 +1,5 @@
- package net.minecraft.client.renderer;
+@@ -95,6 +95,14 @@
+ import org.lwjgl.opengl.ARBOcclusionQuery;
+ import org.lwjgl.opengl.GL11;
  
--import com.google.common.collect.Maps;
- import java.nio.IntBuffer;
- import java.util.ArrayList;
- import java.util.Arrays;
-@@ -10,10 +9,25 @@
- import java.util.Map;
- import java.util.Random;
- import java.util.concurrent.Callable;
-+
-+import org.apache.logging.log4j.LogManager;
-+import org.apache.logging.log4j.Logger;
-+import org.lwjgl.BufferUtils;
-+import org.lwjgl.input.Mouse;
-+import org.lwjgl.opengl.ARBOcclusionQuery;
-+import org.lwjgl.opengl.GL11;
-+
-+import com.google.common.collect.Maps;
 +import com.mtbs3d.minecrift.provider.MCOpenVR;
 +import com.mtbs3d.minecrift.render.RenderVRPlayer;
 +import com.mtbs3d.minecrift.settings.VRSettings;
-+
 +import de.fruitfly.ovr.enums.EyeType;
- import net.minecraft.block.Block;
- import net.minecraft.block.BlockChest;
- import net.minecraft.block.material.Material;
- import net.minecraft.client.Minecraft;
 +import net.minecraft.client.Minecraft.renderPass;
- import net.minecraft.client.audio.ISound;
- import net.minecraft.client.audio.PositionedSoundRecord;
- import net.minecraft.client.entity.EntityClientPlayerMP;
-@@ -88,12 +102,6 @@
- import net.minecraft.util.Vec3;
- import net.minecraft.world.IWorldAccess;
- import net.minecraft.world.WorldProvider;
--import org.apache.logging.log4j.LogManager;
--import org.apache.logging.log4j.Logger;
--import org.lwjgl.BufferUtils;
--import org.lwjgl.input.Mouse;
--import org.lwjgl.opengl.ARBOcclusionQuery;
--import org.lwjgl.opengl.GL11;
- 
++
++
++
  public class RenderGlobal implements IWorldAccess
  {
+     private static final Logger logger = LogManager.getLogger();
 @@ -109,7 +117,9 @@
      public final TextureManager renderEngine;
      public CompactArrayList worldRenderersToUpdate = new CompactArrayList(100, 0.8F);
@@ -68,23 +37,19 @@
      public RenderGlobal(Minecraft par1Minecraft)
      {
          this.glListClouds = GLAllocation.generateDisplayLists(1);
-@@ -290,18 +304,26 @@
+@@ -290,17 +304,25 @@
              ARBOcclusionQuery.glGenQueriesARB(this.glOcclusionQueryBase);
          }
  
--        this.starGLCallList = GLAllocation.generateDisplayLists(3);
 +        setupSkybox();
 +    }
 +
-+	public void setupSkybox() {
-+		this.starGLCallList = GLAllocation.generateDisplayLists(3);
++    public void setupSkybox() {
+         this.starGLCallList = GLAllocation.generateDisplayLists(3);
          GL11.glPushMatrix();
--        GL11.glNewList(this.starGLCallList, GL11.GL_COMPILE);
--        this.renderStars();
--        GL11.glEndList();
-+	        GL11.glNewList(this.starGLCallList, GL11.GL_COMPILE);
-+	        	this.renderStars();
-+	        GL11.glEndList();
+         GL11.glNewList(this.starGLCallList, GL11.GL_COMPILE);
+         this.renderStars();
+         GL11.glEndList();
          GL11.glPopMatrix();
 +        
          Tessellator var4 = Tessellator.instance;
@@ -94,44 +59,11 @@
 +        //odd way to say '6' lol
          byte var6 = 64;
 -        int var7 = 256 / var6 + 2;
--        float var5 = 16.0F;
 +//        int var7 = 256 / var6 + 2;
 +        int var7 = 6;
-+        float var5 = 16.0F ;
+         float var5 = 16.0F;
          int var8;
          int var9;
- 
-@@ -321,7 +343,7 @@
-         GL11.glEndList();
-         this.glSkyList2 = this.starGLCallList + 2;
-         GL11.glNewList(this.glSkyList2, GL11.GL_COMPILE);
--        var5 = -16.0F;
-+        var5 = -16.0F ;
-         var4.startDrawingQuads();
- 
-         for (var8 = -var6 * var7; var8 <= var6 * var7; var8 += var6)
-@@ -337,7 +359,7 @@
- 
-         var4.draw();
-         GL11.glEndList();
--    }
-+	}
- 
-     private void renderStars()
-     {
-@@ -359,9 +381,9 @@
-                 var4 *= var12;
-                 var6 *= var12;
-                 var8 *= var12;
--                double var14 = var4 * 100.0D;
--                double var16 = var6 * 100.0D;
--                double var18 = var8 * 100.0D;
-+                double var14 = var4 * 100.0D ;
-+                double var16 = var6 * 100.0D ;
-+                double var18 = var8 * 100.0D ;
-                 double var20 = Math.atan2(var4, var8);
-                 double var22 = Math.sin(var20);
-                 double var24 = Math.cos(var20);
 @@ -550,7 +572,7 @@
      /**
       * Renders all entities within range and within the frustrum. Args: pos, frustrum, partialTickTime
@@ -233,24 +165,22 @@
                              var19.renderDistanceWeight = 0.06D;
                          }
  
--                        this.renderedEntity = var19;
--                        RenderManager.instance.renderEntitySimple(var19, p_147589_3_);
--                        this.renderedEntity = null;
 +                        if (thePlayer != var19)
 +                        {
 +                            ++this.countEntitiesRendered;
-+                            this.renderedEntity = var19;
+                         this.renderedEntity = var19;
+-                        RenderManager.instance.renderEntitySimple(var19, p_147589_3_);
 +                            if (shadersMod) {
 +                                //Shaders.nextEntity();
 +                                Reflector.callVoid(Reflector.ShadersMod_Shaders_nextEntity, new Object[] {});
 +                            }
 +                            RenderManager.instance.renderEntitySimple(var19, nano);
-+                            this.renderedEntity = null;
-+                        }
+                         this.renderedEntity = null;
                      }
                  }
              }
-+			/** END MINECRIFT */
++            }
++            /** END MINECRIFT */
  
              this.mc.gameSettings.fancyGraphics = var26;
              this.theWorld.theProfiler.endStartSection("blockentities");
@@ -320,7 +250,7 @@
 +            }
 +                
 +            /** END MINECRIFT SHADERS MOD **/
-+			/** END MINECRIFT */
++            /** END MINECRIFT */
  
 -            this.mc.entityRenderer.disableLightmap((double)p_147589_3_);
 +            this.mc.entityRenderer.disableLightmap((double)nano);
@@ -335,18 +265,13 @@
          if (this.mc.gameSettings.ofSmoothFps && renderPass == 0)
          {
 -            GL11.glFinish();
-+        	//VIVECRAFT
++            //VIVECRAFT
 +            //GL11.glFinish();
 +            // UM NO PLZ
          }
  
          byte var35 = 0;
-@@ -1076,14 +1175,27 @@
-                     endIndex = this.countSortedWorldRenderers;
-                 }
- 
--                GL11.glDisable(GL11.GL_TEXTURE_2D);
-+                GL11.glDisable(GL11.GL_TEXTURE_2D);  
+@@ -1080,10 +1179,23 @@
                  GL11.glDisable(GL11.GL_LIGHTING);
                  GL11.glDisable(GL11.GL_ALPHA_TEST);
                  GL11.glDisable(GL11.GL_FOG);
@@ -366,32 +291,13 @@
 -                this.checkOcclusionQueryResult(startIndex, endIndex, player.posX, player.posY, player.posZ);
 +                profiler.startSection("check"); ///should this use the camera???? I think so
 +                //VIVECRAFT USE CAM POS
-+                	Vec3 cam = mc.entityRenderer.getEyeRenderPos(mc.currentPass);
-+                	this.checkOcclusionQueryResult(startIndex, endIndex, cam.xCoord, cam.yCoord, cam.zCoord);
++                    Vec3 cam = mc.entityRenderer.getEyeRenderPos(mc.currentPass);
++                    this.checkOcclusionQueryResult(startIndex, endIndex, cam.xCoord, cam.yCoord, cam.zCoord);
 +                //END VIVECRAFT
                  profiler.endSection();
                  GL11.glPushMatrix();
                  float sumTX = 0.0F;
-@@ -1145,9 +1257,9 @@
-                                 }
- 
-                                 profiler.startSection("bb");
--                                ARBOcclusionQuery.glBeginQueryARB(ARBOcclusionQuery.GL_SAMPLES_PASSED_ARB, wr.glOcclusionQuery);
--                                wr.callOcclusionQueryList();
--                                ARBOcclusionQuery.glEndQueryARB(ARBOcclusionQuery.GL_SAMPLES_PASSED_ARB);
-+	                                ARBOcclusionQuery.glBeginQueryARB(ARBOcclusionQuery.GL_SAMPLES_PASSED_ARB, wr.glOcclusionQuery);
-+	                                wr.callOcclusionQueryList();
-+	                                ARBOcclusionQuery.glEndQueryARB(ARBOcclusionQuery.GL_SAMPLES_PASSED_ARB);
-                                 profiler.endSection();
-                                 wr.isWaitingOnOcclusionQuery = true;
-                                 ++var37;
-@@ -1177,12 +1289,21 @@
-                 {
-                     GL11.glColorMask(true, true, true, true);
-                 }
--
-+                
-                 GL11.glDepthMask(true);
+@@ -1182,7 +1294,16 @@
                  GL11.glEnable(GL11.GL_TEXTURE_2D);
                  GL11.glEnable(GL11.GL_ALPHA_TEST);
                  GL11.glEnable(GL11.GL_FOG);
@@ -484,421 +390,167 @@
              float var231 = (float)var21.xCoord;
              float var4 = (float)var21.yCoord;
              float var5 = (float)var21.zCoord;
-@@ -1570,186 +1710,242 @@
+@@ -1570,14 +1710,32 @@
              Tessellator var241 = Tessellator.instance;
              GL11.glDepthMask(false);
              GL11.glEnable(GL11.GL_FOG);
--            GL11.glColor3f(var231, var4, var5);
--
--            if (Config.isSkyEnabled())
--            {
--                GL11.glCallList(this.glSkyList);
--            }
--
--            GL11.glDisable(GL11.GL_FOG);
--            GL11.glDisable(GL11.GL_ALPHA_TEST);
--            GL11.glEnable(GL11.GL_BLEND);
--            OpenGlHelper.glBlendFunc(770, 771, 1, 0);
--            RenderHelper.disableStandardItemLighting();
--            float[] var251 = this.theWorld.provider.calcSunriseSunsetColors(this.theWorld.getCelestialAngle(par1), par1);
--            float var9;
--            float var10;
--            float var11;
--            float var12;
--            float var20;
--            int var30;
--            float var16;
--            float var17;
--
--            if (var251 != null && Config.isSunMoonEnabled())
--            {
--                GL11.glDisable(GL11.GL_TEXTURE_2D);
--                GL11.glShadeModel(GL11.GL_SMOOTH);
--                GL11.glPushMatrix();
--                GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
--                GL11.glRotatef(MathHelper.sin(this.theWorld.getCelestialAngleRadians(par1)) < 0.0F ? 180.0F : 0.0F, 0.0F, 0.0F, 1.0F);
--                GL11.glRotatef(90.0F, 0.0F, 0.0F, 1.0F);
--                var8 = var251[0];
--                var9 = var251[1];
--                var10 = var251[2];
--
--                if (this.mc.gameSettings.anaglyph)
--                {
--                    var11 = (var8 * 30.0F + var9 * 59.0F + var10 * 11.0F) / 100.0F;
--                    var12 = (var8 * 30.0F + var9 * 70.0F) / 100.0F;
--                    var20 = (var8 * 30.0F + var10 * 70.0F) / 100.0F;
--                    var8 = var11;
--                    var9 = var12;
--                    var10 = var20;
--                }
--
--                var241.startDrawing(6);
--                var241.setColorRGBA_F(var8, var9, var10, var251[3]);
--                var241.addVertex(0.0D, 100.0D, 0.0D);
--                byte var25 = 16;
--                var241.setColorRGBA_F(var251[0], var251[1], var251[2], 0.0F);
--
--                for (var30 = 0; var30 <= var25; ++var30)
--                {
--                    var20 = (float)var30 * (float)Math.PI * 2.0F / (float)var25;
--                    var16 = MathHelper.sin(var20);
--                    var17 = MathHelper.cos(var20);
--                    var241.addVertex((double)(var16 * 120.0F), (double)(var17 * 120.0F), (double)(-var17 * 40.0F * var251[3]));
--                }
--
--                var241.draw();
--                GL11.glPopMatrix();
--                GL11.glShadeModel(GL11.GL_FLAT);
--            }
--
--            GL11.glEnable(GL11.GL_TEXTURE_2D);
--            OpenGlHelper.glBlendFunc(770, 1, 1, 0);
--            GL11.glPushMatrix();
--            var8 = 1.0F - this.theWorld.getRainStrength(par1);
++            if (shadersMod) {
++                Reflector.callVoid(Reflector.ShadersMod_Shaders_enableFog, new Object[] {});
++            }
+             GL11.glColor3f(var231, var4, var5);
+ 
++            GL11.glPushMatrix(); //VIVECRAFT render sky at infinity
++            
++                Vec3 offsetEye = mc.entityRenderer.getEyeRenderPos(mc.currentPass).subtract(mc.entityRenderer.getEyeRenderPos(renderPass.Center));
++                
++               
++                if(mc.currentPass != renderPass.Third)
++                    GL11.glTranslated(-offsetEye.xCoord, -offsetEye.yCoord, -offsetEye.zCoord); //undo depth
++
+             if (Config.isSkyEnabled())
+             {
++                    if (shadersMod) {
++                        Reflector.callVoid(Reflector.ShadersMod_Shaders_preSkyList, new Object[] {});
++                    }
++                    
+                 GL11.glCallList(this.glSkyList);
+             }
+ 
+             GL11.glDisable(GL11.GL_FOG);
++                if (shadersMod) {
++                    Reflector.callVoid(Reflector.ShadersMod_Shaders_disableFog, new Object[] {});
++                }
+             GL11.glDisable(GL11.GL_ALPHA_TEST);
+             GL11.glEnable(GL11.GL_BLEND);
+             OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+@@ -1595,6 +1753,9 @@
+             if (var251 != null && Config.isSunMoonEnabled())
+             {
+                 GL11.glDisable(GL11.GL_TEXTURE_2D);
++                    if (shadersMod) {
++                        Reflector.callVoid(Reflector.ShadersMod_Shaders_disableTexture2D, new Object[] {});
++                    }
+                 GL11.glShadeModel(GL11.GL_SMOOTH);
+                 GL11.glPushMatrix();
+                 GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
+@@ -1634,27 +1795,40 @@
+             }
+ 
+             GL11.glEnable(GL11.GL_TEXTURE_2D);
++                if (shadersMod) {
++                    Reflector.callVoid(Reflector.ShadersMod_Shaders_enableTexture2D, new Object[] {});
++                }
++                   
+             OpenGlHelper.glBlendFunc(770, 1, 1, 0);
+             GL11.glPushMatrix();
+             var8 = 1.0F - this.theWorld.getRainStrength(par1);
 -            var9 = 0.0F;
 -            var10 = 0.0F;
 -            var11 = 0.0F;
--            GL11.glColor4f(1.0F, 1.0F, 1.0F, var8);
+             GL11.glColor4f(1.0F, 1.0F, 1.0F, var8);
 -            GL11.glTranslatef(var9, var10, var11);
--            GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
--            CustomSky.renderSky(this.theWorld, this.renderEngine, this.theWorld.getCelestialAngle(par1), var8);
--            GL11.glRotatef(this.theWorld.getCelestialAngle(par1) * 360.0F, 1.0F, 0.0F, 0.0F);
--
+             GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
++                    
++                    if (shadersMod) {
++                        Reflector.callVoid(Reflector.ShadersMod_Shaders_preCelestialRotate, new Object[] {});
++                    }
++                                      
+             CustomSky.renderSky(this.theWorld, this.renderEngine, this.theWorld.getCelestialAngle(par1), var8);
++                    
+             GL11.glRotatef(this.theWorld.getCelestialAngle(par1) * 360.0F, 1.0F, 0.0F, 0.0F);
+ 
 -            if (Config.isSunMoonEnabled())
--            {
--                var12 = 30.0F;
--                this.renderEngine.bindTexture(locationSunPng);
--                var241.startDrawingQuads();
++                    if (shadersMod) {
++                        Reflector.callVoid(Reflector.ShadersMod_Shaders_postCelestialRotate, new Object[] {});
++                    }
++        
++                    if (Config.isSunMoonEnabled()) //moon or sun
+             {
+                 var12 = 30.0F;
+                 this.renderEngine.bindTexture(locationSunPng);
++                        
++                        double box = 100;
++                        
+                 var241.startDrawingQuads();
 -                var241.addVertexWithUV((double)(-var12), 100.0D, (double)(-var12), 0.0D, 0.0D);
 -                var241.addVertexWithUV((double)var12, 100.0D, (double)(-var12), 1.0D, 0.0D);
 -                var241.addVertexWithUV((double)var12, 100.0D, (double)var12, 1.0D, 1.0D);
 -                var241.addVertexWithUV((double)(-var12), 100.0D, (double)var12, 0.0D, 1.0D);
--                var241.draw();
--                var12 = 20.0F;
--                this.renderEngine.bindTexture(locationMoonPhasesPng);
--                int var26 = this.theWorld.getMoonPhase();
--                int var27 = var26 % 4;
--                var30 = var26 / 4 % 2;
--                var16 = (float)(var27 + 0) / 4.0F;
--                var17 = (float)(var30 + 0) / 2.0F;
--                float var18 = (float)(var27 + 1) / 4.0F;
--                float var19 = (float)(var30 + 1) / 2.0F;
--                var241.startDrawingQuads();
++                        var241.addVertexWithUV((double)(-var12), box, (double)(-var12), 0.0D, 0.0D);
++                        var241.addVertexWithUV((double)var12, box, (double)(-var12), 1.0D, 0.0D);
++                        var241.addVertexWithUV((double)var12, box, (double)var12, 1.0D, 1.0D);
++                        var241.addVertexWithUV((double)(-var12), box, (double)var12, 0.0D, 1.0D);
+                 var241.draw();
+                 var12 = 20.0F;
+                 this.renderEngine.bindTexture(locationMoonPhasesPng);
+@@ -1666,14 +1840,17 @@
+                 float var18 = (float)(var27 + 1) / 4.0F;
+                 float var19 = (float)(var30 + 1) / 2.0F;
+                 var241.startDrawingQuads();
 -                var241.addVertexWithUV((double)(-var12), -100.0D, (double)var12, (double)var18, (double)var19);
 -                var241.addVertexWithUV((double)var12, -100.0D, (double)var12, (double)var16, (double)var19);
 -                var241.addVertexWithUV((double)var12, -100.0D, (double)(-var12), (double)var16, (double)var17);
 -                var241.addVertexWithUV((double)(-var12), -100.0D, (double)(-var12), (double)var18, (double)var17);
--                var241.draw();
--            }
--
--            GL11.glDisable(GL11.GL_TEXTURE_2D);
--            var20 = this.theWorld.getStarBrightness(par1) * var8;
--
--            if (var20 > 0.0F && Config.isStarsEnabled() && !CustomSky.hasSkyLayers(this.theWorld))
--            {
--                GL11.glColor4f(var20, var20, var20, var20);
--                GL11.glCallList(this.starGLCallList);
--            }
--
--            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
--            GL11.glDisable(GL11.GL_BLEND);
--            GL11.glEnable(GL11.GL_ALPHA_TEST);
--            GL11.glEnable(GL11.GL_FOG);
--            GL11.glPopMatrix();
--            GL11.glDisable(GL11.GL_TEXTURE_2D);
--            GL11.glColor3f(0.0F, 0.0F, 0.0F);
--            double var28 = this.mc.thePlayer.getPosition(par1).yCoord - this.theWorld.getHorizon();
--
--            if (var28 < 0.0D)
--            {
--                GL11.glPushMatrix();
--                GL11.glTranslatef(0.0F, 12.0F, 0.0F);
--                GL11.glCallList(this.glSkyList2);
--                GL11.glPopMatrix();
--                var10 = 1.0F;
--                var11 = -((float)(var28 + 65.0D));
--                var12 = -var10;
--                var241.startDrawingQuads();
--                var241.setColorRGBA_I(0, 255);
--                var241.addVertex((double)(-var10), (double)var11, (double)var10);
--                var241.addVertex((double)var10, (double)var11, (double)var10);
--                var241.addVertex((double)var10, (double)var12, (double)var10);
--                var241.addVertex((double)(-var10), (double)var12, (double)var10);
--                var241.addVertex((double)(-var10), (double)var12, (double)(-var10));
--                var241.addVertex((double)var10, (double)var12, (double)(-var10));
--                var241.addVertex((double)var10, (double)var11, (double)(-var10));
--                var241.addVertex((double)(-var10), (double)var11, (double)(-var10));
--                var241.addVertex((double)var10, (double)var12, (double)(-var10));
--                var241.addVertex((double)var10, (double)var12, (double)var10);
--                var241.addVertex((double)var10, (double)var11, (double)var10);
--                var241.addVertex((double)var10, (double)var11, (double)(-var10));
--                var241.addVertex((double)(-var10), (double)var11, (double)(-var10));
--                var241.addVertex((double)(-var10), (double)var11, (double)var10);
--                var241.addVertex((double)(-var10), (double)var12, (double)var10);
--                var241.addVertex((double)(-var10), (double)var12, (double)(-var10));
--                var241.addVertex((double)(-var10), (double)var12, (double)(-var10));
--                var241.addVertex((double)(-var10), (double)var12, (double)var10);
--                var241.addVertex((double)var10, (double)var12, (double)var10);
--                var241.addVertex((double)var10, (double)var12, (double)(-var10));
--                var241.draw();
--            }
--
--            if (this.theWorld.provider.isSkyColored())
--            {
--                GL11.glColor3f(var231 * 0.2F + 0.04F, var4 * 0.2F + 0.04F, var5 * 0.6F + 0.1F);
--            }
--            else
--            {
--                GL11.glColor3f(var231, var4, var5);
--            }
--
--            if (this.mc.gameSettings.renderDistanceChunks <= 4)
--            {
--                GL11.glColor3f(this.mc.entityRenderer.fogColorRed, this.mc.entityRenderer.fogColorGreen, this.mc.entityRenderer.fogColorBlue);
--            }
--
--            GL11.glPushMatrix();
--            GL11.glTranslatef(0.0F, -((float)(var28 - 16.0D)), 0.0F);
--
--            if (Config.isSkyEnabled())
--            {
--                GL11.glCallList(this.glSkyList2);
-+            if (shadersMod) {
-+                Reflector.callVoid(Reflector.ShadersMod_Shaders_enableFog, new Object[] {});
++                        var241.addVertexWithUV((double)(-var12), -box, (double)var12, (double)var18, (double)var19);
++                        var241.addVertexWithUV((double)var12, -box, (double)var12, (double)var16, (double)var19);
++                        var241.addVertexWithUV((double)var12, -box, (double)(-var12), (double)var16, (double)var17);
++                        var241.addVertexWithUV((double)(-var12), -box, (double)(-var12), (double)var18, (double)var17);
+                 var241.draw();
              }
-+            GL11.glColor3f(var231, var4, var5);
  
--            GL11.glPopMatrix();
--            GL11.glEnable(GL11.GL_TEXTURE_2D);
-+            GL11.glPushMatrix(); //VIVECRAFT render sky at infinity
-+            
-+	            Vec3 offsetEye = mc.entityRenderer.getEyeRenderPos(mc.currentPass).subtract(mc.entityRenderer.getEyeRenderPos(renderPass.Center));
-+	            
-+	           
-+	            if(mc.currentPass != renderPass.Third)
-+	            	GL11.glTranslated(-offsetEye.xCoord, -offsetEye.yCoord, -offsetEye.zCoord); //undo depth
-+
-+	            if (Config.isSkyEnabled())
-+	            {
-+	                if (shadersMod) {
-+	                    Reflector.callVoid(Reflector.ShadersMod_Shaders_preSkyList, new Object[] {});
-+	                }
-+	                
-+	                GL11.glCallList(this.glSkyList);
-+	            }
-+	
-+	            GL11.glDisable(GL11.GL_FOG);
-+	            if (shadersMod) {
-+	                Reflector.callVoid(Reflector.ShadersMod_Shaders_disableFog, new Object[] {});
-+	            }
-+	            GL11.glDisable(GL11.GL_ALPHA_TEST);
-+	            GL11.glEnable(GL11.GL_BLEND);
-+	            OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-+	            RenderHelper.disableStandardItemLighting();
-+	            float[] var251 = this.theWorld.provider.calcSunriseSunsetColors(this.theWorld.getCelestialAngle(par1), par1);
-+	            float var9;
-+	            float var10;
-+	            float var11;
-+	            float var12;
-+	            float var20;
-+	            int var30;
-+	            float var16;
-+	            float var17;
-+	
-+	            if (var251 != null && Config.isSunMoonEnabled())
-+	            {
-+	                GL11.glDisable(GL11.GL_TEXTURE_2D);
-+	                if (shadersMod) {
-+	                    Reflector.callVoid(Reflector.ShadersMod_Shaders_disableTexture2D, new Object[] {});
-+	                }
-+	                GL11.glShadeModel(GL11.GL_SMOOTH);
-+	                GL11.glPushMatrix();
-+		                GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
-+		                GL11.glRotatef(MathHelper.sin(this.theWorld.getCelestialAngleRadians(par1)) < 0.0F ? 180.0F : 0.0F, 0.0F, 0.0F, 1.0F);
-+		                GL11.glRotatef(90.0F, 0.0F, 0.0F, 1.0F);
-+		                var8 = var251[0];
-+		                var9 = var251[1];
-+		                var10 = var251[2];
-+		
-+		                if (this.mc.gameSettings.anaglyph)
-+		                {
-+		                    var11 = (var8 * 30.0F + var9 * 59.0F + var10 * 11.0F) / 100.0F;
-+		                    var12 = (var8 * 30.0F + var9 * 70.0F) / 100.0F;
-+		                    var20 = (var8 * 30.0F + var10 * 70.0F) / 100.0F;
-+		                    var8 = var11;
-+		                    var9 = var12;
-+		                    var10 = var20;
-+		                }
-+		
-+		                var241.startDrawing(6);
-+		                var241.setColorRGBA_F(var8, var9, var10, var251[3]);
-+		                var241.addVertex(0.0D, 100.0D, 0.0D);
-+		                byte var25 = 16;
-+		                var241.setColorRGBA_F(var251[0], var251[1], var251[2], 0.0F);
-+		
-+		                for (var30 = 0; var30 <= var25; ++var30)
-+		                {
-+		                    var20 = (float)var30 * (float)Math.PI * 2.0F / (float)var25;
-+		                    var16 = MathHelper.sin(var20);
-+		                    var17 = MathHelper.cos(var20);
-+		                    var241.addVertex((double)(var16 * 120.0F), (double)(var17 * 120.0F), (double)(-var17 * 40.0F * var251[3]));
-+		                }
-+		
-+		                var241.draw();
-+	                GL11.glPopMatrix();
-+	                GL11.glShadeModel(GL11.GL_FLAT);
-+	            }
-+	
-+	            GL11.glEnable(GL11.GL_TEXTURE_2D);
-+	            if (shadersMod) {
-+	                Reflector.callVoid(Reflector.ShadersMod_Shaders_enableTexture2D, new Object[] {});
-+	            } 
-+	               
-+	            OpenGlHelper.glBlendFunc(770, 1, 1, 0);
-+	            GL11.glPushMatrix();
-+		            var8 = 1.0F - this.theWorld.getRainStrength(par1);
-+		            GL11.glColor4f(1.0F, 1.0F, 1.0F, var8);
-+		            GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-+		            
-+		            if (shadersMod) {
-+		                Reflector.callVoid(Reflector.ShadersMod_Shaders_preCelestialRotate, new Object[] {});
-+		            }
-+		                              
-+		            CustomSky.renderSky(this.theWorld, this.renderEngine, this.theWorld.getCelestialAngle(par1), var8);
-+		            
-+		            GL11.glRotatef(this.theWorld.getCelestialAngle(par1) * 360.0F, 1.0F, 0.0F, 0.0F);
-+		            
-+		            if (shadersMod) {
-+		                Reflector.callVoid(Reflector.ShadersMod_Shaders_postCelestialRotate, new Object[] {});
-+		            }
-+		
-+		            if (Config.isSunMoonEnabled()) //moon or sun
-+		            {
-+		                var12 = 30.0F;
-+		                this.renderEngine.bindTexture(locationSunPng);
-+		                
-+		                double box = 100;
-+		                
-+		                var241.startDrawingQuads();
-+		                var241.addVertexWithUV((double)(-var12), box, (double)(-var12), 0.0D, 0.0D);
-+		                var241.addVertexWithUV((double)var12, box, (double)(-var12), 1.0D, 0.0D);
-+		                var241.addVertexWithUV((double)var12, box, (double)var12, 1.0D, 1.0D);
-+		                var241.addVertexWithUV((double)(-var12), box, (double)var12, 0.0D, 1.0D);
-+		                var241.draw();
-+		                var12 = 20.0F;
-+		                this.renderEngine.bindTexture(locationMoonPhasesPng);
-+		                int var26 = this.theWorld.getMoonPhase();
-+		                int var27 = var26 % 4;
-+		                var30 = var26 / 4 % 2;
-+		                var16 = (float)(var27 + 0) / 4.0F;
-+		                var17 = (float)(var30 + 0) / 2.0F;
-+		                float var18 = (float)(var27 + 1) / 4.0F;
-+		                float var19 = (float)(var30 + 1) / 2.0F;
-+		                var241.startDrawingQuads();
-+		                var241.addVertexWithUV((double)(-var12), -box, (double)var12, (double)var18, (double)var19);
-+		                var241.addVertexWithUV((double)var12, -box, (double)var12, (double)var16, (double)var19);
-+		                var241.addVertexWithUV((double)var12, -box, (double)(-var12), (double)var16, (double)var17);
-+		                var241.addVertexWithUV((double)(-var12), -box, (double)(-var12), (double)var18, (double)var17);
-+		                var241.draw();
-+		            }
-+		
-+		            GL11.glDisable(GL11.GL_TEXTURE_2D);
-+		            if (shadersMod) {
-+		                Reflector.callVoid(Reflector.ShadersMod_Shaders_disableTexture2D, new Object[] {});
-+		            }
-+		            var20 = this.theWorld.getStarBrightness(par1) * var8;
-+		
-+		            if (var20 > 0.0F && Config.isStarsEnabled() && !CustomSky.hasSkyLayers(this.theWorld))
-+		            {
-+		                GL11.glColor4f(var20, var20, var20, var20);
-+		                GL11.glCallList(this.starGLCallList);
-+		            }
-+		
-+		            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-+		            GL11.glDisable(GL11.GL_BLEND);
-+		            GL11.glEnable(GL11.GL_ALPHA_TEST);
-+		            GL11.glEnable(GL11.GL_FOG);
-+		            
-+		            if (shadersMod) {
-+		                Reflector.callVoid(Reflector.ShadersMod_Shaders_enableFog, new Object[] {});
-+		            }
-+		                 
-+	            GL11.glPopMatrix();
-+	            GL11.glDisable(GL11.GL_TEXTURE_2D);
-+	            
-+	            if (shadersMod) {
-+	                Reflector.callVoid(Reflector.ShadersMod_Shaders_disableTexture2D, new Object[] {});
-+	            }
-+	            
-+	            GL11.glColor3f(0.0F, 0.0F, 0.0F);
-+	            //VIVECRAFT fix
-+	           // double var28 = this.mc.thePlayer.getPosition(par1).yCoord - this.theWorld.getHorizon();
-+	            double var28 = this.mc.thePlayer.getPosition(par1).yCoord - this.theWorld.getHorizon();
-+	            if (var28 < 0.0D)
-+	            {
-+	                GL11.glPushMatrix();
-+		                GL11.glTranslatef(0.0F, 120.0F, 0.0F);
-+		                GL11.glCallList(this.glSkyList2);
-+	                GL11.glPopMatrix();
-+	                var10 = 1.0F;
-+	                var11 = -((float)(var28 + 65.0D));
-+	                var12 = -1.0F;
-+	                var241.startDrawingQuads();
-+	                var241.setColorRGBA_I(0, 255);
-+	                var241.addVertex((double)(-var10), (double)var11, (double)var10);
-+	                var241.addVertex((double)var10, (double)var11, (double)var10);
-+	                var241.addVertex((double)var10, (double)var12, (double)var10);
-+	                var241.addVertex((double)(-var10), (double)var12, (double)var10);
-+	                var241.addVertex((double)(-var10), (double)var12, (double)(-var10));
-+	                var241.addVertex((double)var10, (double)var12, (double)(-var10));
-+	                var241.addVertex((double)var10, (double)var11, (double)(-var10));
-+	                var241.addVertex((double)(-var10), (double)var11, (double)(-var10));
-+	                var241.addVertex((double)var10, (double)var12, (double)(-var10));
-+	                var241.addVertex((double)var10, (double)var12, (double)var10);
-+	                var241.addVertex((double)var10, (double)var11, (double)var10);
-+	                var241.addVertex((double)var10, (double)var11, (double)(-var10));
-+	                var241.addVertex((double)(-var10), (double)var11, (double)(-var10));
-+	                var241.addVertex((double)(-var10), (double)var11, (double)var10);
-+	                var241.addVertex((double)(-var10), (double)var12, (double)var10);
-+	                var241.addVertex((double)(-var10), (double)var12, (double)(-var10));
-+	                var241.addVertex((double)(-var10), (double)var12, (double)(-var10));
-+	                var241.addVertex((double)(-var10), (double)var12, (double)var10);
-+	                var241.addVertex((double)var10, (double)var12, (double)var10);
-+	                var241.addVertex((double)var10, (double)var12, (double)(-var10));
-+	                var241.draw();
-+	            }
-+	
-+	            if (this.theWorld.provider.isSkyColored())
-+	            {
-+	                GL11.glColor3f(var231 * 0.2F + 0.04F, var4 * 0.2F + 0.04F, var5 * 0.6F + 0.1F);
-+	            }
-+	            else
-+	            {
-+	                GL11.glColor3f(var231, var4, var5);
-+	            }
-+	
-+	            if (this.mc.gameSettings.renderDistanceChunks <= 4)
-+	            {
-+	                GL11.glColor3f(this.mc.entityRenderer.fogColorRed, this.mc.entityRenderer.fogColorGreen, this.mc.entityRenderer.fogColorBlue);
-+	            }
-+	
-+	            GL11.glPushMatrix();
-+	            GL11.glTranslatef(0.0F, -((float)(var28 - 16.0D)), 0.0F);
-+	
-+	            if (Config.isSkyEnabled())
-+	            {
-+	                GL11.glCallList(this.glSkyList2);
-+	            }
-+	
-+	            GL11.glPopMatrix();
-+	            GL11.glEnable(GL11.GL_TEXTURE_2D);
-+	            if (shadersMod) {
-+	                Reflector.callVoid(Reflector.ShadersMod_Shaders_enableTexture2D, new Object[] {});
-+	            }
-+	            
-+	        	//undo infinityrender
-+	        GL11.glPopMatrix();
-+	            
+             GL11.glDisable(GL11.GL_TEXTURE_2D);
++                    if (shadersMod) {
++                        Reflector.callVoid(Reflector.ShadersMod_Shaders_disableTexture2D, new Object[] {});
++                    }
+             var20 = this.theWorld.getStarBrightness(par1) * var8;
+ 
+             if (var20 > 0.0F && Config.isStarsEnabled() && !CustomSky.hasSkyLayers(this.theWorld))
+@@ -1686,20 +1863,31 @@
+             GL11.glDisable(GL11.GL_BLEND);
+             GL11.glEnable(GL11.GL_ALPHA_TEST);
+             GL11.glEnable(GL11.GL_FOG);
++                    
++                    if (shadersMod) {
++                        Reflector.callVoid(Reflector.ShadersMod_Shaders_enableFog, new Object[] {});
++                    }
++                         
+             GL11.glPopMatrix();
+             GL11.glDisable(GL11.GL_TEXTURE_2D);
++                
++                if (shadersMod) {
++                    Reflector.callVoid(Reflector.ShadersMod_Shaders_disableTexture2D, new Object[] {});
++                }
++                
+             GL11.glColor3f(0.0F, 0.0F, 0.0F);
++                //VIVECRAFT fix
++               // double var28 = this.mc.thePlayer.getPosition(par1).yCoord - this.theWorld.getHorizon();
+             double var28 = this.mc.thePlayer.getPosition(par1).yCoord - this.theWorld.getHorizon();
+-
+             if (var28 < 0.0D)
+             {
+                 GL11.glPushMatrix();
+-                GL11.glTranslatef(0.0F, 12.0F, 0.0F);
++                        GL11.glTranslatef(0.0F, 120.0F, 0.0F);
+                 GL11.glCallList(this.glSkyList2);
+                 GL11.glPopMatrix();
+                 var10 = 1.0F;
+                 var11 = -((float)(var28 + 65.0D));
+-                var12 = -var10;
++                    var12 = -1.0F;
+                 var241.startDrawingQuads();
+                 var241.setColorRGBA_I(0, 255);
+                 var241.addVertex((double)(-var10), (double)var11, (double)var10);
+@@ -1749,7 +1937,15 @@
+ 
+             GL11.glPopMatrix();
+             GL11.glEnable(GL11.GL_TEXTURE_2D);
++                if (shadersMod) {
++                    Reflector.callVoid(Reflector.ShadersMod_Shaders_enableTexture2D, new Object[] {});
++                }
++                
++                //undo infinityrender
++            GL11.glPopMatrix();
++                
              GL11.glDepthMask(true);
 +            /** END MINECRIFT SHADERS MOD **/
          }
@@ -1250,16 +902,7 @@
      }
  
      /**
-@@ -2932,7 +3161,7 @@
-                 {
-                     this.theWorld.playSound((double)par3 + 0.5D, (double)par4 + 0.5D, (double)par5 + 0.5D, "random.door_close", 1.0F, this.theWorld.rand.nextFloat() * 0.1F + 0.9F, false);
-                 }
--
-+                
-                 break;
- 
-             case 1004:
-@@ -3026,12 +3255,13 @@
+@@ -3026,10 +3255,11 @@
  
              case 2001:
                  var8 = Block.getBlockById(par6 & 4095);
@@ -1268,20 +911,17 @@
                  if (var8.getMaterial() != Material.air)
                  {
                      this.mc.getSoundHandler().playSound(new PositionedSoundRecord(new ResourceLocation(var8.stepSound.getDigResourcePath()), (var8.stepSound.getVolume() + 1.0F) / 2.0F, var8.stepSound.getFrequency() * 0.8F, (float)par3 + 0.5F, (float)par4 + 0.5F, (float)par5 + 0.5F));
-+                    MCOpenVR.triggerHapticPulse(0,250);    
++                    MCOpenVR.triggerHapticPulse(0,250);
                  }
--
-+      
-                 this.mc.effectRenderer.addBlockDestroyEffects(par3, par4, par5, var8, par6 >> 12 & 255);
-                 break;
  
+                 this.mc.effectRenderer.addBlockDestroyEffects(par3, par4, par5, var8, par6 >> 12 & 255);
 @@ -3128,6 +3358,9 @@
  
                      for (int var24 = 0; var24 < var23; ++var24)
                      {
 +                  //landing
-+                    	MCOpenVR.triggerHapticPulse(0,2500);    
-+                    	MCOpenVR.triggerHapticPulse(1,2500);                  
++                        MCOpenVR.triggerHapticPulse(0,2500);
++                        MCOpenVR.triggerHapticPulse(1,2500);
                          float var25 = MathHelper.randomFloatClamp(var7, 0.0F, ((float)Math.PI * 2F));
                          var26 = (double)MathHelper.randomFloatClamp(var7, 0.75F, 1.0F);
                          var28 = 0.20000000298023224D + var21 / 100.0D;

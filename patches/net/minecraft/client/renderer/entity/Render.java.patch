@@ -20,9 +20,9 @@
 -            GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
 +            
 +            //VIVECRAFT this isnt right even in vanilla
-+    		y=y+p_147906_1_.height+0.5f;
-+    		float f = (float)Math.toDegrees(Math.atan2(-x, z));     
-+    		float f1 = -(float)Math.toDegrees(Math.asin(y/Math.sqrt(x*x+y*y+z*z))); 
++            y=y+p_147906_1_.height+0.5f;
++            float f = (float)Math.toDegrees(Math.atan2(-x, z));
++            float f1 = -(float)Math.toDegrees(Math.asin(y/Math.sqrt(x*x+y*y+z*z)));
 +            GL11.glRotatef(-f, 0.0F, 1.0F, 0.0F);
 +            GL11.glRotatef(f1, 1.0F, 0.0F, 0.0F);
 +            //

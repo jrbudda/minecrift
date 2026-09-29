@@ -1,46 +1,28 @@
 --- a/net/minecraft/client/entity/EntityPlayerSP.java
 +++ b/net/minecraft/client/entity/EntityPlayerSP.java
-@@ -1,5 +1,17 @@
- package net.minecraft.client.entity;
+@@ -49,6 +49,22 @@
+ import net.minecraft.util.Session;
+ import net.minecraft.world.World;
  
 +import java.lang.reflect.Field;
-+
 +import com.mtbs3d.minecrift.api.IRoomscaleAdapter;
 +import com.mtbs3d.minecrift.provider.MCOpenVR;
 +import com.mtbs3d.minecrift.provider.OpenVRPlayer;
-+
 +import net.minecraft.block.Block;
 +import net.minecraft.block.BlockLiquid;
 +import net.minecraft.block.material.Material;
 +import com.mtbs3d.minecrift.settings.VRSettings;
 +import com.mtbs3d.minecrift.utils.Utils;
-+
- import net.minecraft.client.Minecraft;
- import net.minecraft.client.audio.PositionedSoundRecord;
- import net.minecraft.client.gui.GuiCommandBlock;
-@@ -26,11 +38,14 @@
- import net.minecraft.entity.ai.attributes.IAttributeInstance;
- import net.minecraft.entity.item.EntityMinecartHopper;
- import net.minecraft.entity.passive.EntityHorse;
 +import net.minecraft.entity.player.EntityPlayer;
- import net.minecraft.init.Items;
- import net.minecraft.inventory.IInventory;
- import net.minecraft.item.Item;
- import net.minecraft.item.ItemStack;
 +import net.minecraft.nbt.NBTTagCompound;
- import net.minecraft.potion.Potion;
 +import net.minecraft.src.Reflector;
- import net.minecraft.tileentity.TileEntity;
- import net.minecraft.tileentity.TileEntityBeacon;
- import net.minecraft.tileentity.TileEntityBrewingStand;
-@@ -47,6 +62,7 @@
- import net.minecraft.util.MovementInput;
- import net.minecraft.util.ResourceLocation;
- import net.minecraft.util.Session;
 +import net.minecraft.util.Vec3;
- import net.minecraft.world.World;
- 
++
++
++
  public class EntityPlayerSP extends AbstractClientPlayer
+ {
+     public MovementInput movementInput;
 @@ -61,6 +77,19 @@
       */
      protected int sprintToggleTimer;
@@ -72,36 +54,36 @@
          this.mc = p_i1238_1_;
          this.dimension = p_i1238_4_;
 +        
-     }
- 
++    }
++
 +    //VIVECRAFT
 +    protected Field inuse, inusedur;
 +        
 +    public void setItemInUseClient(ItemStack item){
-+    	if(this.inuse==null){
-+    		return;
-+    	} 
++        if(this.inuse==null){
++            return;
++        }
 +
-+    	try {
-+    		this.inuse.set(this, item);
-+    	} catch (IllegalArgumentException e) {
-+    	} catch (Exception e) {
-+    	}
++        try {
++            this.inuse.set(this, item);
++        } catch (IllegalArgumentException e) {
++        } catch (Exception e) {
++        }
 +    }
 +    
 +    
 +    public void setItemInUseCountClient(int count){
-+    	if(this.inusedur==null){
-+    		return;
-+    	} 
++        if(this.inusedur==null){
++            return;
++        }
 +
-+    	try {
-+    		this.inusedur.set(this, count);
-+    	} catch (IllegalArgumentException e) {
-+    	} catch (Exception e) {
-+    	}
-+    }
-+    
++        try {
++            this.inusedur.set(this, count);
++        } catch (IllegalArgumentException e) {
++        } catch (Exception e) {
++        }
+     }
+ 
 +    //END VIVECRAFT
 +    
 +    
@@ -156,21 +138,12 @@
                  if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.getIsKeyPressed())
                  {
 -                    this.sprintToggleTimer = 7;
-+                	//VIVECRAFT
++                    //VIVECRAFT
 +                    this.sprintToggleTimer = 14;
 +                    //END VIVECRAFT
                  }
                  else
                  {
-@@ -252,7 +325,7 @@
-                     this.motionY += 0.15D;
-                 }
-             }
--
-+            
-             if (this.isRidingHorse())
-             {
-                 if (this.horseJumpPowerCounter < 0)
 @@ -296,6 +369,10 @@
  
              super.onLivingUpdate();
@@ -182,23 +155,23 @@
              if (this.onGround && this.capabilities.isFlying)
              {
                  this.capabilities.isFlying = false;
-@@ -341,7 +418,14 @@
+@@ -341,8 +418,15 @@
              var1 *= 1.0F - var4 * 0.15F;
          }
  
--        return var1;
 +        /** MINECRIFT FORGE **/
 +        if (Reflector.forgeExists()) {
 +            return (Float)Reflector.call(Reflector.ForgeHooksClient_getOffsetFov, new Object[] {this, var1});
 +        }
 +        else {
-+            return var1;
-+        }
-+        /** END MINECRIFT FORGE **/
+         return var1;
      }
++        /** END MINECRIFT FORGE **/
++    }
  
      /**
-@@ -524,70 +608,168 @@
+      * set current crafting inventory back to the 2x2 square
+@@ -524,16 +608,112 @@
      {
          return this.worldObj.getBlock(p_71153_1_, p_71153_2_, p_71153_3_).isNormalCube();
      }
@@ -215,24 +188,11 @@
 +    /** END MINECRIFT FORGE **/
      protected boolean pushOutOfBlocks(double x, double y, double z)
      {
--        int var7 = MathHelper.floor_double(x);
--        int var8 = MathHelper.floor_double(y);
--        int var9 = MathHelper.floor_double(z);
--        double var10 = x - (double)var7;
--        double var12 = z - (double)var9;
--
--        if (this.isBlockNormal(var7, var8, var9) || this.isBlockNormal(var7, var8 + 1, var9))
 +        if (this.noClip)
-         {
--            boolean var14 = !this.isBlockNormal(var7 - 1, var8, var9) && !this.isBlockNormal(var7 - 1, var8 + 1, var9);
--            boolean var15 = !this.isBlockNormal(var7 + 1, var8, var9) && !this.isBlockNormal(var7 + 1, var8 + 1, var9);
--            boolean var16 = !this.isBlockNormal(var7, var8, var9 - 1) && !this.isBlockNormal(var7, var8 + 1, var9 - 1);
--            boolean var17 = !this.isBlockNormal(var7, var8, var9 + 1) && !this.isBlockNormal(var7, var8 + 1, var9 + 1);
--            byte var18 = -1;
--            double var19 = 9999.0D;
++        {
 +            return false;
 +        }
-+    	
++        
 +        /** MINECRIFT FORGE **/
 +        if (Reflector.forgeExists()) {
 +     
@@ -241,75 +201,46 @@
 +            int k = MathHelper.floor_double(z);
 +            double d3 = x - (double)i;
 +            double d4 = z - (double)k;
- 
--            if (var14 && var10 < var19)
--            {
--                var19 = var10;
--                var18 = 0;
--            }
++
 +            int entHeight = Math.max(Math.round(this.height), 1);
- 
--            if (var15 && 1.0D - var10 < var19)
--            {
--                var19 = 1.0D - var10;
--                var18 = 1;
--            }
++
 +            boolean inTranslucentBlock = true;
- 
--            if (var16 && var12 < var19)
++
 +            for (int i1 = 0; i1 < entHeight; i1++)
-             {
--                var19 = var12;
--                var18 = 4;
++            {
 +                if (!this.isBlockNormal(i, j + i1, k))
 +                {
 +                    inTranslucentBlock = false;
 +                }
-             }
- 
--            if (var17 && 1.0D - var12 < var19)
++            }
++
 +            if (inTranslucentBlock)
-             {
--                var19 = 1.0D - var12;
--                var18 = 5;
--            }
++            {
 +                boolean flag  = !isHeadspaceFree(i - 1, j, k, entHeight);
 +                boolean flag1 = !isHeadspaceFree(i + 1, j, k, entHeight);
 +                boolean flag2 = !isHeadspaceFree(i, j, k - 1, entHeight);
 +                boolean flag3 = !isHeadspaceFree(i, j, k + 1, entHeight);
 +                byte b0 = -1;
 +                double d5 = 9999.0D;
- 
--            float var21 = 0.1F;
++
 +                if (flag && d3 < d5)
 +                {
 +                    d5 = d3;
 +                    b0 = 0;
 +                }
- 
--            if (var18 == 0)
--            {
--                this.motionX = (double)(-var21);
--            }
++
 +                if (flag1 && 1.0D - d3 < d5)
 +                {
 +                    d5 = 1.0D - d3;
 +                    b0 = 1;
 +                }
- 
--            if (var18 == 1)
--            {
--                this.motionX = (double)var21;
--            }
++
 +                if (flag2 && d4 < d5)
 +                {
 +                    d5 = d4;
 +                    b0 = 4;
 +                }
- 
--            if (var18 == 4)
--            {
--                this.motionZ = (double)(-var21);
++
 +                if (flag3 && 1.0D - d4 < d5)
 +                {
 +                    d5 = 1.0D - d4;
@@ -337,78 +268,29 @@
 +                {
 +                    this.motionZ = (double)f;
 +                }
-             }
++            }
 +        }
 +        else {
-+            int var7 = MathHelper.floor_double(x);
-+            int var8 = MathHelper.floor_double(y);
-+            int var9 = MathHelper.floor_double(z);
-+            double var10 = x - (double)var7;
-+            double var12 = z - (double)var9;
-+
+         int var7 = MathHelper.floor_double(x);
+         int var8 = MathHelper.floor_double(y);
+         int var9 = MathHelper.floor_double(z);
+         double var10 = x - (double)var7;
+         double var12 = z - (double)var9;
+ 
+-        if (this.isBlockNormal(var7, var8, var9) || this.isBlockNormal(var7, var8 + 1, var9))
 +            //CRAWLING
 +            boolean tall = Math.floor(this.height) > 0;
 +            //
 +                        
 +            if ((tall && this.isBlockNormal(var7, var8 - 1 , var9)) || this.isBlockNormal(var7, var8, var9))
-+            {
-+                boolean var14 = !this.isBlockNormal(var7 - 1, var8, var9) && !this.isBlockNormal(var7 - 1, var8 + 1, var9);
-+                boolean var15 = !this.isBlockNormal(var7 + 1, var8, var9) && !this.isBlockNormal(var7 + 1, var8 + 1, var9);
-+                boolean var16 = !this.isBlockNormal(var7, var8, var9 - 1) && !this.isBlockNormal(var7, var8 + 1, var9 - 1);
-+                boolean var17 = !this.isBlockNormal(var7, var8, var9 + 1) && !this.isBlockNormal(var7, var8 + 1, var9 + 1);
-+                byte var18 = -1;
-+                double var19 = 9999.0D;
- 
--            if (var18 == 5)
--            {
--                this.motionZ = (double)var21;
-+                if (var14 && var10 < var19)
-+                {
-+                    var19 = var10;
-+                    var18 = 0;
-+                }
-+
-+                if (var15 && 1.0D - var10 < var19)
-+                {
-+                    var19 = 1.0D - var10;
-+                    var18 = 1;
-+                }
-+
-+                if (var16 && var12 < var19)
-+                {
-+                    var19 = var12;
-+                    var18 = 4;
-+                }
-+
-+                if (var17 && 1.0D - var12 < var19)
-+                {
-+                    var19 = 1.0D - var12;
-+                    var18 = 5;
-+                }
-+
-+                float var21 = 0.1F;
-+
-+                if (var18 == 0)
-+                {
-+                    this.motionX = (double)(-var21);
-+                }
-+
-+                if (var18 == 1)
-+                {
-+                    this.motionX = (double)var21;
-+                }
-+
-+                if (var18 == 4)
-+                {
-+                    this.motionZ = (double)(-var21);
-+                }
-+
-+                if (var18 == 5)
-+                {
-+                    this.motionZ = (double)var21;
-+                }
+         {
+             boolean var14 = !this.isBlockNormal(var7 - 1, var8, var9) && !this.isBlockNormal(var7 - 1, var8 + 1, var9);
+             boolean var15 = !this.isBlockNormal(var7 + 1, var8, var9) && !this.isBlockNormal(var7 + 1, var8 + 1, var9);
+@@ -588,6 +768,8 @@
+                 this.motionZ = (double)var21;
              }
          }
++        }
 +        /** END MINECRIFT FORGE **/
  
          return false;
@@ -442,38 +324,38 @@
 +    public void doDrag()
 +    {
 +
-+   	
-+    	float var3 = 0.91F;
++       
++        float var3 = 0.91F;
 +
-+    	if (this.onGround)
-+    	{
-+    		var3 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.91F;
-+    	}
++        if (this.onGround)
++        {
++            var3 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.91F;
++        }
 +
-+    	double xFactor = var3;
-+    	double zFactor = var3;
++        double xFactor = var3;
++        double zFactor = var3;
 +
-+    	//VIVECRAFT account for stock drag code we can't change in EntityLivingBase
-+    	this.motionX /= xFactor;
-+    	this.motionZ /= zFactor;
-+    	//
++        //VIVECRAFT account for stock drag code we can't change in EntityLivingBase
++        this.motionX /= xFactor;
++        this.motionZ /= zFactor;
++        //
 +
-+    	int inertiaFactor = Minecraft.getMinecraft().vrSettings.inertiaFactor;
-+    	double addFactor = VRSettings.getInertiaAddFactor(inertiaFactor);
++        int inertiaFactor = Minecraft.getMinecraft().vrSettings.inertiaFactor;
++        double addFactor = VRSettings.getInertiaAddFactor(inertiaFactor);
 +
-+    	double boundedAdditionX = getBoundedAddition(additionX);
-+    	double targetLimitX = (var3 * boundedAdditionX) / (1f - var3);
-+    	double multiFactorX = targetLimitX / (var3 * (targetLimitX + (boundedAdditionX * addFactor)));
-+    	xFactor *= multiFactorX;
++        double boundedAdditionX = getBoundedAddition(additionX);
++        double targetLimitX = (var3 * boundedAdditionX) / (1f - var3);
++        double multiFactorX = targetLimitX / (var3 * (targetLimitX + (boundedAdditionX * addFactor)));
++        xFactor *= multiFactorX;
 +
-+    	double boundedAdditionZ = getBoundedAddition(additionZ);
-+    	double targetLimitZ = (var3 * boundedAdditionZ) / (1f - var3);
-+    	double multiFactorZ = targetLimitZ / (var3 * (targetLimitZ + (boundedAdditionZ * addFactor)));
-+    	zFactor *= multiFactorZ;
++        double boundedAdditionZ = getBoundedAddition(additionZ);
++        double targetLimitZ = (var3 * boundedAdditionZ) / (1f - var3);
++        double multiFactorZ = targetLimitZ / (var3 * (targetLimitZ + (boundedAdditionZ * addFactor)));
++        zFactor *= multiFactorZ;
 +
 +
-+    	this.motionX *= xFactor;
-+    	this.motionZ *= zFactor;
++        this.motionX *= xFactor;
++        this.motionZ *= zFactor;
 +    }
 +    
 +    public double getBoundedAddition(double orig)
@@ -494,10 +376,10 @@
 +    public void moveFlying(float strafe, float forward, float friction)
 +    {
 +//   	super.moveFlying(strafe, forward, friction);;
-+    	
-+    	OpenVRPlayer vr = mc.vrPlayer;		
-+    	if (!vr.getFreeMoveMode()) {return;}
-+		
++        
++        OpenVRPlayer vr = mc.vrPlayer;
++        if (!vr.getFreeMoveMode()) {return;}
++        
 +        int inertiaFactor = Minecraft.getMinecraft().vrSettings.inertiaFactor;
 +        float speed = strafe * strafe + forward * forward;
 +
@@ -520,51 +402,51 @@
 +            forward *= speed;
 +
 +            Vec3 directionVec = Vec3.createVectorHelper(strafe, 0, forward);
-+	  						
-+         	//VIVE DO PITCH FLYING		
++                              
++             //VIVE DO PITCH FLYING
 +
-+    		IRoomscaleAdapter con = mc.roomScale;
-+    		
++            IRoomscaleAdapter con = mc.roomScale;
++            
 +            // Account for pitch if required
-+    		if(mc.vrSettings.seated){
-+            	directionVec=directionVec.rotateYaw(-con.getControllerOffhandYaw_World() * PIOVER180);	    		
-+    		}else{
-+        		if(this.capabilities.isFlying || this.inWater){
-+        			switch (mc.vrSettings.vrFreeMoveMode){
-+        			case VRSettings.FREEMOVE_CONTROLLER:
-+        			case VRSettings.FREEMOVE_JOYPAD:
-+        				directionVec.rotateAroundX(con.getControllerOffhandPitch_World() * PIOVER180);		   
-+        				break;
-+        			case VRSettings.FREEMOVE_HMD:
-+        				directionVec.rotateAroundX(con.getHMDPitch_World()* PIOVER180);				
-+        				break;
-+        			case VRSettings.FREEMOVE_RUNINPLACE:
-+        				//hmd pitch
-+        				directionVec.rotateAroundX(con.getHMDPitch_World()* PIOVER180);	
-+        				break;
-+        			}
-+        		}
-+        		
-+    			switch (mc.vrSettings.vrFreeMoveMode){
-+    			case VRSettings.FREEMOVE_CONTROLLER:
-+    			case VRSettings.FREEMOVE_JOYPAD:
-+    				directionVec.rotateAroundY(-con.getControllerOffhandYaw_World() * PIOVER180);	
-+    				break;
-+    			case VRSettings.FREEMOVE_HMD:
-+                	directionVec.rotateAroundY(-con.getHMDYaw_World() * PIOVER180);	
-+    				break;
-+    			case VRSettings.FREEMOVE_RUNINPLACE:
-+                	directionVec=directionVec.rotateYaw((float) (-mc.runTracker.getYaw() * PIOVER180));
-+    				directionVec=directionVec.scale(mc.runTracker.getSpeed());
-+    				break;
-+    			}    		    	    			
-+    		}
-+    	
++            if(mc.vrSettings.seated){
++                directionVec=directionVec.rotateYaw(-con.getControllerOffhandYaw_World() * PIOVER180);
++            }else{
++                if(this.capabilities.isFlying || this.inWater){
++                    switch (mc.vrSettings.vrFreeMoveMode){
++                    case VRSettings.FREEMOVE_CONTROLLER:
++                    case VRSettings.FREEMOVE_JOYPAD:
++                        directionVec.rotateAroundX(con.getControllerOffhandPitch_World() * PIOVER180);
++                        break;
++                    case VRSettings.FREEMOVE_HMD:
++                        directionVec.rotateAroundX(con.getHMDPitch_World()* PIOVER180);
++                        break;
++                    case VRSettings.FREEMOVE_RUNINPLACE:
++                        //hmd pitch
++                        directionVec.rotateAroundX(con.getHMDPitch_World()* PIOVER180);
++                        break;
++                    }
++                }
++                
++                switch (mc.vrSettings.vrFreeMoveMode){
++                case VRSettings.FREEMOVE_CONTROLLER:
++                case VRSettings.FREEMOVE_JOYPAD:
++                    directionVec.rotateAroundY(-con.getControllerOffhandYaw_World() * PIOVER180);
++                    break;
++                case VRSettings.FREEMOVE_HMD:
++                    directionVec.rotateAroundY(-con.getHMDYaw_World() * PIOVER180);
++                    break;
++                case VRSettings.FREEMOVE_RUNINPLACE:
++                    directionVec=directionVec.rotateYaw((float) (-mc.runTracker.getYaw() * PIOVER180));
++                    directionVec=directionVec.scale(mc.runTracker.getSpeed());
++                    break;
++                }
++            }
++        
 +            mX = directionVec.xCoord;
 +            mY = directionVec.yCoord;
 +            mZ = directionVec.zCoord;
 +
-+     	   // Modify acceleration sequence (each tick)
++            // Modify acceleration sequence (each tick)
 +            if(!this.capabilities.isFlying && !this.inWater) addFactor = VRSettings.getInertiaAddFactor(inertiaFactor);
 +            
 +            float yAdd = 1f;
@@ -583,7 +465,7 @@
 +        //}
 +
 +        
-+     if(!this.capabilities.isFlying && !this.inWater) doDrag();       //TODO put back intertia while flying.. doesnt work for some reason. 
++     if(!this.capabilities.isFlying && !this.inWater) doDrag();       //TODO put back intertia while flying.. doesnt work for some reason.
 +        
 +/** END MINECRIFT **/
 +   
@@ -617,13 +499,13 @@
 +    public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch)
 +    {
 +        super.setPositionAndRotation(x, y, z, yaw, pitch);
-+		
++        
 +        OpenVRPlayer.get().snapRoomOriginToPlayerEntity(this, true, false, 1);
 +      
-+		if(initFromServer == false){
-+			this.setLocationAndAngles(x, y, z, yaw, pitch);
-+			mc.entityRenderer.interpolatedPlayerPos = Vec3.createVectorHelper(x,y,z);
-+            initFromServer = true;    
++        if(initFromServer == false){
++            this.setLocationAndAngles(x, y, z, yaw, pitch);
++            mc.entityRenderer.interpolatedPlayerPos = Vec3.createVectorHelper(x,y,z);
++            initFromServer = true;
 +        }
 +    }
 +
@@ -638,88 +520,88 @@
 +    @Override
 +    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch)
 +    {
-+    	 	
++             
 +//    	Vec3 roomOrigin = OpenVRPlayer.get().getRoomOriginPos_World();
 +//    	double ox = roomOrigin.xCoord - posX;
 +//    	double oz = roomOrigin.zCoord - posZ;
-+//    	
-+    	super.setLocationAndAngles(x, y, z, yaw, pitch);
-+    	
-+    	if(!initFromServer) return;
-+    	else { //still init.
++//
++        super.setLocationAndAngles(x, y, z, yaw, pitch);
++        
++        if(!initFromServer) return;
++        else { //still init.
 +            mc.vrPlayer.snapRoomOriginToPlayerEntity(this, true, false, 1);
 +            
 +//    		OpenVRPlayer.get().setRoomOrigin(
-+//    				posX + ox, 
-+//    				this.boundingBox.minY, 
++//    				posX + ox,
++//    				this.boundingBox.minY,
 +//    				posZ  + oz, false);
-+    	}
++        }
 +    }
 +    
 +    // VIVE START - update room origin when player entity is moved
 +    public void setPosition(double x, double y, double z)
 +    { //this is also called when riding to move this around.
-+    	
-+    	super.setPosition(x, y, z);
-+    	
-+    	if(this.isRiding()){
-+		
-+    		Vec3 roomOrigin = OpenVRPlayer.get().getRoomOriginPos_World();
-+    		Vec3 me = OpenVRPlayer.get().getHMDPos_World();
-+    		double ox = roomOrigin.xCoord - me.xCoord;
-+    		double oy = roomOrigin.yCoord - me.yCoord;
-+    		double oz = roomOrigin.zCoord - me.zCoord;
-+    		
-+    		OpenVRPlayer.get().setRoomOrigin(
-+    				this.ridingEntity.posX + ox, 
-+    				this.ridingEntity.posY + this.ridingEntity.getMountedYOffset(),
-+    				this.ridingEntity.posZ + oz, false, false); 
-+    		
-+    	} 
-+    		
++        
++        super.setPosition(x, y, z);
++        
++        if(this.isRiding()){
++        
++            Vec3 roomOrigin = OpenVRPlayer.get().getRoomOriginPos_World();
++            Vec3 me = OpenVRPlayer.get().getHMDPos_World();
++            double ox = roomOrigin.xCoord - me.xCoord;
++            double oy = roomOrigin.yCoord - me.yCoord;
++            double oz = roomOrigin.zCoord - me.zCoord;
++            
++            OpenVRPlayer.get().setRoomOrigin(
++                    this.ridingEntity.posX + ox,
++                    this.ridingEntity.posY + this.ridingEntity.getMountedYOffset(),
++                    this.ridingEntity.posZ + oz, false, false);
++            
++        }
++            
 +
 +    }
 +    
 +    @Override
 +    public void moveEntity(double x, double y, double z)
 +    {
-+    	if(this.isRiding())return;
-+    	boolean client = this instanceof EntityPlayerSP;
-+    	boolean freemove = OpenVRPlayer.get().getFreeMoveMode();
-+    	boolean doY = freemove || (Minecraft.getMinecraft().vrSettings.simulateFalling && !this.isOnLadder()) && !this.isSneaking();
-+    	if(mc.climbTracker.isActive(this)) doY = true;
-+    	Vec3 roomOrigin = OpenVRPlayer.get().getRoomOriginPos_World();
++        if(this.isRiding())return;
++        boolean client = this instanceof EntityPlayerSP;
++        boolean freemove = OpenVRPlayer.get().getFreeMoveMode();
++        boolean doY = freemove || (Minecraft.getMinecraft().vrSettings.simulateFalling && !this.isOnLadder()) && !this.isSneaking();
++        if(mc.climbTracker.isActive(this)) doY = true;
++        Vec3 roomOrigin = OpenVRPlayer.get().getRoomOriginPos_World();
 + //   	Vec3 camloc = Minecraft.getMinecraft().roomScale.getHMDPos_World();
 +
-+    	if (this.isRiding() ||  freemove && (this.moveForward != 0 || Math.abs(this.motionX) > 0.01 || Math.abs(this.motionZ) > 0.01))
-+    	{
-+    		double ox = roomOrigin.xCoord - posX;
-+    		double oz = roomOrigin.zCoord - posZ;
-+    		super.moveEntity(x,y,z);
++        if (this.isRiding() ||  freemove && (this.moveForward != 0 || Math.abs(this.motionX) > 0.01 || Math.abs(this.motionZ) > 0.01))
++        {
++            double ox = roomOrigin.xCoord - posX;
++            double oz = roomOrigin.zCoord - posZ;
++            super.moveEntity(x,y,z);
 +
-+    		if (client){	
-+    			double oy = this.boundingBox.minY;
-+    			if (this.isRiding()) oy = this.ridingEntity.boundingBox.minY;
-+    			OpenVRPlayer.get().setRoomOrigin(
-+    					posX + ox, 
-+    					oy, 
-+    					posZ  + oz, false, false);
-+    					}
-+    	} else {
-+    		if(doY) {      	 
-+    			super.moveEntity(0,y,0);
-+    			if (client){
-+    				OpenVRPlayer.get().setRoomOrigin(
-+    					OpenVRPlayer.get().getRoomOriginPos_World().xCoord, 
-+    					this.boundingBox.minY, 
-+    					OpenVRPlayer.get().getRoomOriginPos_World().zCoord, false, false);
-+    			}
++            if (client){
++                double oy = this.boundingBox.minY;
++                if (this.isRiding()) oy = this.ridingEntity.boundingBox.minY;
++                OpenVRPlayer.get().setRoomOrigin(
++                        posX + ox,
++                        oy,
++                        posZ  + oz, false, false);
++                        }
++        } else {
++            if(doY) {
++                super.moveEntity(0,y,0);
++                if (client){
++                    OpenVRPlayer.get().setRoomOrigin(
++                        OpenVRPlayer.get().getRoomOriginPos_World().xCoord,
++                        this.boundingBox.minY,
++                        OpenVRPlayer.get().getRoomOriginPos_World().zCoord, false, false);
++                }
 +
-+    		} else {
-+    			this.onGround = true; //
-+    			//do not move player, VRPlayer.moveplayerinroom will move him around.
-+    		}
-+    	}
++            } else {
++                this.onGround = true; //
++                //do not move player, VRPlayer.moveplayerinroom will move him around.
++            }
++        }
 +    }
 +    
 +    

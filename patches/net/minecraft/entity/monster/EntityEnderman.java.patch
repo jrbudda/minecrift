@@ -1,25 +1,14 @@
 --- a/net/minecraft/entity/monster/EntityEnderman.java
 +++ b/net/minecraft/entity/monster/EntityEnderman.java
-@@ -1,8 +1,10 @@
- package net.minecraft.entity.monster;
- 
+@@ -19,11 +19,15 @@
+ import net.minecraft.util.MathHelper;
+ import net.minecraft.util.Vec3;
+ import net.minecraft.world.World;
 +import java.util.IdentityHashMap;
- import java.util.UUID;
- import net.minecraft.block.Block;
- import net.minecraft.block.material.Material;
 +import net.minecraft.client.Minecraft;
- import net.minecraft.entity.Entity;
- import net.minecraft.entity.SharedMonsterAttributes;
- import net.minecraft.entity.ai.attributes.AttributeModifier;
-@@ -13,6 +15,7 @@
- import net.minecraft.item.Item;
- import net.minecraft.item.ItemStack;
- import net.minecraft.nbt.NBTTagCompound;
 +import net.minecraft.src.Reflector;
- import net.minecraft.util.DamageSource;
- import net.minecraft.util.EntityDamageSource;
- import net.minecraft.util.EntityDamageSourceIndirect;
-@@ -24,6 +27,7 @@
+ 
+ public class EntityEnderman extends EntityMob
  {
      private static final UUID attackingSpeedBoostModifierUUID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
      private static final AttributeModifier attackingSpeedBoostModifier = (new AttributeModifier(attackingSpeedBoostModifierUUID, "Attacking speed boost", 6.199999809265137D, 0)).setSaved(false);
@@ -27,26 +16,24 @@
      private static boolean[] carriableBlocks = new boolean[256];
  
      /**
-@@ -130,8 +134,17 @@
+@@ -130,7 +134,16 @@
          }
          else
          {
 -            Vec3 var3 = p_70821_1_.getLook(1.0F).normalize();
--            Vec3 var4 = Vec3.createVectorHelper(this.posX - p_70821_1_.posX, this.boundingBox.minY + (double)(this.height / 2.0F) - (p_70821_1_.posY + (double)p_70821_1_.getEyeHeight()), this.posZ - p_70821_1_.posZ);
-+        	
-+        	//VIVE FIX
++            
++            //VIVE FIX
 +            Vec3 var3;
-+        	if(Minecraft.getMinecraft().isSingleplayer()){
-+        		var3 = Minecraft.getMinecraft().vrPlayer.getHMDDir_World();
-+        	}else {
-+        		var3 = p_70821_1_.getLook(1.0F).normalize();        		
-+        	}
-+        	//
++            if(Minecraft.getMinecraft().isSingleplayer()){
++                var3 = Minecraft.getMinecraft().vrPlayer.getHMDDir_World();
++            }else {
++                var3 = p_70821_1_.getLook(1.0F).normalize();
++            }
++            //
 +
-+        	Vec3 var4 = Vec3.createVectorHelper(this.posX - p_70821_1_.posX, this.boundingBox.minY + (double)(this.height / 2.0F) - (p_70821_1_.posY + (double)p_70821_1_.getEyeHeight()), this.posZ - p_70821_1_.posZ);
+             Vec3 var4 = Vec3.createVectorHelper(this.posX - p_70821_1_.posX, this.boundingBox.minY + (double)(this.height / 2.0F) - (p_70821_1_.posY + (double)p_70821_1_.getEyeHeight()), this.posZ - p_70821_1_.posZ);
              double var5 = var4.lengthVector();
              var4 = var4.normalize();
-             double var7 = var3.dotProduct(var4);
 @@ -179,7 +192,7 @@
                      var3 = MathHelper.floor_double(this.posZ - 2.0D + this.rand.nextDouble() * 4.0D);
                      var4 = this.worldObj.getBlock(var6, var2, var3);
@@ -60,7 +47,7 @@
       */
      protected boolean teleportTo(double p_70825_1_, double p_70825_3_, double p_70825_5_)
      {
-+    	
++        
 +        Object event = null;
 +        if (Reflector.forgeExists())
 +        {
@@ -68,13 +55,10 @@
 +           if (Reflector.postForgeBusEvent(event))
 +               return false;
 +        }
-+    	
++        
          double var7 = this.posX;
          double var9 = this.posY;
          double var11 = this.posZ;
--        this.posX = p_70825_1_;
--        this.posY = p_70825_3_;
--        this.posZ = p_70825_5_;
 +        
 +        
 +        if (Reflector.forgeExists())
@@ -85,9 +69,9 @@
 +        }
 +        else
 +        {
-+            this.posX = p_70825_1_;
-+            this.posY = p_70825_3_;
-+            this.posZ = p_70825_5_;
+         this.posX = p_70825_1_;
+         this.posY = p_70825_3_;
+         this.posZ = p_70825_5_;
 +        }
          boolean var13 = false;
          int var14 = MathHelper.floor_double(this.posX);

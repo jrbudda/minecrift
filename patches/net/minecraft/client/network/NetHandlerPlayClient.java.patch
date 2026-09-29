@@ -1,26 +1,19 @@
 --- a/net/minecraft/client/network/NetHandlerPlayClient.java
 +++ b/net/minecraft/client/network/NetHandlerPlayClient.java
-@@ -2,6 +2,11 @@
- 
- import com.google.common.base.Charsets;
- import com.mojang.authlib.GameProfile;
-+import com.mtbs3d.minecrift.api.NetworkHelper;
-+import com.mtbs3d.minecrift.api.NetworkHelper.PacketDiscriminators;
-+import com.mtbs3d.minecrift.provider.OpenVRPlayer;
-+
-+import net.minecraft.src.Reflector;
- import io.netty.buffer.ByteBuf;
- import io.netty.buffer.Unpooled;
- import io.netty.util.concurrent.GenericFutureListener;
-@@ -193,6 +198,8 @@
- import net.minecraft.world.storage.ISaveHandler;
- import net.minecraft.world.storage.MapData;
- import net.minecraft.world.storage.MapStorage;
-+
-+import org.apache.commons.lang3.ArrayUtils;
+@@ -196,6 +196,13 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
++import com.mtbs3d.minecrift.api.NetworkHelper;
++import com.mtbs3d.minecrift.api.NetworkHelper.PacketDiscriminators;
++import com.mtbs3d.minecrift.provider.OpenVRPlayer;
++import net.minecraft.src.Reflector;
++import org.apache.commons.lang3.ArrayUtils;
++
++
+ public class NetHandlerPlayClient implements INetHandlerPlayClient
+ {
+     private static final Logger logger = LogManager.getLogger();
 @@ -290,6 +297,12 @@
          this.gameController.playerController.setGameType(packetIn.func_149198_e());
          this.gameController.gameSettings.sendSettingsToServer();
@@ -39,7 +32,7 @@
      {
          this.netManager.closeChannel(packetIn.func_149165_c());
 +        // VIVE START - no longer on a vanilla server, reset restricted state
-+    	this.gameController.vrPlayer.noTeleportClient = true;
++        this.gameController.vrPlayer.noTeleportClient = true;
 +        OpenVRPlayer.get().setFreeMoveMode(true);
 +        // VIVE END - no longer on a vanilla server, reset restricted state
      }
@@ -64,25 +57,25 @@
 +        // VIVE START - server told us that it has this mod too, allow extended reach, etc.
 +        else if ("MC|ViveOK".equals(packetIn.func_149169_c()))
 +        { //allowed, set to user preference.
-+        	this.gameController.vrPlayer.noTeleportClient = false;
++            this.gameController.vrPlayer.noTeleportClient = false;
 +            this.gameController.vrPlayer.setFreeMoveMode(Minecraft.getMinecraft().vrSettings.vrFreeMove);
-+        } 
++        }
 +        else if ("Vivecraft".equals(packetIn.func_149169_c()))
-+        { 
-+        	byte[] bytes = packetIn.func_149168_d();
-+        	byte[] payload = ArrayUtils.remove(bytes, 0);
-+        	PacketDiscriminators dis = PacketDiscriminators.values()[bytes[0]];
-+        	switch (dis){
-+        	case VERSION:
-+            	this.gameController.vrPlayer.noTeleportClient = false;
++        {
++            byte[] bytes = packetIn.func_149168_d();
++            byte[] payload = ArrayUtils.remove(bytes, 0);
++            PacketDiscriminators dis = PacketDiscriminators.values()[bytes[0]];
++            switch (dis){
++            case VERSION:
++                this.gameController.vrPlayer.noTeleportClient = false;
 +                this.gameController.vrPlayer.setFreeMoveMode(Minecraft.getMinecraft().vrSettings.vrFreeMove);
 +                this.gameController.printChatMessage("Vivecraft server mod detected: " + new String(payload));
-+        		break;
-+        	case REQUESTDATA:
-+        		NetworkHelper.serverWantsData = true;
-+        	default:
-+        		break;
-+        	}
++                break;
++            case REQUESTDATA:
++                NetworkHelper.serverWantsData = true;
++            default:
++                break;
++            }
 +
 +        }
 +        // VIVE END

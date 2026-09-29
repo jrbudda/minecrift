@@ -1,19 +1,17 @@
 --- a/net/minecraft/entity/projectile/EntityArrow.java
 +++ b/net/minecraft/entity/projectile/EntityArrow.java
-@@ -1,8 +1,13 @@
- package net.minecraft.entity.projectile;
+@@ -21,6 +21,11 @@
+ import net.minecraft.util.Vec3;
+ import net.minecraft.world.World;
  
- import java.util.List;
-+
 +import de.fruitfly.ovr.structs.Matrix4f;
 +import de.fruitfly.ovr.structs.Vector3f;
- import net.minecraft.block.Block;
- import net.minecraft.block.material.Material;
 +import net.minecraft.client.Minecraft;
 +import net.minecraft.client.entity.EntityPlayerSP;
- import net.minecraft.enchantment.EnchantmentHelper;
- import net.minecraft.entity.Entity;
- import net.minecraft.entity.EntityLivingBase;
++
+ public class EntityArrow extends Entity implements IProjectile
+ {
+     private int field_145791_d = -1;
 @@ -92,28 +97,65 @@
          }
      }
@@ -32,13 +30,7 @@
          {
              this.canBePickedUp = 1;
          }
--
--        this.setSize(0.5F, 0.5F);
--        this.setLocationAndAngles(p_i1756_2_.posX, p_i1756_2_.posY + (double)p_i1756_2_.getEyeHeight(), p_i1756_2_.posZ, p_i1756_2_.rotationYaw, p_i1756_2_.rotationPitch);
--        this.posX -= (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
--        this.posY -= 0.10000000149011612D;
--        this.posZ -= (double)(MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
-+  
+ 
 +        //JRBUDDA VIVE
 +        Vec3 spawnPosition = shooter.getPosition(1);
 +        spawnPosition.yCoord += shooter.getEyeHeight();
@@ -49,7 +41,7 @@
 +     
 +        if (shooter.getEntityId() == Minecraft.getMinecraft().thePlayer.getEntityId())
 +        {
-+        	
++            
 +            Vec3 aimSource = Minecraft.getMinecraft().roomScale.getControllerPos_World(1);
 +//        	Matrix4f aimRotation = Minecraft.getMinecraft().lookaimController.getAimRotation(0);
 +//            //Matrix4f tilt = OpenVRUtil.rotationXMatrix((float)Math.PI * -0.0f);
@@ -60,24 +52,28 @@
 +            Vec3 controllerDirection = Minecraft.getMinecraft().bowTracker.getAimVector();
 +  
 +            if(controllerDirection!=null){
-+            	pitch = -(float)Math.toDegrees(Math.asin(controllerDirection.yCoord/controllerDirection.lengthVector()));
-+            	yaw = -(float)Math.toDegrees(Math.atan2(controllerDirection.xCoord, controllerDirection.zCoord));        	
++                pitch = -(float)Math.toDegrees(Math.asin(controllerDirection.yCoord/controllerDirection.lengthVector()));
++                yaw = -(float)Math.toDegrees(Math.atan2(controllerDirection.xCoord, controllerDirection.zCoord));
 +            }
 +         
 +            spawnPosition.xCoord = aimSource.xCoord + controllerDirection.xCoord * 0.1f;
 +            spawnPosition.yCoord = aimSource.yCoord + controllerDirection.yCoord * 0.1f;
 +            spawnPosition.zCoord = aimSource.zCoord + controllerDirection.zCoord * 0.1f;
-+      	
++          
 +            if(!Minecraft.getMinecraft().vrSettings.seated){
-+            	damage_ = (float) (Minecraft.getMinecraft().bowTracker.getDrawPercent() * 1.4f);
-+           	   this.setDamage(4f);
++                damage_ = (float) (Minecraft.getMinecraft().bowTracker.getDrawPercent() * 1.4f);
++                  this.setDamage(4f);
 +            }
 +        }
 +    
 +        this.setLocationAndAngles(spawnPosition.xCoord, spawnPosition.yCoord ,spawnPosition.zCoord, yaw, pitch);
 +        //END VIVE
 +        
-+        this.setSize(0.5F, 0.5F);    
+         this.setSize(0.5F, 0.5F);
+-        this.setLocationAndAngles(p_i1756_2_.posX, p_i1756_2_.posY + (double)p_i1756_2_.getEyeHeight(), p_i1756_2_.posZ, p_i1756_2_.rotationYaw, p_i1756_2_.rotationPitch);
+-        this.posX -= (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
+-        this.posY -= 0.10000000149011612D;
+-        this.posZ -= (double)(MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
 +    //    this.posX -= (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
 +     //   this.posY -= 0.10000000149011612D;
 +     //   this.posZ -= (double)(MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);

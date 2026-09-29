@@ -35,13 +35,13 @@
      {
          int var6 = p_77015_3_.getMetadata();
          Object var7 = p_77015_3_.getIconIndex();
-@@ -438,28 +450,27 @@
-         }
+@@ -439,22 +451,21 @@
          else if (p_77015_3_.getItem().requiresMultipleRenderPasses())
          {
--            GL11.glDisable(GL11.GL_LIGHTING);
+             GL11.glDisable(GL11.GL_LIGHTING);
 -            GL11.glEnable(GL11.GL_ALPHA_TEST);
--            p_77015_2_.bindTexture(TextureMap.locationItemsTexture);
++//            GL11.glEnable(GL11.GL_ALPHA_TEST); jrbudda dont care how. it works.
+             p_77015_2_.bindTexture(TextureMap.locationItemsTexture);
 -            GL11.glDisable(GL11.GL_ALPHA_TEST);
 -            GL11.glDisable(GL11.GL_TEXTURE_2D);
 -            GL11.glEnable(GL11.GL_BLEND);
@@ -56,15 +56,7 @@
 -            var8.addVertex((double)(p_77015_4_ + 18), (double)(p_77015_5_ - 2), (double)this.zLevel);
 -            var8.addVertex((double)(p_77015_4_ - 2), (double)(p_77015_5_ - 2), (double)this.zLevel);
 -            var8.draw();
--            GL11.glColorMask(true, true, true, true);
--            GL11.glEnable(GL11.GL_TEXTURE_2D);
--            GL11.glEnable(GL11.GL_ALPHA_TEST);
--            OpenGlHelper.glBlendFunc(770, 771, 1, 0);
--
-+          GL11.glDisable(GL11.GL_LIGHTING);
-+//            GL11.glEnable(GL11.GL_ALPHA_TEST); jrbudda dont care how. it works.
-+         	  p_77015_2_.bindTexture(TextureMap.locationItemsTexture);
-+         	  GL11.glDisable(GL11.GL_BLEND);
++               GL11.glDisable(GL11.GL_BLEND);
 +//            GL11.glDisable(GL11.GL_TEXTURE_2D);
 +//            GL11.glEnable(GL11.GL_BLEND);
 +//            GL11.glColorMask(false, false, false, true);
@@ -77,14 +69,9 @@
 +//            var8.addVertex((double)(p_77015_4_ + 18), (double)(p_77015_5_ - 2), (double)this.zLevel);
 +//            var8.addVertex((double)(p_77015_4_ - 2), (double)(p_77015_5_ - 2), (double)this.zLevel);
 +//            var8.draw();
-+           GL11.glColorMask(true, true, true, true);
-+           GL11.glEnable(GL11.GL_TEXTURE_2D);
-+           GL11.glEnable(GL11.GL_ALPHA_TEST);
-+           OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-+           
-             for (var9 = 0; var9 <= 1; ++var9)
-             {
-                 IIcon var10 = p_77015_3_.getItem().getIconFromDamageForRenderPass(var6, var9);
+             GL11.glColorMask(true, true, true, true);
+             GL11.glEnable(GL11.GL_TEXTURE_2D);
+             GL11.glEnable(GL11.GL_ALPHA_TEST);
 @@ -475,7 +486,6 @@
  
                  this.renderIcon(p_77015_4_, p_77015_5_, var10, 16, 16);
@@ -99,10 +86,10 @@
              {
 -                this.renderItemIntoGUI(p_82406_1_, p_82406_2_, p_82406_3_, p_82406_4_, p_82406_5_);
 +                /** MINECRIFT FORGE **/
-+            	GL11.glColorMask(true, true, true, false); //VIVE experiment.
-+                if (!Reflector.forgeExists() || 
-+                		!Reflector.callBoolean(Reflector.ForgeHooksClient_renderInventoryItem, this.field_147909_c, p_82406_2_, p_82406_3_, renderWithColor, zLevel, (float)p_82406_4_, (float)p_82406_5_) /*!ForgeHooksClient.renderInventoryItem(this.field_147909_c, p_82406_2_, p_82406_3_, renderWithColor, zLevel, (float)p_82406_4_, (float)p_82406_5_)*/) {
-+                	
++                GL11.glColorMask(true, true, true, false); //VIVE experiment.
++                if (!Reflector.forgeExists() ||
++                        !Reflector.callBoolean(Reflector.ForgeHooksClient_renderInventoryItem, this.field_147909_c, p_82406_2_, p_82406_3_, renderWithColor, zLevel, (float)p_82406_4_, (float)p_82406_5_) /*!ForgeHooksClient.renderInventoryItem(this.field_147909_c, p_82406_2_, p_82406_3_, renderWithColor, zLevel, (float)p_82406_4_, (float)p_82406_5_)*/) {
++                    
 +                    this.renderItemIntoGUI(p_82406_1_, p_82406_2_, p_82406_3_, p_82406_4_, p_82406_5_, true);
 +                }
 +                GL11.glColorMask(true, true, true, true);//VIVE experiment.
@@ -129,7 +116,7 @@
                  GL11.glEnable(GL11.GL_LIGHTING);
                  GL11.glDepthFunc(GL11.GL_LEQUAL);
              }
-@@ -581,32 +602,34 @@
+@@ -581,29 +602,31 @@
          }
      }
  
@@ -179,16 +166,12 @@
 +            tessellator.draw();
          }
      }
--
-+    
-     /**
-      * Renders the item's overlay information. Examples being stack count or damage on top of the item's image at the
-      * specified position.
+ 
 @@ -673,6 +696,7 @@
  
      public void renderIcon(int p_94149_1_, int p_94149_2_, IIcon p_94149_3_, int p_94149_4_, int p_94149_5_)
      {
-+    	if(p_94149_3_ == null) return; //wtf
++        if(p_94149_3_ == null) return; //wtf
          Tessellator var6 = Tessellator.instance;
          var6.startDrawingQuads();
          var6.addVertexWithUV((double)(p_94149_1_ + 0), (double)(p_94149_2_ + p_94149_5_), (double)this.zLevel, (double)p_94149_3_.getMinU(), (double)p_94149_3_.getMaxV());

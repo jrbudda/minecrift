@@ -1,45 +1,17 @@
 --- a/net/minecraft/client/gui/GuiIngame.java
 +++ b/net/minecraft/client/gui/GuiIngame.java
-@@ -5,8 +5,11 @@
- import java.util.Iterator;
- import java.util.List;
- import java.util.Random;
-+
-+import de.fruitfly.ovr.OculusRift;
- import net.minecraft.block.material.Material;
- import net.minecraft.client.Minecraft;
-+import net.minecraft.client.Minecraft.renderPass;
- import net.minecraft.client.network.NetHandlerPlayClient;
- import net.minecraft.client.renderer.OpenGlHelper;
- import net.minecraft.client.renderer.RenderHelper;
-@@ -19,6 +22,7 @@
- import net.minecraft.entity.SharedMonsterAttributes;
- import net.minecraft.entity.ai.attributes.IAttributeInstance;
- import net.minecraft.entity.boss.BossStatus;
-+import net.minecraft.entity.player.EntityPlayer;
- import net.minecraft.entity.player.InventoryPlayer;
- import net.minecraft.init.Blocks;
- import net.minecraft.item.Item;
-@@ -28,6 +32,7 @@
- import net.minecraft.scoreboard.ScoreObjective;
- import net.minecraft.scoreboard.ScorePlayerTeam;
- import net.minecraft.scoreboard.Scoreboard;
-+import net.minecraft.src.Reflector;
- import net.minecraft.util.Direction;
- import net.minecraft.util.EnumChatFormatting;
- import net.minecraft.util.FoodStats;
-@@ -35,40 +40,48 @@
- import net.minecraft.util.MathHelper;
- import net.minecraft.util.ResourceLocation;
- import net.minecraft.util.StringUtils;
-+import net.minecraft.util.Vec3;
- import net.minecraft.world.EnumSkyBlock;
- import net.minecraft.world.chunk.Chunk;
+@@ -40,35 +40,48 @@
  import org.lwjgl.opengl.GL11;
  import org.lwjgl.opengl.GL12;
  
++import de.fruitfly.ovr.OculusRift;
++import net.minecraft.client.Minecraft.renderPass;
++import net.minecraft.entity.player.EntityPlayer;
++import net.minecraft.src.Reflector;
++import net.minecraft.util.Vec3;
 +import com.mtbs3d.minecrift.provider.MCOpenVR;
 +import com.mtbs3d.minecrift.render.OpenGLdebugging;
++
 +
  public class GuiIngame extends Gui
  {
@@ -49,7 +21,7 @@
 -    private static final RenderItem itemRenderer = new RenderItem();
 -    private final Random rand = new Random();
 -    private final Minecraft mc;
-+	/** MINECRIFT FORGE **/
++    /** MINECRIFT FORGE **/
 +    protected static final ResourceLocation vignetteTexPath = new ResourceLocation("textures/misc/vignette.png");
 +    protected static final ResourceLocation widgetsTexPath = new ResourceLocation("textures/gui/widgets.png");
 +    protected static final ResourceLocation pumpkinBlurTexPath = new ResourceLocation("textures/misc/pumpkinblur.png");
@@ -87,7 +59,7 @@
      /** The ItemStack that is currently being highlighted */
 -    private ItemStack highlightingItemStack;
 +    protected ItemStack highlightingItemStack;
-+	/** END MINECRIFT FORGE **/
++    /** END MINECRIFT FORGE **/
      private static final String __OBFID = "CL_00000661";
  
      public GuiIngame(Minecraft p_i46379_1_)
@@ -96,32 +68,32 @@
      }
  
 +    public String v3Format(Vec3 in){
-+    	String frmat = "%.2f";
++        String frmat = "%.2f";
 +        return "(" + String.format(frmat, in.xCoord) + ", " + String.format(frmat, in.yCoord)+ ", " + String.format(frmat, in.zCoord)+ ")";
 +    }
 +    
-+	public void drawMouseMenuQuad(int mouseX, int mouseY)
-+	{
-+		GL11.glEnable(GL11.GL_BLEND);
-+		OpenGlHelper.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR, 1, 0); //color blend for corsshair transparency
-+		GL11.glDisable(GL11.GL_DEPTH_TEST); //no occlusion on menu cursor		
-+		GL11.glDisable(GL11.GL_LIGHTING);
-+		GL11.glEnable(GL11.GL_TEXTURE_2D);
-+		GL11.glDisable(GL11.GL_ALPHA_TEST);
-+		GL11.glColorMask(true,  true,  true,  false); // DISBALE CHANIGNG UNDERLYING ALPHA VALUE
-+		GL11.glColor4f(1f, 1f, 1f, 1f);
-+		this.mc.mcProfiler.endStartSection("mouse pointer");
-+		this.mc.getTextureManager().bindTexture(Gui.icons);
-+		float menuMousePointerSize = 16f * this.mc.vrSettings.menuCrosshairScale;
-+		this.mc.ingameGUI.drawCentredTexturedModalRect(mouseX, mouseY, menuMousePointerSize, menuMousePointerSize, 0, 0, 15, 15);
++    public void drawMouseMenuQuad(int mouseX, int mouseY)
++    {
++        GL11.glEnable(GL11.GL_BLEND);
++        OpenGlHelper.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR, 1, 0); //color blend for corsshair transparency
++        GL11.glDisable(GL11.GL_DEPTH_TEST); //no occlusion on menu cursor
++        GL11.glDisable(GL11.GL_LIGHTING);
++        GL11.glEnable(GL11.GL_TEXTURE_2D);
++        GL11.glDisable(GL11.GL_ALPHA_TEST);
++        GL11.glColorMask(true,  true,  true,  false); // DISBALE CHANIGNG UNDERLYING ALPHA VALUE
++        GL11.glColor4f(1f, 1f, 1f, 1f);
++        this.mc.mcProfiler.endStartSection("mouse pointer");
++        this.mc.getTextureManager().bindTexture(Gui.icons);
++        float menuMousePointerSize = 16f * this.mc.vrSettings.menuCrosshairScale;
++        this.mc.ingameGUI.drawCentredTexturedModalRect(mouseX, mouseY, menuMousePointerSize, menuMousePointerSize, 0, 0, 15, 15);
 +        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA); //back to normal alpha mode.
-+		GL11.glDisable(GL11.GL_BLEND);
-+		GL11.glEnable(GL11.GL_DEPTH_TEST);
-+		GL11.glEnable(GL11.GL_LIGHTING);
-+		GL11.glEnable(GL11.GL_ALPHA_TEST);
++        GL11.glDisable(GL11.GL_BLEND);
++        GL11.glEnable(GL11.GL_DEPTH_TEST);
++        GL11.glEnable(GL11.GL_LIGHTING);
++        GL11.glEnable(GL11.GL_ALPHA_TEST);
 +
-+		GL11.glColorMask(true,  true,  true,  true); // ENABLE CHANIGNG UNDERLYING ALPHA VALUE
-+	}
++        GL11.glColorMask(true,  true,  true,  true); // ENABLE CHANIGNG UNDERLYING ALPHA VALUE
++    }
 +    
      /**
       * Render the ingame overlay with quick icon bar, ...
@@ -144,17 +116,15 @@
          }
          else
          {
-@@ -100,62 +141,98 @@
-         }
+@@ -101,45 +142,80 @@
  
          ItemStack var9 = this.mc.thePlayer.inventory.armorItemInSlot(3);
--
-+        
+ 
 +        mc.pumpkineffect = 0;
          if (this.mc.gameSettings.thirdPersonView == 0 && var9 != null && var9.getItem() == Item.getItemFromBlock(Blocks.pumpkin))
          {
 -            this.renderPumpkinBlur(var6, var7);
-+        	mc.pumpkineffect = 1f;
++            mc.pumpkineffect = 1f;
 +           // this.renderPumpkinBlur(width, height);
          }
  
@@ -187,7 +157,7 @@
 -            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 +        { //render HUD
 +            
-+        	GL11.glColor4f(1F,1f,1F,1F);
++            GL11.glColor4f(1F,1f,1F,1F);
 +            GL11.glDisable(GL11.GL_DEPTH_TEST);
 +            GL11.glEnable(GL11.GL_ALPHA_TEST);
 +            GL11.glDisable(GL11.GL_BLEND);
@@ -206,28 +176,23 @@
              this.mc.getTextureManager().bindTexture(icons);
 +            
              GL11.glEnable(GL11.GL_BLEND);
--            OpenGlHelper.glBlendFunc(775, 769, 1, 0);
--            this.drawTexturedModalRect(var6 / 2 - 7, var7 / 2 - 7, 0, 0, 16, 16);
 +            GL11.glEnable(GL11.GL_DEPTH_TEST);
 +            GL11.glEnable(GL11.GL_ALPHA_TEST);
 +        
 +            /** MINECRIFT ** - don't render the normal crosshair
-+       		OpenGlHelper.glBlendFunc(775, 769, 1, 0);
-+          	this.drawTexturedModalRect(var6 / 2 - 7, var7 / 2 - 7, 0, 0, 16, 16);
-+			** END MINECRIFT **/
-+			
+             OpenGlHelper.glBlendFunc(775, 769, 1, 0);
+             this.drawTexturedModalRect(var6 / 2 - 7, var7 / 2 - 7, 0, 0, 16, 16);
++            ** END MINECRIFT **/
++            
 +
              OpenGlHelper.glBlendFunc(770, 771, 1, 0);
              this.mc.mcProfiler.startSection("bossHealth");
--            this.renderBossHealth();
-+            	this.renderBossHealth();
+             this.renderBossHealth();
              this.mc.mcProfiler.endSection();
  
--            if (this.mc.playerController.shouldDrawHUD())
 +            //VIVE SPRINTDICATOR
 +            if (this.mc.renderViewEntity instanceof EntityPlayer)
-             {
--                this.renderIcons(var6, var7);
++            {
 +                EntityPlayer entityplayer = (EntityPlayer)this.mc.renderViewEntity;
 +                int iconp = 0;
 +                if(entityplayer.isSprinting()) iconp = 10;
@@ -238,38 +203,29 @@
 +                int h = height -39;
 +                this.drawTexturedModalRect(w, h, 0 + iconp % 8 * 18, 198 + iconp / 8 * 18, 18, 18);
 +                }
-             }
--
--            this.mc.mcProfiler.startSection("actionBar");
--            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
--            RenderHelper.enableGUIStandardItemLighting();
--
--            for (var11 = 0; var11 < 9; ++var11)
++            }
 +            //
 +            
-+            if (this.mc.playerController.shouldDrawHUD())
+             if (this.mc.playerController.shouldDrawHUD())
              {
--                var12 = var6 / 2 - 90 + var11 * 20 + 2;
--                var13 = var7 - 16 - 3;
--                this.renderInventorySlot(var11, var12, var13, p_73830_1_);
+-                this.renderIcons(var6, var7);
 +                this.renderIcons(width, height);
              }
  
--            RenderHelper.disableStandardItemLighting();
--            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-+            this.mc.mcProfiler.startSection("actionBar");
-+	            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-+	            RenderHelper.enableGUIStandardItemLighting();
-+	
-+	            for (var11 = 0; var11 < 9; ++var11)
-+	            {
-+	                var12 = width / 2 - 90 + var11 * 20 + 2;
-+	                var13 = height - 16 - 3;
-+	                this.renderInventorySlot(var11, var12, var13, p_73830_1_);
-+	            }
-+	
-+	            RenderHelper.disableStandardItemLighting();
-+	            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+             this.mc.mcProfiler.startSection("actionBar");
+@@ -148,14 +224,15 @@
+ 
+             for (var11 = 0; var11 < 9; ++var11)
+             {
+-                var12 = var6 / 2 - 90 + var11 * 20 + 2;
+-                var13 = var7 - 16 - 3;
++                    var12 = width / 2 - 90 + var11 * 20 + 2;
++                    var13 = height - 16 - 3;
+                 this.renderInventorySlot(var11, var12, var13, p_73830_1_);
+             }
+ 
+             RenderHelper.disableStandardItemLighting();
+             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
              this.mc.mcProfiler.endSection();
 +
              GL11.glDisable(GL11.GL_BLEND);
@@ -351,10 +307,10 @@
 -            var8.drawStringWithShadow(this.mc.getEntityDebug(), 2, 22, 16777215);
 -            var8.drawStringWithShadow(this.mc.debugInfoEntities(), 2, 32, 16777215);
 -            var8.drawStringWithShadow(this.mc.getWorldProviderName(), 2, 42, 16777215);
-+			/** MINECRIFT **/
++            /** MINECRIFT **/
 +            var8.drawStringWithShadow(this.mc.minecriftVerString + ", " + "J/OpenVR 1.0.2" , 2, 2, 16777215);
-+			/** END MINECRIFT **/ 
-+			var8.drawStringWithShadow(this.mc.debug, 2, 12, 16777215);
++            /** END MINECRIFT **/
++            var8.drawStringWithShadow(this.mc.debug, 2, 12, 16777215);
 +            var8.drawStringWithShadow(this.mc.debugInfoRenders(), 2, 22, 16777215);
 +            var8.drawStringWithShadow(this.mc.getEntityDebug(), 2, 32, 16777215);
 +            var8.drawStringWithShadow(this.mc.debugInfoEntities(), 2, 42, 16777215);
@@ -372,7 +328,7 @@
 +            this.drawString(var8, var20, width - var8.getStringWidth(var20) - 2, 22, 14737632);
 +        
 +            /** MINECRIFT FORGE **/
-+			Object fmlCommonHandler = null;
++            Object fmlCommonHandler = null;
 +            if( Reflector.FMLCommonHandler_instance.exists()) {
 +                fmlCommonHandler = Reflector.call( Reflector.FMLCommonHandler_instance, new Object[0]);
 +            }
@@ -383,7 +339,7 @@
 +                    this.drawString(var8, brd, width - var8.getStringWidth(brd) - 2, offset+=10, 14737632);
 +                }
 +            }
-+			/** END MINECRIFT FORGE **/
++            /** END MINECRIFT FORGE **/
 +            
              var22 = MathHelper.floor_double(this.mc.thePlayer.posX);
              var23 = MathHelper.floor_double(this.mc.thePlayer.posY);
@@ -397,7 +353,7 @@
              int var25 = MathHelper.floor_double((double)(this.mc.thePlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
              this.drawString(var8, "f: " + var25 + " (" + Direction.directions[var25] + ") / " + MathHelper.wrapAngleTo180_float(this.mc.thePlayer.rotationYaw), 2, 88, 14737632);
  
-@@ -347,11 +442,29 @@
+@@ -347,6 +442,24 @@
              {
                  this.drawString(var8, String.format("shader: %s", new Object[] {this.mc.entityRenderer.getShaderGroup().getShaderGroupName()}), 2, 112, 14737632);
              }
@@ -422,12 +378,6 @@
  
              GL11.glPopMatrix();
              this.mc.mcProfiler.endSection();
-         }
--
-+       
-         if (this.recordPlayingUpFor > 0)
-         {
-             this.mc.mcProfiler.startSection("overlayMessage");
 @@ -366,7 +479,7 @@
              if (var13 > 8)
              {
@@ -463,34 +413,30 @@
              byte var47 = 10;
              drawRect(var19 - 1, var47 - 1, var19 + var46 * var17, var47 + 9 * var16, Integer.MIN_VALUE);
  
-@@ -501,9 +614,10 @@
+@@ -501,8 +614,9 @@
      {
          this.streamIndicator.render((int)(p_152126_1_ - 10.0F), 10);
      }
 -
 -    private void renderScoreboard(ScoreObjective p_96136_1_, int p_96136_2_, int p_96136_3_, FontRenderer p_96136_4_)
--    {
-+	/** MINECRIFT FORGE **/
++    /** MINECRIFT FORGE **/
 +    protected void renderScoreboard(ScoreObjective p_96136_1_, int p_96136_2_, int p_96136_3_, FontRenderer p_96136_4_)
 +    /** END MINECRIFT FORGE **/
-+	{
+     {
          Scoreboard var5 = p_96136_1_.getScoreboard();
          Collection var6 = var5.getSortedScores(p_96136_1_);
- 
-@@ -549,9 +663,10 @@
+@@ -549,8 +663,9 @@
              }
          }
      }
 -
 -    private void renderIcons(int p_110327_1_, int p_110327_2_)
--    {
-+	/** MINECRIFT FORGE **/
++    /** MINECRIFT FORGE **/
 +    protected void renderIcons(int width, int height)
 +    /** END MINECRIFT FORGE **/
-+	{
+     {
          boolean var3 = this.mc.thePlayer.hurtResistantTime / 3 % 2 == 1;
  
-         if (this.mc.thePlayer.hurtResistantTime < 10)
 @@ -559,52 +674,52 @@
              var3 = false;
          }
@@ -702,9 +648,9 @@
       * Renders dragon's (boss) health on the HUD
       */
 -    private void renderBossHealth()
-+	/** MINECRIFT FORGE **/ 
++    /** MINECRIFT FORGE **/
 +    protected void renderBossHealth()
-+	/** END MINECRIFT FORGE **/
++    /** END MINECRIFT FORGE **/
      {
          if (BossStatus.bossName != null && BossStatus.statusBarTime > 0)
          {
@@ -714,9 +660,9 @@
      }
 -
 -    private void renderPumpkinBlur(int p_73836_1_, int p_73836_2_)
-+	/** MINECRIFT FORGE **/
++    /** MINECRIFT FORGE **/
 +    protected void renderPumpkinBlur(int p_73836_1_, int p_73836_2_)
-+	/** END MINECRIFT FORGE **/
++    /** END MINECRIFT FORGE **/
      {
 +        /** MINECRIFT **/
 +        if (this.mc.stereoProvider.isStereo())
@@ -731,9 +677,9 @@
       * Renders the vignette. Args: vignetteBrightness, width, height
       */
 -    private void renderVignette(float p_73829_1_, int p_73829_2_, int p_73829_3_)
-+	/** MINECRIFT FORGE **/ 
++    /** MINECRIFT FORGE **/
 +    protected void renderVignette(float p_73829_1_, int p_73829_2_, int p_73829_3_)
-+	/** END MINECRIFT FORGE **/
++    /** END MINECRIFT FORGE **/
      {
 +        /** MINECRIFT **/
 +        if (this.mc.stereoProvider.isStereo())
@@ -743,17 +689,15 @@
          p_73829_1_ = 1.0F - p_73829_1_;
  
          if (p_73829_1_ < 0.0F)
-@@ -913,44 +1043,22 @@
-         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+@@ -914,43 +1044,21 @@
          OpenGlHelper.glBlendFunc(770, 771, 1, 0);
      }
--
+ 
 -    private void func_130015_b(float p_130015_1_, int p_130015_2_, int p_130015_3_)
-+    
 +    //unused (IMPORTANT: Do not rename or delete because Forge breaks!)
-+	/** MINECRIFT FORGE **/
++    /** MINECRIFT FORGE **/
 +    protected void func_130015_b(float p_130015_1_, int p_130015_2_, int p_130015_3_)
-+	/** END MINECRIFT FORGE **/
++    /** END MINECRIFT FORGE **/
      {
 -        if (p_130015_1_ < 1.0F)
 -        {
@@ -784,17 +728,17 @@
 -        GL11.glEnable(GL11.GL_DEPTH_TEST);
 -        GL11.glEnable(GL11.GL_ALPHA_TEST);
 -        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-+    	//leave cause forge?
-+    	mc.entityRenderer.itemRenderer.renderPortal(p_130015_1_, p_130015_2_, p_130015_3_);
++        //leave cause forge?
++        mc.entityRenderer.itemRenderer.renderPortal(p_130015_1_, p_130015_2_, p_130015_3_);
      }
  
      /**
       * Renders the specified item of the inventory slot at the specified location. Args: slot, x, y, partialTick
       */
 -    private void renderInventorySlot(int p_73832_1_, int p_73832_2_, int p_73832_3_, float p_73832_4_)
-+	/** MINECRIFT FORGE **/ 
++    /** MINECRIFT FORGE **/
 +    protected void renderInventorySlot(int p_73832_1_, int p_73832_2_, int p_73832_3_, float p_73832_4_)
-+	/** END MINECRIFT FORGE **/
++    /** END MINECRIFT FORGE **/
      {
          ItemStack var5 = this.mc.thePlayer.inventory.mainInventory[p_73832_1_];
  
@@ -804,12 +748,12 @@
      }
 +
 +    /** ALL MINECRIFT ADDITIONS BELOW **/
-+	
++    
 +    /**
 +     * Draws a centred textured rectangle at the stored z-value. Args: x, y, width, height, u, v, texwidth, texheight
 +     */
 +    public void drawCentredTexturedModalRect(int centreX, int centreY, float width, float height, int u, int v, int texWidth, int texHeight)
-+    {   	
++    {
 +        float f = 0.00390625F;
 +        float f1 = 0.00390625F;
 +        Tessellator tessellator = Tessellator.instance;
@@ -819,6 +763,6 @@
 +        tessellator.addVertexWithUV((double)(centreX + (width / 2f)), (double)(centreY - (height / 2f)), (double)this.zLevel, (double)((float)(u + texWidth) * f), (double)((float)(v + 0) * f1));
 +        tessellator.addVertexWithUV((double)(centreX - (width / 2f)), (double)(centreY - (height / 2f)), (double)this.zLevel, (double)((float)(u + 0) * f), (double)((float)(v + 0) * f1));
 +        tessellator.draw();
-+    }
++}
  }
 +

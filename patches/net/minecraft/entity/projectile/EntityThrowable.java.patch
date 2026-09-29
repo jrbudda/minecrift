@@ -1,18 +1,17 @@
 --- a/net/minecraft/entity/projectile/EntityThrowable.java
 +++ b/net/minecraft/entity/projectile/EntityThrowable.java
-@@ -1,7 +1,12 @@
- package net.minecraft.entity.projectile;
+@@ -14,6 +14,11 @@
+ import net.minecraft.util.Vec3;
+ import net.minecraft.world.World;
  
- import java.util.List;
-+
 +import de.fruitfly.ovr.structs.Matrix4f;
 +import de.fruitfly.ovr.structs.Vector3f;
- import net.minecraft.block.Block;
 +import net.minecraft.client.Minecraft;
 +import net.minecraft.client.entity.EntityPlayerSP;
- import net.minecraft.entity.Entity;
- import net.minecraft.entity.EntityLivingBase;
- import net.minecraft.entity.IProjectile;
++
+ public abstract class EntityThrowable extends Entity implements IProjectile
+ {
+     private int xTile = -1;
 @@ -49,15 +54,40 @@
          return distance < var3 * var3;
      }
@@ -39,13 +38,13 @@
 +     
 +     
 +        if (shooter.getEntityId() == Minecraft.getMinecraft().thePlayer.getEntityId())
-+        { 	
++        {
 +            Vec3 aimSource = Minecraft.getMinecraft().roomScale.getControllerPos_World(0);
 +            Vec3 controllerDirection = Minecraft.getMinecraft().roomScale.getControllerMainDir_World();
 +            spawnPosition.xCoord = aimSource.xCoord + controllerDirection.xCoord * 0.28f;
 +            spawnPosition.yCoord = aimSource.yCoord - controllerDirection.yCoord * 0.28f;
 +            spawnPosition.zCoord = aimSource.zCoord + controllerDirection.zCoord * 0.28f;
-+      	
++          
 +            yaw = Minecraft.getMinecraft().roomScale.getControllerMainYaw_World();
 +            pitch =-Minecraft.getMinecraft().roomScale.getControllerMainPitch_World();
 +        }

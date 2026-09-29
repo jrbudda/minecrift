@@ -1,13 +1,13 @@
 --- a/net/minecraft/client/renderer/ActiveRenderInfo.java
 +++ b/net/minecraft/client/renderer/ActiveRenderInfo.java
-@@ -4,6 +4,7 @@
- import java.nio.IntBuffer;
- import net.minecraft.block.Block;
- import net.minecraft.block.BlockLiquid;
+@@ -12,6 +12,7 @@
+ import net.minecraft.world.World;
+ import org.lwjgl.opengl.GL11;
+ import org.lwjgl.util.glu.GLU;
 +import net.minecraft.client.Minecraft;
- import net.minecraft.entity.EntityLivingBase;
- import net.minecraft.entity.player.EntityPlayer;
- import net.minecraft.util.MathHelper;
+ 
+ public class ActiveRenderInfo
+ {
 @@ -73,6 +74,10 @@
          int var4 = p_74583_1_ ? 1 : 0;
          float var5 = p_74583_0_.rotationPitch;

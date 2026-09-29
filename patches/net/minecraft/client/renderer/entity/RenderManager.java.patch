@@ -1,21 +1,15 @@
 --- a/net/minecraft/client/renderer/entity/RenderManager.java
 +++ b/net/minecraft/client/renderer/entity/RenderManager.java
-@@ -3,7 +3,10 @@
- import java.util.HashMap;
- import java.util.Iterator;
- import java.util.Map;
-+
-+import de.fruitfly.ovr.enums.EyeType;
- import net.minecraft.block.Block;
-+import net.minecraft.client.Minecraft;
- import net.minecraft.client.gui.FontRenderer;
- import net.minecraft.client.model.ModelChicken;
- import net.minecraft.client.model.ModelCow;
-@@ -93,8 +96,9 @@
+@@ -91,10 +91,14 @@
+ import net.minecraft.world.World;
+ import org.lwjgl.opengl.GL11;
  
++import de.fruitfly.ovr.enums.EyeType;
++import net.minecraft.client.Minecraft;
++
  public class RenderManager
  {
-+	
++    
      /** A map of entity classes and the associated renderer. */
 -    private Map entityRenderMap = new HashMap();
 +    public Map entityRenderMap = new HashMap(); ///SHADERSMOD make public
@@ -41,10 +35,10 @@
  
      public boolean renderEntityStatic(Entity p_147936_1_, float p_147936_2_, boolean p_147936_3_)
      {
-+    	
-+    	//pixelmon no 1st person model
-+    	if(p_147936_1_ == Minecraft.getMinecraft().thePlayer) return true;
-+    	
++        
++        //pixelmon no 1st person model
++        if(p_147936_1_ == Minecraft.getMinecraft().thePlayer) return true;
++        
          if (p_147936_1_.ticksExisted == 0)
          {
              p_147936_1_.lastTickPosX = p_147936_1_.posX;

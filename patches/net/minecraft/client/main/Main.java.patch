@@ -4,8 +4,8 @@
  
  public class Main
  {
-+	public static boolean kiosk;
-+	public static boolean katvr;
++    public static boolean kiosk;
++    public static boolean katvr;
      private static final java.lang.reflect.Type field_152370_a = new ParameterizedType()
      {
          private static final String __OBFID = "CL_00000828";

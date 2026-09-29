@@ -5,7 +5,7 @@
                  this.buttonList.add(new GuiOptionSlider(enumoptions.returnEnumOrdinal(), x, y, enumoptions));
              }
 +            if (enumoptions == GameSettings.Options.SMOOTH_FPS) {
-+            	((GuiButton)this.buttonList.get(i)).enabled = false;
++                ((GuiButton)this.buttonList.get(i)).enabled = false;
 +            }
  
              ++i;

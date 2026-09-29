@@ -1,31 +1,31 @@
 --- a/net/minecraft/client/LoadingScreenRenderer.java
 +++ b/net/minecraft/client/LoadingScreenRenderer.java
-@@ -5,6 +5,7 @@
- import net.minecraft.client.renderer.OpenGlHelper;
- import net.minecraft.client.renderer.Tessellator;
- import net.minecraft.client.shader.Framebuffer;
-+import net.minecraft.src.Reflector;
+@@ -8,6 +8,7 @@
  import net.minecraft.util.IProgressUpdate;
  import net.minecraft.util.MinecraftError;
  import org.lwjgl.opengl.GL11;
-@@ -23,16 +24,32 @@
++import net.minecraft.src.Reflector;
+ 
+ public class LoadingScreenRenderer implements IProgressUpdate
+ {
+@@ -23,17 +24,33 @@
      private long field_73723_d = Minecraft.getSystemTime();
      private boolean field_73724_e;
      private ScaledResolution field_146587_f;
 -    private Framebuffer field_146588_g;
-+	/** MINECRIFT */
++    /** MINECRIFT */
 +    public Framebuffer field_146588_g;
-+	/** END MINECRIFT */
++    /** END MINECRIFT */
      private static final String __OBFID = "CL_00000655";
  
 -    public LoadingScreenRenderer(Minecraft p_i1017_1_)
-+	/** MINECRIFT */
++    /** MINECRIFT */
 +    public Framebuffer renderTarget;
-+	public int index = 0;
-+	public int loadingProgress = -1;
-+	/** END MINECRIFT */
++    public int index = 0;
++    public int loadingProgress = -1;
++    /** END MINECRIFT */
 +
-+	/** MINECRIFT */
++    /** MINECRIFT */
 +    public LoadingScreenRenderer(Minecraft p_i1017_1_, int width, int height)
      {
          this.mc = p_i1017_1_;
@@ -35,27 +35,28 @@
 +        this.field_146588_g = new Framebuffer(width, height, false);
          this.field_146588_g.setFramebufferFilter(9728);
 +        this.field_146588_g.setFramebufferColor(this.mc.RED_COLOUR_COMPONENT, this.mc.GREEN_COLOUR_COMPONENT, this.mc.BLUE_COLOUR_COMPONENT, 0f);
-+    }
-+
+     }
+ 
 +    public LoadingScreenRenderer(Minecraft p_i1017_1_)
 +    {
 +        this(p_i1017_1_, p_i1017_1_.displayWidth, p_i1017_1_.displayHeight);
-     }
-+	/** END MINECRIFT */
- 
++    }
++    /** END MINECRIFT */
++
      /**
       * this string, followed by "working..." and then the "% complete" are the 3 lines shown. This resets progress to 0,
+      * and the WorkingString to "working...".
 @@ -122,9 +139,16 @@
          }
          else
          {
-+/** MINECRIFT */		
++/** MINECRIFT */
 +            this.loadingProgress = p_73718_1_;
 +        }
 +    }
 +
 +    public void render()
-+    {
++        {
              long var2 = Minecraft.getSystemTime();
  
 -            if (var2 - this.field_73723_d >= 100L)
@@ -72,12 +73,11 @@
                  GL11.glMatrixMode(GL11.GL_PROJECTION);
                  GL11.glLoadIdentity();
                  GL11.glOrtho(0.0D, var4.getScaledWidth_double(), var4.getScaledHeight_double(), 0.0D, 100.0D, 300.0D);
-@@ -154,18 +178,31 @@
+@@ -154,6 +178,19 @@
                      GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
                  }
  
--                Tessellator var8 = Tessellator.instance;
-+			/** MINECRIFT FORGE **/
++            /** MINECRIFT FORGE **/
 +            boolean draw = true;
 +            Object fmlClientHandler = null;
 +            if( Reflector.FMLClientHandler_instance.exists())
@@ -90,17 +90,10 @@
 +            if (draw)
 +            {
 +            /** END MINECRIFT FORGE **/
-+			    Tessellator var8 = Tessellator.instance;
+                 Tessellator var8 = Tessellator.instance;
                  this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
                  float var9 = 32.0F;
-                 var8.startDrawingQuads();
-                 var8.setColorOpaque_I(4210752);
--                var8.addVertexWithUV(0.0D, (double)var7, 0.0D, 0.0D, (double)((float)var7 / var9));
--                var8.addVertexWithUV((double)var6, (double)var7, 0.0D, (double)((float)var6 / var9), (double)((float)var7 / var9));
--                var8.addVertexWithUV((double)var6, 0.0D, 0.0D, (double)((float)var6 / var9), 0.0D);
-+                var8.addVertexWithUV(0.0D, (double) var7, 0.0D, 0.0D, (double) ((float) var7 / var9));
-+                var8.addVertexWithUV((double) var6, (double) var7, 0.0D, (double) ((float) var6 / var9), (double) ((float) var7 / var9));
-+                var8.addVertexWithUV((double) var6, 0.0D, 0.0D, (double) ((float) var6 / var9), 0.0D);
+@@ -165,7 +202,7 @@
                  var8.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
                  var8.draw();
  
@@ -109,25 +102,12 @@
                  {
                      byte var10 = 100;
                      byte var11 = 2;
-@@ -174,15 +211,15 @@
-                     GL11.glDisable(GL11.GL_TEXTURE_2D);
-                     var8.startDrawingQuads();
-                     var8.setColorOpaque_I(8421504);
--                    var8.addVertex((double)var12, (double)var13, 0.0D);
--                    var8.addVertex((double)var12, (double)(var13 + var11), 0.0D);
--                    var8.addVertex((double)(var12 + var10), (double)(var13 + var11), 0.0D);
--                    var8.addVertex((double)(var12 + var10), (double)var13, 0.0D);
-+                    var8.addVertex((double) var12, (double) var13, 0.0D);
-+                    var8.addVertex((double) var12, (double) (var13 + var11), 0.0D);
-+                    var8.addVertex((double) (var12 + var10), (double) (var13 + var11), 0.0D);
-+                    var8.addVertex((double) (var12 + var10), (double) var13, 0.0D);
+@@ -181,8 +218,8 @@
                      var8.setColorOpaque_I(8454016);
--                    var8.addVertex((double)var12, (double)var13, 0.0D);
--                    var8.addVertex((double)var12, (double)(var13 + var11), 0.0D);
+                     var8.addVertex((double)var12, (double)var13, 0.0D);
+                     var8.addVertex((double)var12, (double)(var13 + var11), 0.0D);
 -                    var8.addVertex((double)(var12 + p_73718_1_), (double)(var13 + var11), 0.0D);
 -                    var8.addVertex((double)(var12 + p_73718_1_), (double)var13, 0.0D);
-+                    var8.addVertex((double) var12, (double) var13, 0.0D);
-+                    var8.addVertex((double) var12, (double) (var13 + var11), 0.0D);
 +                    var8.addVertex((double) (var12 + this.loadingProgress), (double) (var13 + var11), 0.0D);
 +                    var8.addVertex((double) (var12 + this.loadingProgress), (double) var13, 0.0D);
                      var8.draw();
@@ -137,49 +117,37 @@
                  OpenGlHelper.glBlendFunc(770, 771, 1, 0);
                  this.mc.fontRendererObj.drawStringWithShadow(this.currentlyDisplayedText, (var6 - this.mc.fontRendererObj.getStringWidth(this.currentlyDisplayedText)) / 2, var7 / 2 - 4 - 16, 16777215);
                  this.mc.fontRendererObj.drawStringWithShadow(this.field_73727_a, (var6 - this.mc.fontRendererObj.getStringWidth(this.field_73727_a)) / 2, var7 / 2 - 4 + 8, 16777215);
--                this.field_146588_g.unbindFramebuffer();
 +            }
- 
--                if (OpenGlHelper.isFramebufferEnabled())
--                {
--                    this.field_146588_g.framebufferRender(var6 * var5, var7 * var5);
--                }
++
 +            if (OpenGlHelper.isFramebufferEnabled() && this.renderTarget != null)
 +            {
 +                this.renderTarget.bindFramebuffer(true);
 +            }
 +            else
 +            {
-+                this.field_146588_g.unbindFramebuffer();
+                 this.field_146588_g.unbindFramebuffer();
 +            }
  
--                this.mc.resetSize();
-+            if (OpenGlHelper.isFramebufferEnabled())
-+            {
-+                this.field_146588_g.framebufferRender(var6 * var5, var7 * var5);
-+            }
+                 if (OpenGlHelper.isFramebufferEnabled())
+                 {
+                     this.field_146588_g.framebufferRender(var6 * var5, var7 * var5);
+                 }
+-
 +/*
-+			this.mc.resetSize();
+                 this.mc.resetSize();
  
--                try
--                {
--                    Thread.yield();
--                }
+                 try
+                 {
+                     Thread.yield();
+                 }
 -                catch (Exception var14)
--                {
--                    ;
--                }
-+            try
-+            {
-+                Thread.yield();
-+            }
 +            catch (Exception exception)
-+            {
-+                ;
-             }
+                 {
+                     ;
+                 }
 +*/
 +        }
-+    }
+             }
 +
 +    public void deleteFramebuffer()
 +    {

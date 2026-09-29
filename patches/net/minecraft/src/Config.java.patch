@@ -6,7 +6,7 @@
      {
 -        if (gameSettings == null)
 -        {
-+    	//VIVE WHY WOULD YOU DO THAT??
++        //VIVE WHY WOULD YOU DO THAT??
 +  //      if (gameSettings == null)
 + //       {
              gameSettings = settings;

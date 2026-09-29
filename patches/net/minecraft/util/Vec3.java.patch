@@ -16,29 +16,29 @@
      }
 +
 +    //VIVECRAFT ADDITIONS
-+	public Vec3 scale(double d) {
-+		return new Vec3(this.xCoord*d, this.yCoord*d, this.zCoord*d);
-+	}
++    public Vec3 scale(double d) {
++        return new Vec3(this.xCoord*d, this.yCoord*d, this.zCoord*d);
++    }
 +
-+	public Vec3 add(Vec3 other) {
-+		return new Vec3(this.xCoord+other.xCoord, this.yCoord+other.yCoord, this.zCoord+other.zCoord);
-+	}
++    public Vec3 add(Vec3 other) {
++        return new Vec3(this.xCoord+other.xCoord, this.yCoord+other.yCoord, this.zCoord+other.zCoord);
++    }
 +
-+	public Vec3 subtractProperly(double x, double y, double z) {
-+		return new Vec3(this.xCoord-x, this.yCoord-y, this.zCoord-z);
-+	}
-+	
-+	public Vec3 subtractProperly(Vec3 other) {
-+		return new Vec3(this.xCoord-other.xCoord, this.yCoord-other.yCoord, this.zCoord-other.zCoord);
-+	}
++    public Vec3 subtractProperly(double x, double y, double z) {
++        return new Vec3(this.xCoord-x, this.yCoord-y, this.zCoord-z);
++    }
++    
++    public Vec3 subtractProperly(Vec3 other) {
++        return new Vec3(this.xCoord-other.xCoord, this.yCoord-other.yCoord, this.zCoord-other.zCoord);
++    }
 +
-+	public Vec3 rotateYaw(float angle) {
++    public Vec3 rotateYaw(float angle) {
 +        float var2 = MathHelper.cos(angle);
 +        float var3 = MathHelper.sin(angle);
 +        double var4 = this.xCoord * (double)var2 + this.zCoord * (double)var3;
 +        double var6 = this.yCoord;
 +        double var8 = this.zCoord * (double)var2 - this.xCoord * (double)var3;
 +        return new Vec3(var4, var6, var8);
-+	}
++    }
 +
  }

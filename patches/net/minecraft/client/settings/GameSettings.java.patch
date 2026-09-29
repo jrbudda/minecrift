@@ -1,11 +1,10 @@
 --- a/net/minecraft/client/settings/GameSettings.java
 +++ b/net/minecraft/client/settings/GameSettings.java
-@@ -2,17 +2,20 @@
+@@ -2,11 +2,9 @@
  
  import com.google.common.collect.Maps;
  import com.google.gson.Gson;
 -import java.io.BufferedReader;
-+
  import java.io.File;
  import java.io.FileReader;
  import java.io.FileWriter;
@@ -13,24 +12,19 @@
  import java.lang.reflect.ParameterizedType;
  import java.lang.reflect.Type;
  import java.util.ArrayList;
- import java.util.Arrays;
- import java.util.List;
- import java.util.Map;
-+
+@@ -42,6 +40,12 @@
+ import org.lwjgl.input.Mouse;
+ import org.lwjgl.opengl.Display;
+ 
 +import com.mtbs3d.minecrift.settings.profile.ProfileManager;
 +import com.mtbs3d.minecrift.settings.profile.ProfileReader;
 +import com.mtbs3d.minecrift.settings.profile.ProfileWriter;
- import net.minecraft.client.Minecraft;
- import net.minecraft.client.audio.SoundCategory;
- import net.minecraft.client.gui.GuiNewChat;
-@@ -38,6 +41,7 @@
- import org.apache.commons.lang3.ArrayUtils;
- import org.apache.logging.log4j.LogManager;
- import org.apache.logging.log4j.Logger;
 +import org.json.JSONObject;
- import org.lwjgl.input.Keyboard;
- import org.lwjgl.input.Mouse;
- import org.lwjgl.opengl.Display;
++
++
+ public class GameSettings
+ {
+     private static final Logger logger = LogManager.getLogger();
 @@ -75,12 +79,14 @@
      public boolean invertMouse;
      public int renderDistanceChunks = -1;
@@ -201,7 +195,7 @@
 -
 -            Config.updateFramebufferSize();
 -            this.mc.renderGlobal.loadRenderers();
-+        	//Vivecraft no no
++            //Vivecraft no no
 +            this.ofFastRender = false;
 +            //End vivecraft
          }
@@ -212,7 +206,7 @@
          if (par1EnumOptions == GameSettings.Options.ANAGLYPH)
          {
 -            this.anaglyph = !this.anaglyph;
-+        	//VIVE NOPE
++            //VIVE NOPE
 +            this.anaglyph = false;
 +            //NOPE
              this.mc.refreshResources();
@@ -223,12 +217,11 @@
          if (par1EnumOptions == GameSettings.Options.ENABLE_VSYNC)
          {
 -            this.enableVsync = !this.enableVsync;
--            Display.setVSyncEnabled(this.enableVsync);
 +            /** MINECRIFT **/
 +            this.enableVsync = false;
-+			// Don't update Vsync - need to be off
-+            Display.setVSyncEnabled(this.enableVsync); 
-+			/** END MINECRIFT */
++            // Don't update Vsync - need to be off
+             Display.setVSyncEnabled(this.enableVsync);
++            /** END MINECRIFT */
          }
  
          this.saveOptions();
@@ -424,15 +417,10 @@
          this.ofChunkLoading = 0;
          this.ofChunkUpdatesDynamic = false;
          this.ofTime = 0;
-@@ -2966,17 +2960,39 @@
+@@ -2966,16 +2960,38 @@
          this.ofAnimatedTerrain = true;
          this.ofAnimatedItems = true;
          this.ofAnimatedTextures = true;
--        this.mc.renderGlobal.updateCapes();
--        this.updateWaterOpacity();
--        this.mc.renderGlobal.setAllRenderersVisible();
--        this.mc.refreshResources();
--        this.saveOptions();
 +
 +        /** MINECRIFT **/
 +
@@ -449,10 +437,11 @@
 +        this.ofFastRender = false;      // Not convinced this was helping with this ON, and other stuff breaks!
 +
 +        if (this.mc.renderGlobal != null) {
-+            this.mc.renderGlobal.updateCapes();
-+            this.updateWaterOpacity();
-+            this.mc.renderGlobal.setAllRenderersVisible();
-+            this.mc.refreshResources();
+         this.mc.renderGlobal.updateCapes();
+         this.updateWaterOpacity();
+         this.mc.renderGlobal.setAllRenderersVisible();
+         this.mc.refreshResources();
+-        this.saveOptions();
 +        }
 +        if (save) {
 +            this.saveOptions(theProfile);
@@ -463,14 +452,12 @@
      public void updateVSync()
      {
 -        Display.setVSyncEnabled(this.enableVsync);
--    }
-+		/** MINECRIFT */ // Always needs to be off
++        /** MINECRIFT */ // Always needs to be off
 +        Display.setVSyncEnabled(false);
-+		/** END MINECRIFT */
-+	}
++        /** END MINECRIFT */
+     }
  
      private void updateWaterOpacity()
-     {
 @@ -3181,12 +3197,12 @@
              return null;
          }

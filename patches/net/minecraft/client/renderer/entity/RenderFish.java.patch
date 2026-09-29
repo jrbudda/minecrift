@@ -1,14 +1,15 @@
 --- a/net/minecraft/client/renderer/entity/RenderFish.java
 +++ b/net/minecraft/client/renderer/entity/RenderFish.java
-@@ -1,5 +1,8 @@
- package net.minecraft.client.renderer.entity;
- 
+@@ -9,6 +9,9 @@
+ import net.minecraft.util.Vec3;
+ import org.lwjgl.opengl.GL11;
+ import org.lwjgl.opengl.GL12;
 +import de.fruitfly.ovr.structs.Matrix4f;
 +import de.fruitfly.ovr.structs.Vector3f;
 +import jopenvr.OpenVRUtil;
- import net.minecraft.client.Minecraft;
- import net.minecraft.client.renderer.Tessellator;
- import net.minecraft.entity.Entity;
+ 
+ public class RenderFish extends Render
+ {
 @@ -64,6 +67,17 @@
              double var27 = p_76986_1_.angler.prevPosZ + (p_76986_1_.angler.posZ - p_76986_1_.angler.prevPosZ) * (double)p_76986_9_ + var22.zCoord;
              double var29 = p_76986_1_.angler == Minecraft.getMinecraft().thePlayer ? 0.0D : (double)p_76986_1_.angler.getEyeHeight();

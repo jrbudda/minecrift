@@ -1,32 +1,24 @@
 --- a/net/minecraft/client/gui/inventory/GuiContainerCreative.java
 +++ b/net/minecraft/client/gui/inventory/GuiContainerCreative.java
-@@ -4,7 +4,9 @@
- import java.util.Iterator;
- import java.util.List;
- import java.util.Map;
-+
- import net.minecraft.client.gui.GuiButton;
+@@ -32,6 +32,9 @@
+ import org.lwjgl.opengl.GL11;
+ import org.lwjgl.opengl.GL12;
+ 
 +import net.minecraft.client.gui.GuiScreen;
- import net.minecraft.client.gui.GuiTextField;
- import net.minecraft.client.gui.achievement.GuiAchievements;
- import net.minecraft.client.gui.achievement.GuiStats;
-@@ -24,6 +26,7 @@
- import net.minecraft.inventory.Slot;
- import net.minecraft.item.Item;
- import net.minecraft.item.ItemStack;
 +import net.minecraft.src.Reflector;
- import net.minecraft.util.EnumChatFormatting;
- import net.minecraft.util.IIcon;
- import net.minecraft.util.ResourceLocation;
++
+ public class GuiContainerCreative extends InventoryEffectRenderer
+ {
+     /** The location of the creative inventory tabs texture */
 @@ -57,7 +60,10 @@
      private boolean field_147057_D;
      private CreativeCrafting field_147059_E;
      private static final String __OBFID = "CL_00000752";
 -
-+	/** MINECRIFT FORGE **/
++    /** MINECRIFT FORGE **/
 +    private static int tabPage = 0;
 +    private int maxPages = 0;
-+	/** END MINECRIFT FORGE **/
++    /** END MINECRIFT FORGE **/
      public GuiContainerCreative(EntityPlayer p_i1088_1_)
      {
          super(new GuiContainerCreative.ContainerCreative(p_i1088_1_));
@@ -34,17 +26,17 @@
              this.setCurrentCreativeTab(CreativeTabs.creativeTabArray[var1]);
              this.field_147059_E = new CreativeCrafting(this.mc);
              this.mc.thePlayer.inventoryContainer.onCraftGuiOpened(this.field_147059_E);
-+			/** MINECRIFT FORGE **/
-+			if (Reflector.forgeExists()) {
-+	            int tabCount = CreativeTabs.creativeTabArray.length;
-+	            if (tabCount > 12)
-+	            {
-+	                buttonList.add(new GuiButton(101, guiLeft,                       guiTop - 50, 20, 20, "<"));
-+	                buttonList.add(new GuiButton(102, guiLeft + xSize - 20, guiTop - 50, 20, 20, ">"));
-+	                maxPages = ((tabCount - 12) / 10) + 1;
-+	            }
-+			}
-+			/** END MINECRIFT FORGE **/
++            /** MINECRIFT FORGE **/
++            if (Reflector.forgeExists()) {
++                int tabCount = CreativeTabs.creativeTabArray.length;
++                if (tabCount > 12)
++                {
++                    buttonList.add(new GuiButton(101, guiLeft,                       guiTop - 50, 20, 20, "<"));
++                    buttonList.add(new GuiButton(102, guiLeft + xSize - 20, guiTop - 50, 20, 20, ">"));
++                    maxPages = ((tabCount - 12) / 10) + 1;
++                }
++            }
++            /** END MINECRIFT FORGE **/
          }
          else
          {
@@ -53,16 +45,16 @@
      protected void keyTyped(char typedChar, int keyCode)
      {
 -        if (selectedTabIndex != CreativeTabs.tabAllSearch.getTabIndex())
-+		/** MINECRIFT FORGE **/
-+		boolean result = selectedTabIndex != CreativeTabs.tabAllSearch.getTabIndex();
-+		if (Reflector.forgeExists()) {
++        /** MINECRIFT FORGE **/
++        boolean result = selectedTabIndex != CreativeTabs.tabAllSearch.getTabIndex();
++        if (Reflector.forgeExists()) {
 +            CreativeTabs tab = CreativeTabs.creativeTabArray[selectedTabIndex];
 +            boolean tabHasSearchBar = Reflector.callBoolean(tab, Reflector.MinecraftCreativeTabs_hasSearchBar, new Object[] {});
 +            result = !tabHasSearchBar;
-+			//result = !CreativeTabs.creativeTabArray[selectedTabIndex].hasSearchBar();
-+		}
++            //result = !CreativeTabs.creativeTabArray[selectedTabIndex].hasSearchBar();
++        }
 +        if (result)
-+		/** END MINECRIFT FORGE **/
++        /** END MINECRIFT FORGE **/
          {
              if (GameSettings.isKeyDown(this.mc.gameSettings.keyBindChat))
              {
@@ -70,18 +62,18 @@
      {
          GuiContainerCreative.ContainerCreative var1 = (GuiContainerCreative.ContainerCreative)this.inventorySlots;
          var1.itemList.clear();
-+		/** MINECRIFT FORGE **/
-+		if (Reflector.forgeExists()) {
-+	        CreativeTabs tab = CreativeTabs.creativeTabArray[selectedTabIndex];
++        /** MINECRIFT FORGE **/
++        if (Reflector.forgeExists()) {
++            CreativeTabs tab = CreativeTabs.creativeTabArray[selectedTabIndex];
 +            boolean tabHasSearchBar = Reflector.callBoolean(tab, Reflector.MinecraftCreativeTabs_hasSearchBar, new Object[] {});
-+	        if (tabHasSearchBar && tab != CreativeTabs.tabAllSearch)
-+	        {
-+	            tab.displayAllReleventItems(var1.itemList);
-+	            updateFilteredItems(var1);
-+	            return;
-+	        }
-+		}
-+		/** END MINECRIFT FORGE **/
++            if (tabHasSearchBar && tab != CreativeTabs.tabAllSearch)
++            {
++                tab.displayAllReleventItems(var1.itemList);
++                updateFilteredItems(var1);
++                return;
++            }
++        }
++        /** END MINECRIFT FORGE **/
          Iterator var2 = Item.itemRegistry.iterator();
  
          while (var2.hasNext())
@@ -89,7 +81,7 @@
                  var3.getSubItems(var3, (CreativeTabs)null, var1.itemList);
              }
          }
-+/** MINECRIFT FORGE **/		
++/** MINECRIFT FORGE **/
 +        updateFilteredItems(var1);
 +    }
  
@@ -100,9 +92,9 @@
          Enchantment[] var8 = Enchantment.enchantmentsList;
          int var9 = var8.length;
 -
-+		if (Reflector.forgeExists()) {
-+        	if (CreativeTabs.creativeTabArray[selectedTabIndex] != CreativeTabs.tabAllSearch) var9 = 0; //Forge: Don't add enchants to custom tabs.
-+		}	
++        if (Reflector.forgeExists()) {
++            if (CreativeTabs.creativeTabArray[selectedTabIndex] != CreativeTabs.tabAllSearch) var9 = 0; //Forge: Don't add enchants to custom tabs.
++        }
 +/** END MINECRIFT FORGE **/
          for (int var4 = 0; var4 < var9; ++var4)
          {
@@ -111,22 +103,22 @@
       */
      private boolean needsScrollBars()
      {
-+		/** MINECRIFT FORGE **/
-+		if (Reflector.forgeExists()) {
-+        	if (CreativeTabs.creativeTabArray[selectedTabIndex] == null) return false;
-+		}
-+		/** END MINECRIFT FORGE **/
++        /** MINECRIFT FORGE **/
++        if (Reflector.forgeExists()) {
++            if (CreativeTabs.creativeTabArray[selectedTabIndex] == null) return false;
++        }
++        /** END MINECRIFT FORGE **/
          return selectedTabIndex != CreativeTabs.tabInventory.getTabIndex() && CreativeTabs.creativeTabArray[selectedTabIndex].shouldHidePlayerInventory() && ((GuiContainerCreative.ContainerCreative)this.inventorySlots).func_148328_e();
      }
  
      private void setCurrentCreativeTab(CreativeTabs p_147050_1_)
      {
-+		/** MINECRIFT FORGE **/
++        /** MINECRIFT FORGE **/
 +        boolean Forge = Reflector.forgeExists();
-+		if (Forge) {
-+			if (p_147050_1_ == null) return;
-+		}
-+		/** END MINECRIFT FORGE **/
++        if (Forge) {
++            if (p_147050_1_ == null) return;
++        }
++        /** END MINECRIFT FORGE **/
          int var2 = selectedTabIndex;
          selectedTabIndex = p_147050_1_.getTabIndex();
          GuiContainerCreative.ContainerCreative var3 = (GuiContainerCreative.ContainerCreative)this.inventorySlots;
@@ -135,30 +127,30 @@
          if (this.searchField != null)
          {
 -            if (p_147050_1_ == CreativeTabs.tabAllSearch)
-+			/** MINECRIFT FORGE **/
-+			boolean result = (p_147050_1_ == CreativeTabs.tabAllSearch);
++            /** MINECRIFT FORGE **/
++            boolean result = (p_147050_1_ == CreativeTabs.tabAllSearch);
 +            if (Forge) {
 +                boolean tabHasSearchBar = Reflector.callBoolean(p_147050_1_, Reflector.MinecraftCreativeTabs_hasSearchBar, new Object[] {});
-+				result = tabHasSearchBar;
-+			}
-+			if (result)
-+			/** END MINECRIFT FORGE **/
++                result = tabHasSearchBar;
++            }
++            if (result)
++            /** END MINECRIFT FORGE **/
              {
                  this.searchField.setVisible(true);
                  this.searchField.setCanLoseFocus(false);
                  this.searchField.setFocused(true);
                  this.searchField.setText("");
-+				/** MINECRIFT FORGE **/
-+				if (Forge) {
++                /** MINECRIFT FORGE **/
++                if (Forge) {
 +                    // TODO FORGE: Not sure how to get getSearchBarWidth working, hardcode instead.
 +                    int searchBarWidth = 89; //Reflector.callInt(p_147050_1_, Reflector.MinecraftCreativeTabs_getSearchBarWidth, new Object[]{});
 +                    int xPos = this.guiLeft + (82 /*default left*/ + 89 /*default width*/) - searchBarWidth;
 +                    Reflector.setFieldValue(this.searchField, Reflector.MinecraftGuiTextField_width, new Object[] { searchBarWidth });
 +                    Reflector.setFieldValue(this.searchField, Reflector.MinecraftGuiTextField_xPosition, new Object[] { xPos });
-+	                //this.searchField.width = p_147050_1_.getSearchbarWidth();
-+	                //this.searchField.xPosition = this.guiLeft + (82 /*default left*/ + 89 /*default width*/) - this.searchField.width;
-+				}
-+				/** END MINECRIFT FORGE **/
++                    //this.searchField.width = p_147050_1_.getSearchbarWidth();
++                    //this.searchField.xPosition = this.guiLeft + (82 /*default left*/ + 89 /*default width*/) - this.searchField.width;
++                }
++                /** END MINECRIFT FORGE **/
                  this.updateCreativeSearch();
              }
              else
@@ -179,22 +171,22 @@
          int var12 = var11.length;
 -
 -        for (int var13 = 0; var13 < var12; ++var13)
-+		/** MINECRIFT FORGE **/
-+		int start = 0;
-+		boolean rendered = false;
++        /** MINECRIFT FORGE **/
++        int start = 0;
++        boolean rendered = false;
 +        boolean Forge = Reflector.forgeExists();
-+		if (Forge) {
-+			start = tabPage * 10;
-+			var12 = Math.min(var11.length, ((tabPage + 1) * 10) + 2);
-+			if (tabPage != 0) start += 2;
-+		}
++        if (Forge) {
++            start = tabPage * 10;
++            var12 = Math.min(var11.length, ((tabPage + 1) * 10) + 2);
++            if (tabPage != 0) start += 2;
++        }
 +        for (int var13 = start; var13 < var12; ++var13)
          {
              CreativeTabs var14 = var11[var13];
 -
-+			if (Forge) {
-+				if (var14 == null) continue;
-+			}
++            if (Forge) {
++                if (var14 == null) continue;
++            }
              if (this.renderCreativeInventoryHoveringText(var14, mouseX, mouseY))
              {
 +                rendered = true;
@@ -202,31 +194,30 @@
              }
          }
 -
-+		if (Forge) {
-+	        if (!rendered && renderCreativeInventoryHoveringText(CreativeTabs.tabAllSearch, mouseX, mouseY))
-+	        {
-+	            renderCreativeInventoryHoveringText(CreativeTabs.tabInventory, mouseX, mouseY);
-+	        }
-+		}
++        if (Forge) {
++            if (!rendered && renderCreativeInventoryHoveringText(CreativeTabs.tabAllSearch, mouseX, mouseY))
++            {
++                renderCreativeInventoryHoveringText(CreativeTabs.tabInventory, mouseX, mouseY);
++            }
++        }
          if (this.field_147064_C != null && selectedTabIndex == CreativeTabs.tabInventory.getTabIndex() && this.isPointInRegion(this.field_147064_C.xDisplayPosition, this.field_147064_C.yDisplayPosition, 16, 16, mouseX, mouseY))
          {
              this.drawCreativeTabHoveringText(I18n.format("inventory.binSlot", new Object[0]), mouseX, mouseY);
--        }
-+		}
-+		if (Forge) {
-+	        if (maxPages != 0)
-+	        {
-+	            String page = String.format("%d / %d", tabPage + 1, maxPages + 1);
-+	            int width = fontRendererObj.getStringWidth(page);
-+	            GL11.glDisable(GL11.GL_LIGHTING);
-+	            this.zLevel = 300.0F;
-+	            itemRender.zLevel = 300.0F;
-+	            fontRendererObj.drawString(page, guiLeft + (xSize / 2) - (width / 2), guiTop - 44, -1);
-+	            this.zLevel = 0.0F;
-+	            itemRender.zLevel = 0.0F;
-+	        }
-+		}
-+		/** END MINECRIFT FORGE **/
+         }
++        if (Forge) {
++            if (maxPages != 0)
++            {
++                String page = String.format("%d / %d", tabPage + 1, maxPages + 1);
++                int width = fontRendererObj.getStringWidth(page);
++                GL11.glDisable(GL11.GL_LIGHTING);
++                this.zLevel = 300.0F;
++                itemRender.zLevel = 300.0F;
++                fontRendererObj.drawString(page, guiLeft + (xSize / 2) - (width / 2), guiTop - 44, -1);
++                this.zLevel = 0.0F;
++                itemRender.zLevel = 0.0F;
++            }
++        }
++        /** END MINECRIFT FORGE **/
  
          GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
          GL11.glDisable(GL11.GL_LIGHTING);
@@ -236,43 +227,43 @@
          int var7;
 -
 -        for (var7 = 0; var7 < var6; ++var7)
-+		/** MINECRIFT FORGE **/
-+		int start = 0;
++        /** MINECRIFT FORGE **/
++        int start = 0;
 +        boolean Forge = Reflector.forgeExists();
-+		if (Forge) {
-+	        start = tabPage * 10;
-+	        var6 = Math.min(var5.length, ((tabPage + 1) * 10 + 2));
-+	        if (tabPage != 0) start += 2;			
-+		}
++        if (Forge) {
++            start = tabPage * 10;
++            var6 = Math.min(var5.length, ((tabPage + 1) * 10 + 2));
++            if (tabPage != 0) start += 2;
++        }
 +        for (var7 = start; var7 < var6; ++var7)
          {
              CreativeTabs var8 = var5[var7];
              this.mc.getTextureManager().bindTexture(creativeInventoryTabs);
  
-+			if (Forge) {
-+				if (var8 == null) continue;
-+			}
++            if (Forge) {
++                if (var8 == null) continue;
++            }
              if (var8.getTabIndex() != selectedTabIndex)
              {
                  this.func_147051_a(var8);
              }
          }
 -
-+		if (Forge) {
-+	        if (tabPage != 0)
-+	        {
-+	            if (var4 != CreativeTabs.tabAllSearch)
-+	            {
-+	                this.mc.getTextureManager().bindTexture(creativeInventoryTabs);
-+	                func_147051_a(CreativeTabs.tabAllSearch);
-+	            }
-+	            if (var4 != CreativeTabs.tabInventory)
-+	            {
-+	                this.mc.getTextureManager().bindTexture(creativeInventoryTabs);
-+	                func_147051_a(CreativeTabs.tabInventory);
-+	            }
-+	        }
-+		}
++        if (Forge) {
++            if (tabPage != 0)
++            {
++                if (var4 != CreativeTabs.tabAllSearch)
++                {
++                    this.mc.getTextureManager().bindTexture(creativeInventoryTabs);
++                    func_147051_a(CreativeTabs.tabAllSearch);
++                }
++                if (var4 != CreativeTabs.tabInventory)
++                {
++                    this.mc.getTextureManager().bindTexture(creativeInventoryTabs);
++                    func_147051_a(CreativeTabs.tabInventory);
++                }
++            }
++        }
          this.mc.getTextureManager().bindTexture(new ResourceLocation("textures/gui/container/creative_inventory/tab_" + var4.getBackgroundImageName()));
          this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
          this.searchField.drawTextBox();
@@ -281,17 +272,17 @@
              this.drawTexturedModalRect(var9, var6 + (int)((float)(var7 - var6 - 17) * this.currentScroll), 232 + (this.needsScrollBars() ? 0 : 12), 0, 12, 15);
          }
 -
-+		if (Forge) {
++        if (Forge) {
 +            int currentTabPage = Reflector.callInt(var4, Reflector.MinecraftCreativeTabs_getTabPage, new Object[] {});
-+	        if (var4 == null || currentTabPage != tabPage)
-+	        {
-+	            if (var4 != CreativeTabs.tabAllSearch && var4 != CreativeTabs.tabInventory)
-+	            {
-+	                return;
-+	            }
-+	        }
-+		}
-+		/** END MINECRIFT FORGE **/
++            if (var4 == null || currentTabPage != tabPage)
++            {
++                if (var4 != CreativeTabs.tabAllSearch && var4 != CreativeTabs.tabInventory)
++                {
++                    return;
++                }
++            }
++        }
++        /** END MINECRIFT FORGE **/
          this.func_147051_a(var4);
  
          if (var4 == CreativeTabs.tabInventory)
@@ -299,19 +290,19 @@
  
      protected boolean func_147049_a(CreativeTabs p_147049_1_, int p_147049_2_, int p_147049_3_)
      {
-+		/** MINECRIFT FORGE **/
-+		if (Reflector.forgeExists()) {
++        /** MINECRIFT FORGE **/
++        if (Reflector.forgeExists()) {
 +            int currentTabPage = Reflector.callInt(p_147049_1_, Reflector.MinecraftCreativeTabs_getTabPage, new Object[] {});
-+	        if (currentTabPage != tabPage)
-+	        {
-+	            if (p_147049_1_ != CreativeTabs.tabAllSearch &&
-+	                p_147049_1_ != CreativeTabs.tabInventory)
-+	            {
-+	                return false;
-+	            }
-+	        }
-+		}
-+		/** END MINECRIFT FORGE **/
++            if (currentTabPage != tabPage)
++            {
++                if (p_147049_1_ != CreativeTabs.tabAllSearch &&
++                    p_147049_1_ != CreativeTabs.tabInventory)
++                {
++                    return false;
++                }
++            }
++        }
++        /** END MINECRIFT FORGE **/
          int var4 = p_147049_1_.getTabColumn();
          int var5 = 28 * var4;
          byte var6 = 0;
@@ -319,12 +310,12 @@
          }
  
          GL11.glDisable(GL11.GL_LIGHTING);
-+		/** MINECRIFT FORGE **/
-+		if (Reflector.forgeExists()) {
-+			GL11.glColor3f(1F, 1F, 1F); //Forge: Reset color in case Items change it.
-+	        GL11.glEnable(GL11.GL_BLEND); //Forge: Make sure blend is enabled else tabs show a white border.
-+		}
-+		/** END MINECRIFT FORGE **/
++        /** MINECRIFT FORGE **/
++        if (Reflector.forgeExists()) {
++            GL11.glColor3f(1F, 1F, 1F); //Forge: Reset color in case Items change it.
++            GL11.glEnable(GL11.GL_BLEND); //Forge: Make sure blend is enabled else tabs show a white border.
++        }
++        /** END MINECRIFT FORGE **/
          this.drawTexturedModalRect(var7, var8, var5, var6, 28, var9);
          this.zLevel = 100.0F;
          itemRender.zLevel = 100.0F;
@@ -332,18 +323,18 @@
          {
              this.mc.displayGuiScreen(new GuiStats(this, this.mc.thePlayer.getStatFileWriter()));
          }
-+		/** MINECRIFT FORGE **/
-+		if (Reflector.forgeExists()) {
-+	        if (button.id == 101)
-+	        {
-+	            tabPage = Math.max(tabPage - 1, 0);
-+	        }
-+	        else if (button.id == 102)
-+	        {
-+	            tabPage = Math.min(tabPage + 1, maxPages);
-+	        }
-+		}
-+		/** END MINECRIFT FORGE **/
++        /** MINECRIFT FORGE **/
++        if (Reflector.forgeExists()) {
++            if (button.id == 101)
++            {
++                tabPage = Math.max(tabPage - 1, 0);
++            }
++            else if (button.id == 102)
++            {
++                tabPage = Math.min(tabPage + 1, maxPages);
++            }
++        }
++        /** END MINECRIFT FORGE **/
      }
  
      public int func_147056_g()

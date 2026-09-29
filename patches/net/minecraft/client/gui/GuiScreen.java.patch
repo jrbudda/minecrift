@@ -1,27 +1,18 @@
 --- a/net/minecraft/client/gui/GuiScreen.java
 +++ b/net/minecraft/client/gui/GuiScreen.java
-@@ -5,15 +5,21 @@
- import java.awt.datatransfer.DataFlavor;
- import java.awt.datatransfer.StringSelection;
- import java.awt.datatransfer.Transferable;
+@@ -20,6 +20,12 @@
+ import org.lwjgl.opengl.GL11;
+ import org.lwjgl.opengl.GL12;
+ 
 +import java.io.IOException;
- import java.util.ArrayList;
- import java.util.Arrays;
- import java.util.Iterator;
- import java.util.List;
-+
 +import com.mtbs3d.minecrift.provider.MCOpenVR;
 +import com.mtbs3d.minecrift.settings.VRSettings;
- import net.minecraft.client.Minecraft;
- import net.minecraft.client.renderer.RenderHelper;
- import net.minecraft.client.renderer.Tessellator;
- import net.minecraft.client.renderer.entity.RenderItem;
 +import net.minecraft.item.Item;
- import net.minecraft.item.ItemStack;
 +import net.minecraft.src.Reflector;
- import net.minecraft.util.EnumChatFormatting;
- import org.lwjgl.input.Keyboard;
- import org.lwjgl.input.Mouse;
++
+ public class GuiScreen extends Gui
+ {
+     /**
 @@ -44,13 +50,17 @@
      public boolean allowUserInput;
  
@@ -35,9 +26,9 @@
      private long lastMouseEvent;
  
 +    //VIVECRAFT
-+	public boolean pressShiftFake;
-+	///
-+	
++    public boolean pressShiftFake;
++    ///
++    
      /**
       * Incremented when the game is in touchscreen mode and the screen is tapped, decremented if the screen isn't
       * tapped. Does not appear to be used.
@@ -57,20 +48,19 @@
              }
          }
 -
--        this.drawHoveringText(var4, x, y);
-+		/** MINECRIFT FORGE **/
++        /** MINECRIFT FORGE **/
 +        if (Reflector.forgeExists())
-+		{
++        {
 +            Item item = itemIn.getItem();
 +            FontRenderer font = (FontRenderer)Reflector.call(item, Reflector.MinecraftItem_Forge_getFontRenderer, new Object[] {itemIn});
 +            drawHoveringText(var4, x, y, (font == null ? fontRendererObj : font));
-+		}
-+		else
-+		{
-+			this.drawHoveringText(var4, x, y);
-+		}
-+		/** END MINECRIFT FORGE **/
++        }
++        else
++        {
+         this.drawHoveringText(var4, x, y);
      }
++        /** END MINECRIFT FORGE **/
++    }
  
      /**
       * Draws the text when mouse is over creative inventory tab. Params: current creative tab to be checked, current
@@ -120,71 +110,64 @@
  
                  if (var5.mousePressed(this.mc, mouseX, mouseY))
                  {
--                    this.selectedButton = var5;
--                    var5.playPressSound(this.mc.getSoundHandler());
--                    this.actionPerformed(var5);
--                }
-+					/** MINECRIFT FORGE **/
-+					if (Reflector.forgeExists())
-+					{
++                    /** MINECRIFT FORGE **/
++                    if (Reflector.forgeExists())
++                    {
 +                        Object event = Reflector.newInstance(Reflector.ForgeGuiScreenActionPerformedEvent_Pre_Constructor, new Object[] {this, var5, this.buttonList});
-+	                    if (Reflector.postForgeBusEvent(event))
-+	                        break;
-+	                    this.selectedButton = (GuiButton)Reflector.getFieldValue(event, Reflector.ForgeGuiScreenActionPerformedEvent_button);
++                        if (Reflector.postForgeBusEvent(event))
++                            break;
++                        this.selectedButton = (GuiButton)Reflector.getFieldValue(event, Reflector.ForgeGuiScreenActionPerformedEvent_button);
 +                        this.selectedButton.playPressSound(this.mc.getSoundHandler());
-+	                    this.actionPerformed(this.selectedButton);
-+	                    if (this.equals(this.mc.currentScreen))
++                        this.actionPerformed(this.selectedButton);
++                        if (this.equals(this.mc.currentScreen))
 +                            Reflector.postForgeBusEvent(Reflector.ForgeActionPerformedEvent_Post_Constructor, new Object[] {this, this.selectedButton, this.buttonList});
-+					}
-+					else
-+					{
-+	                    this.selectedButton = var5;
-+	                    var5.playPressSound(this.mc.getSoundHandler());
-+	                    this.actionPerformed(var5);
-+					}
-+					/** END MINECRIFT FORGE **/
-+				}
++                    }
++                    else
++                {
+                     this.selectedButton = var5;
+                     var5.playPressSound(this.mc.getSoundHandler());
+                     this.actionPerformed(var5);
+                 }
++                    /** END MINECRIFT FORGE **/
++                }
              }
          }
      }
-@@ -285,8 +335,22 @@
+@@ -285,9 +335,23 @@
          this.fontRendererObj = mc.fontRendererObj;
          this.width = width;
          this.height = height;
--        this.buttonList.clear();
--        this.initGui();
-+		/** MINECRIFT FORGE **/
-+		if (Reflector.forgeExists())
-+		{
++        /** MINECRIFT FORGE **/
++        if (Reflector.forgeExists())
++        {
 +            if (!Reflector.postForgeBusEvent(Reflector.ForgeInitGuiEvent_Pre_Constructor, new Object[] {this, this.buttonList}));
 +            {
 +                this.buttonList.clear();
 +                this.initGui();
 +            }
 +            Reflector.postForgeBusEvent(Reflector.ForgeInitGuiEvent_Post_Constructor, new Object[] {this, this.buttonList});
-+		}
-+		else
-+		{
-+            this.buttonList.clear();
-+            this.initGui();
-+		}
-+		/** END MINECRIFT FORGE **/
++        }
++        else
++        {
+         this.buttonList.clear();
+         this.initGui();
      }
++        /** END MINECRIFT FORGE **/
++    }
  
      /**
-@@ -302,7 +366,14 @@
-         if (Mouse.isCreated())
+      * Adds the buttons (and other controls) to the screen in question.
+@@ -303,6 +367,13 @@
          {
              while (Mouse.next())
--            {
-+            {		
-+            	
-+            	if (mc.stereoProvider.isStereo()){
-+            		if(!MCOpenVR.controllerMouseValid){
-+            			MCOpenVR.controllerMouseValid = true;
-+            			MCOpenVR.controllerMouseTicks = 20;
-+				}}
-+            	
+             {
++                
++                if (mc.stereoProvider.isStereo()){
++                    if(!MCOpenVR.controllerMouseValid){
++                        MCOpenVR.controllerMouseValid = true;
++                        MCOpenVR.controllerMouseTicks = 20;
++                }}
++                
                  this.handleMouseInput();
              }
          }
@@ -194,19 +177,19 @@
      {
 -        int var1 = Mouse.getEventX() * this.width / this.mc.displayWidth;
 -        int var2 = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
-+		/** MINECRIFT */
++        /** MINECRIFT */
 +
-+    	if (mc.stereoProvider.isStereo()){
-+    		if(!MCOpenVR.controllerMouseValid){
-+				if (mc.mouseHelper.deltaX > 0 || mc.mouseHelper.deltaY> 0 )
-+        			MCOpenVR.controllerMouseValid = true;
-+				}
-+			}
-+    	
++        if (mc.stereoProvider.isStereo()){
++            if(!MCOpenVR.controllerMouseValid){
++                if (mc.mouseHelper.deltaX > 0 || mc.mouseHelper.deltaY> 0 )
++                    MCOpenVR.controllerMouseValid = true;
++                }
++            }
++        
 +        int var1 = getMouseXPos();
 +        int var2 = getMouseYPos();
          int var3 = Mouse.getEventButton();
-+		/** END MINECRIFT */
++        /** END MINECRIFT */
  
          if (Mouse.getEventButtonState())
          {
@@ -223,7 +206,7 @@
 +        {
              this.drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
          }
-+		/** END MINECRIFT */
++        /** END MINECRIFT */
 +        }
          else
          {
@@ -232,9 +215,9 @@
      {
          return Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54);
      }
-+	
++    
 +    /** MINECRIFT ADDITIONS BELOW */
-+	public static boolean mouseDown;
++    public static boolean mouseDown;
 +    public void mouseDown( int rawX, int rawY, int button )
 +    {
 +        int var1 = rawX * this.width / this.mc.displayWidth;
@@ -242,12 +225,12 @@
 +        this.eventButton = button;
 +        this.lastMouseEvent = Minecraft.getSystemTime();
 +        mouseClicked(var1, var2, button);
-+    	mouseDown = true;
++        mouseDown = true;
 +    }
 +    
 +    public void mouseUp( int rawX, int rawY, int button )
 +    {
-+    	mouseDown = false;
++        mouseDown = false;
 +        int var1 = rawX * this.width / this.mc.displayWidth;
 +        int var2 = this.height - rawY * this.height / this.mc.displayHeight - 1;
 +        mouseReleased(var1, var2, button);
@@ -270,7 +253,7 @@
 +    
 +    public void mouseGuiUp( int guiX, int guiY, int button )
 +    {
-+    	mouseDown = false;
++        mouseDown = false;
 +        mouseReleased(guiX, guiY, button);
 +    }
 +    
@@ -293,7 +276,7 @@
 +    }
 +
 +    public void keyTypedPublic(char typedChar, int keyCode) throws IOException {
-+    	keyTyped(typedChar, keyCode);
++        keyTyped(typedChar, keyCode);
 +    }
 +
  }

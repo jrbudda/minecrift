@@ -1,28 +1,16 @@
 --- a/net/minecraft/client/gui/inventory/GuiContainer.java
 +++ b/net/minecraft/client/gui/inventory/GuiContainer.java
-@@ -3,7 +3,9 @@
- import java.util.HashSet;
- import java.util.Iterator;
- import java.util.Set;
-+
- import net.minecraft.client.Minecraft;
-+import net.minecraft.client.gui.FontRenderer;
- import net.minecraft.client.gui.GuiScreen;
- import net.minecraft.client.renderer.OpenGlHelper;
- import net.minecraft.client.renderer.RenderHelper;
-@@ -12,10 +14,12 @@
- import net.minecraft.inventory.Container;
- import net.minecraft.inventory.Slot;
- import net.minecraft.item.ItemStack;
-+import net.minecraft.src.Reflector;
- import net.minecraft.util.EnumChatFormatting;
- import net.minecraft.util.IIcon;
- import net.minecraft.util.MathHelper;
- import net.minecraft.util.ResourceLocation;
-+
- import org.lwjgl.input.Keyboard;
+@@ -20,6 +20,10 @@
  import org.lwjgl.opengl.GL11;
  import org.lwjgl.opengl.GL12;
+ 
++import net.minecraft.client.gui.FontRenderer;
++import net.minecraft.src.Reflector;
++
++
+ public abstract class GuiContainer extends GuiScreen
+ {
+     /** The location of the inventory background texture */
 @@ -140,7 +144,11 @@
              }
          }
@@ -75,7 +63,7 @@
       */
      protected void mouseReleased(int mouseX, int mouseY, int state)
      {
-+    	super.mouseReleased(mouseX, mouseY, state); //Forge, Call parent to release buttons
++        super.mouseReleased(mouseX, mouseY, state); //Forge, Call parent to release buttons
          Slot var4 = this.getSlotAtPosition(mouseX, mouseY);
          int var5 = this.guiLeft;
          int var6 = this.guiTop;
