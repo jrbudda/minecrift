@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/Minecraft.java
++++ b/net/minecraft/client/Minecraft.java
+@@ -983,11 +983,12 @@
+                     }
+ 
+                     this.displayCrashReport(this.crashReporter);
++                    return;
+                 }
+             }
+             catch (MinecraftError var12)
+             {
+-                break;
++                ;
+             }
+             catch (ReportedException var13)
+             {

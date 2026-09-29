@@ -1,0 +1,17 @@
+--- a/net/minecraft/network/PingResponseHandler.java
++++ b/net/minecraft/network/PingResponseHandler.java
+@@ -30,8 +30,13 @@
+ 
+         try
+         {
+-            if (var3.readUnsignedByte() == 254)
++            try
+             {
++                if (var3.readUnsignedByte() != 254)
++                {
++                    return;
++                }
++
+                 InetSocketAddress var5 = (InetSocketAddress)p_channelRead_1_.channel().remoteAddress();
+                 MinecraftServer var6 = this.networkSystem.getServer();
+                 int var7 = var3.readableBytes();

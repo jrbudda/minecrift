@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/gen/feature/WorldGenDungeons.java
++++ b/net/minecraft/world/gen/feature/WorldGenDungeons.java
+@@ -91,7 +91,7 @@
+                 {
+                     if (var11 < 3)
+                     {
+-                        label101:
++                        label197:
+                         {
+                             var12 = p_76484_3_ + p_76484_2_.nextInt(var7 * 2 + 1) - var7;
+                             int var14 = p_76484_5_ + p_76484_2_.nextInt(var8 * 2 + 1) - var8;

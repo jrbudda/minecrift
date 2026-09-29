@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/Minecraft.java
++++ b/net/minecraft/client/Minecraft.java
+@@ -1003,7 +1003,6 @@
+                 this.freeMemory();
+                 logger.fatal("Unreported exception thrown!", var14);
+                 this.displayCrashReport(var2);
+-                break;
+             }
+             finally
+             {

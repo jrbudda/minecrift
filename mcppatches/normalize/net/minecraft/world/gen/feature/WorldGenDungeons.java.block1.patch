@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/gen/feature/WorldGenDungeons.java
++++ b/net/minecraft/world/gen/feature/WorldGenDungeons.java
+@@ -131,7 +131,7 @@
+                                         WeightedRandomChestContent.generateChestContents(p_76484_2_, var16, var17, 8);
+                                     }
+ 
+-                                    break label101;
++                                    break label197;
+                                 }
+                             }
+ 

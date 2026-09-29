@@ -1,0 +1,11 @@
+--- a/net/minecraft/src/RandomMobs.java
++++ b/net/minecraft/src/RandomMobs.java
+@@ -80,7 +80,7 @@
+         }
+         else
+         {
+-            ResourceLocation var5;
++            ResourceLocation props;
+ 
+             try
+             {

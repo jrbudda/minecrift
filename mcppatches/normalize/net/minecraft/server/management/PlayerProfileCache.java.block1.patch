@@ -1,0 +1,18 @@
+--- a/net/minecraft/server/management/PlayerProfileCache.java
++++ b/net/minecraft/server/management/PlayerProfileCache.java
+@@ -283,11 +283,11 @@
+         }
+         catch (FileNotFoundException var8)
+         {
++            return;
++        }
++        catch (IOException var9)
++        {
+             ;
+-        }
+-        catch (IOException var9)
+-        {
+-            return;
+         }
+         finally
+         {

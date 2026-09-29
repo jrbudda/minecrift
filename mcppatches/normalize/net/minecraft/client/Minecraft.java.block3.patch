@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/Minecraft.java
++++ b/net/minecraft/client/Minecraft.java
+@@ -995,7 +996,6 @@
+                 this.freeMemory();
+                 logger.fatal("Reported exception thrown!", var13);
+                 this.displayCrashReport(var13.getCrashReport());
+-                break;
+             }
+             catch (Throwable var14)
+             {

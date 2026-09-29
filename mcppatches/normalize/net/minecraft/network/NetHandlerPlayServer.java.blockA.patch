@@ -1,0 +1,33 @@
+--- a/net/minecraft/network/NetHandlerPlayServer.java
++++ b/net/minecraft/network/NetHandlerPlayServer.java
+@@ -1133,20 +1133,20 @@
+             {
+                 var3 = var2.readItemStackFromBuffer();
+ 
+-                if (var3 != null)
++                if (var3 == null)
+                 {
+-                    if (!ItemWritableBook.validBookPageTagContents(var3.getTagCompound()))
+-                    {
+-                        throw new IOException("Invalid book tag!");
+-                    }
++                    return;
++                }
+ 
+-                    var4 = this.playerEntity.inventory.getCurrentItem();
++                if (!ItemWritableBook.validBookPageTagContents(var3.getTagCompound()))
++                {
++                    throw new IOException("Invalid book tag!");
++                }
+ 
+-                    if (var4 == null)
+-                    {
+-                        return;
+-                    }
++                var4 = this.playerEntity.inventory.getCurrentItem();
+ 
++                if (var4 != null)
++                {
+                     if (var3.getItem() == Items.writable_book && var3.getItem() == var4.getItem())
+                     {
+                         var4.setTagInfo("pages", var3.getTagCompound().getTagList("pages", 8));

@@ -1,0 +1,26 @@
+--- a/net/minecraft/src/VersionCheckThread.java
++++ b/net/minecraft/src/VersionCheckThread.java
+@@ -40,16 +40,16 @@
+                 in.close();
+                 String[] verLines = Config.tokenize(verStr, "\n\r");
+ 
+-                if (verLines.length >= 1)
++                if (verLines.length < 1)
+                 {
+-                    String newVer = verLines[0];
+-                    Config.dbg("Version found: " + newVer);
++                    return;
++                }
+ 
+-                    if (Config.compareRelease(newVer, "D1") <= 0)
+-                    {
+-                        return;
+-                    }
++                String newVer = verLines[0];
++                Config.dbg("Version found: " + newVer);
+ 
++                if (Config.compareRelease(newVer, "D1") > 0)
++                {
+                     Config.setNewRelease(newVer);
+                     return;
+                 }

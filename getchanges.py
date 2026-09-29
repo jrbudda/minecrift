@@ -16,7 +16,7 @@ def cmdsplit(args):
 
 def create_patch( target_dir, src_file, mod_file, label, patch_file ):
     
-    print "Checking patch status for %s..." % src_file
+    print("Checking patch status for %s..." % src_file)
     if os.name == 'nt':
         diff = os.path.abspath(os.path.join(base_dir, 'bin', 'diff.exe'))
     else:
@@ -28,10 +28,10 @@ def create_patch( target_dir, src_file, mod_file, label, patch_file ):
     stdout, stderr = process.communicate()
     if stdout:
         with open( patch_file, 'wb') as out:
-            out.write( stdout.replace('\r\n','\n').replace('\r','\n') )
+            out.write( stdout.replace(b'\r\n',b'\n').replace(b'\r',b'\n') )
 
 def pythonisdumb(func, path, excinfo):
-    print path + str(excinfo)
+    print(path + str(excinfo))
 
 def main(mcp_dir, patch_dir = "patches", orig_dir = ".minecraft_orig"):
     new_src_dir    = os.path.join( base_dir , "src" )
@@ -85,7 +85,7 @@ def main(mcp_dir, patch_dir = "patches", orig_dir = ".minecraft_orig"):
 
             if file_ == "Minecraft.java":
                 # Update Minecrift version
-                print "Updating Minecraft.java Minecrift version: [Minecrift %s %s] %s" % ( minecrift_version_num, minecrift_build, org_file ) 
+                print("Updating Minecraft.java Minecrift version: [Minecrift %s %s] %s" % ( minecrift_version_num, minecrift_build, org_file ) )
                 replacelineinfile( mod_file, "public final String minecriftVerString",     "    public final String minecriftVerString = \"Vivecraft %s %s\";\n" % (minecrift_version_num, minecrift_build) );
                 
             if os.path.exists(org_file):
@@ -110,7 +110,7 @@ def main(mcp_dir, patch_dir = "patches", orig_dir = ".minecraft_orig"):
         for file_ in files:              
             new_file = os.path.join(new_dir, file_)
             mod_file = os.path.join(asset_dir, file_)
-            print "Copy asset %s" % (mod_file)
+            print("Copy asset %s" % (mod_file))
 
             #new class file, just replace
             if os.path.exists( new_file ):

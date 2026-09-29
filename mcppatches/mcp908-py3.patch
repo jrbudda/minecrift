@@ -1,0 +1,969 @@
+diff --git a/cleanup.bat b/cleanup.bat
+index 8f02713..50e8923 100644
+--- a/cleanup.bat
++++ b/cleanup.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\cleanup.py %*
++py -3 runtime\cleanup.py %*
+ pause
+diff --git a/cleanup.sh b/cleanup.sh
+index d037237..e9930de 100644
+--- a/cleanup.sh
++++ b/cleanup.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/cleanup.py "$@"
++python3 runtime/cleanup.py "$@"
+diff --git a/decompile.bat b/decompile.bat
+index 86f7bd0..9c666e3 100644
+--- a/decompile.bat
++++ b/decompile.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\decompile.py %*
++py -3 runtime\decompile.py %*
+ pause
+diff --git a/decompile.sh b/decompile.sh
+index a048742..4f4dc01 100644
+--- a/decompile.sh
++++ b/decompile.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/decompile.py "$@"
++python3 runtime/decompile.py "$@"
+diff --git a/getchangedsrc.bat b/getchangedsrc.bat
+index 0d87841..0101e76 100644
+--- a/getchangedsrc.bat
++++ b/getchangedsrc.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\getchangedsrc.py %*
++py -3 runtime\getchangedsrc.py %*
+ pause
+diff --git a/getchangedsrc.sh b/getchangedsrc.sh
+index 6454895..db1b90b 100644
+--- a/getchangedsrc.sh
++++ b/getchangedsrc.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/getchangedsrc.py "$@"
++python3 runtime/getchangedsrc.py "$@"
+diff --git a/recompile.bat b/recompile.bat
+index 444a393..cffb051 100644
+--- a/recompile.bat
++++ b/recompile.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\recompile.py %*
++py -3 runtime\recompile.py %*
+ pause
+diff --git a/recompile.sh b/recompile.sh
+index 549b2bc..98f1c82 100644
+--- a/recompile.sh
++++ b/recompile.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/recompile.py "$@"
++python3 runtime/recompile.py "$@"
+diff --git a/reformat.bat b/reformat.bat
+index d0c7020..98072cb 100644
+--- a/reformat.bat
++++ b/reformat.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\reformat.py %*
++py -3 runtime\reformat.py %*
+ pause
+diff --git a/reformat.sh b/reformat.sh
+index 3cded3c..b319baa 100644
+--- a/reformat.sh
++++ b/reformat.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/reformat.py "$@"
++python3 runtime/reformat.py "$@"
+diff --git a/reobfuscate.bat b/reobfuscate.bat
+index 3a2b01f..9d7a476 100644
+--- a/reobfuscate.bat
++++ b/reobfuscate.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\reobfuscate.py %*
++py -3 runtime\reobfuscate.py %*
+ pause
+diff --git a/reobfuscate.sh b/reobfuscate.sh
+index b64b3d3..dbccb78 100644
+--- a/reobfuscate.sh
++++ b/reobfuscate.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/reobfuscate.py "$@"
++python3 runtime/reobfuscate.py "$@"
+diff --git a/reobfuscate_srg.bat b/reobfuscate_srg.bat
+index 1d7194f..cced4a7 100644
+--- a/reobfuscate_srg.bat
++++ b/reobfuscate_srg.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\reobfuscate.py --srgnames %*
++py -3 runtime\reobfuscate.py --srgnames %*
+ pause
+diff --git a/reobfuscate_srg.sh b/reobfuscate_srg.sh
+index 712b344..0003a84 100644
+--- a/reobfuscate_srg.sh
++++ b/reobfuscate_srg.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/reobfuscate.py --srgnames "$@"
++python3 runtime/reobfuscate.py --srgnames "$@"
+diff --git a/runtime/MinecraftDiscovery.py b/runtime/MinecraftDiscovery.py
+index 53abf67..6f264fc 100644
+--- a/runtime/MinecraftDiscovery.py
++++ b/runtime/MinecraftDiscovery.py
+@@ -12,7 +12,7 @@ def getMinecraftPath():
+     elif sys.platform.startswith('darwin'):
+         return os.path.expanduser("~/Library/Application Support/minecraft")
+     else:
+-        print "Cannot detect of version : %s. Please report to your closest sysadmin"%sys.platform
++        print("Cannot detect of version : %s. Please report to your closest sysadmin"%sys.platform)
+         sys.exit()
+ 
+ def getNativesKeyword():
+@@ -23,7 +23,7 @@ def getNativesKeyword():
+     elif sys.platform.startswith('darwin'):
+         return "osx"
+     else:
+-        print "Cannot detect of version : %s. Please report to your closest sysadmin"%sys.platform
++        print("Cannot detect of version : %s. Please report to your closest sysadmin"%sys.platform)
+         sys.exit()        
+ 
+ def checkMCDir(src, version):
+@@ -113,7 +113,7 @@ def getLibraries(root, jsonfile, osKeyword):
+     try:
+         jsonFile = json.load(open(jsonfile))
+     except Exception as e:
+-        print "Error while parsing the library JSON file : %s"%e
++        print("Error while parsing the library JSON file : %s"%e)
+         sys.exit()
+     
+     mcLibraries  = jsonFile['libraries']
+@@ -194,7 +194,7 @@ if __name__ == '__main__':
+ 
+     for native in mcNatives.keys():
+         if checkNativeExists("./jars", native, "1.6.1"):
+-            print 'Found %s %s'%(native, mcNatives[native])
++            print('Found %s %s'%(native, mcNatives[native]))
+         else:
+-            print 'Not found %s %s'%(native, mcNatives[native])
++            print('Not found %s %s'%(native, mcNatives[native]))
+             
+\ No newline at end of file
+diff --git a/runtime/cleanup.py b/runtime/cleanup.py
+index a71910e..a789d85 100644
+--- a/runtime/cleanup.py
++++ b/runtime/cleanup.py
+@@ -29,13 +29,13 @@ def cleanup(conffile, force, distclean):
+         commands = Commands(conffile, shortstart=True)
+ 
+         if not force:
+-            print 'WARNING:'
+-            print 'The cleanup script will delete all folders created by MCP, including the'
+-            print 'src folder which may contain changes you made to the code, along with any'
+-            print 'saved worlds from the client or server.'
+-            answer = raw_input('If you really want to clean up, enter "Yes" ')
++            print('WARNING:')
++            print('The cleanup script will delete all folders created by MCP, including the')
++            print('src folder which may contain changes you made to the code, along with any')
++            print('saved worlds from the client or server.')
++            answer = input('If you really want to clean up, enter "Yes" ')
+             if answer.lower() not in ['yes']:
+-                print 'You have not entered "Yes", aborting the clean up process'
++                print('You have not entered "Yes", aborting the clean up process')
+                 sys.exit(1)
+ 
+         commands.checkupdates()
+@@ -76,9 +76,9 @@ def cleanup(conffile, force, distclean):
+             logging.shutdown()
+             reallyrmtree(commands.dirlogs)
+         except OSError as ex:
+-            print >> sys.stderr, 'Cleanup FAILED'
++            print('Cleanup FAILED', file=sys.stderr)
+             if hasattr(ex, 'filename'):
+-                print >> sys.stderr, 'Failed to remove ' + ex.filename
++                print('Failed to remove ' + ex.filename, file=sys.stderr)
+             sys.exit(1)
+     except Exception:  # pylint: disable-msg=W0703
+         logging.exception('FATAL ERROR')
+diff --git a/runtime/commands.py b/runtime/commands.py
+index 07e0574..b5f8e68 100644
+--- a/runtime/commands.py
++++ b/runtime/commands.py
+@@ -15,8 +15,8 @@ import zipfile
+ import csv
+ import re
+ import subprocess
+-import ConfigParser
+-import urllib
++import configparser as ConfigParser
++import urllib.request
+ import time
+ import stat
+ import errno
+@@ -36,6 +36,7 @@ from pylibs.fffix import fffix
+ from pylibs.cleanup_src import strip_comments, src_cleanup
+ from pylibs.normlines import normaliselines
+ from pylibs.normpatch import normalisepatch
++from pylibs.py2order import py2_dict_order
+ 
+ CLIENT = 0
+ SERVER = 1
+@@ -136,7 +137,7 @@ def truncate(text, length):
+ def csv_header(csvfile):
+     fieldnames = []
+     if os.path.isfile(csvfile):
+-        with open(csvfile, 'rb') as fh:
++        with open(csvfile, 'r', newline='') as fh:
+             csvreader = csv.DictReader(fh)
+             fieldnames = csvreader.fieldnames
+     return set(fieldnames)
+@@ -154,9 +155,9 @@ class Commands(object):
+         """Read the version configuration file and return a full version string"""
+         full_version = None
+         try:
+-            config = ConfigParser.SafeConfigParser()
++            config = ConfigParser.ConfigParser()
+             with open(os.path.normpath(cls._version_config)) as fh:
+-                config.readfp(fh)
++                config.read_file(fh)
+             data_version = config.get('VERSION', 'MCPVersion')
+             client_version = config.get('VERSION', 'ClientVersion')
+             server_version = config.get('VERSION', 'ServerVersion')
+@@ -209,9 +210,9 @@ class Commands(object):
+ 
+     def getVersions(self):
+         try:
+-            config = ConfigParser.SafeConfigParser()
++            config = ConfigParser.ConfigParser()
+             with open(os.path.normpath(self._version_config)) as fh:
+-                config.readfp(fh)
++                config.read_file(fh)
+             client_version = config.get('VERSION', 'ClientVersion')
+             server_version = config.get('VERSION', 'ServerVersion')
+             return client_version, server_version
+@@ -400,6 +401,10 @@ class Commands(object):
+ 
+     def startlogger(self):
+         self.logger = logging.getLogger()
++        # drop handlers from an earlier Commands instance, or every message is logged once per instance
++        for handler in list(self.logger.handlers):
++            self.logger.removeHandler(handler)
++            handler.close()
+         self.logger.setLevel(logging.DEBUG)
+         # create file handler which logs even debug messages
+         filehandler = logging.FileHandler(filename=self.mcplogfile)
+@@ -423,6 +428,9 @@ class Commands(object):
+ 
+         # HINT: SECONDARY LOGGER FOR CLIENT & SERVER
+         self.loggermc = logging.getLogger('MCRunLog')
++        for handler in list(self.loggermc.handlers):
++            self.loggermc.removeHandler(handler)
++            handler.close()
+         self.loggermc.setLevel(logging.DEBUG)
+         chmc = logging.StreamHandler()
+         chmc.setLevel(logging.DEBUG)
+@@ -433,10 +441,10 @@ class Commands(object):
+ 
+     def readconf(self, workdir, json):
+         """Read the configuration file to setup some basic paths"""
+-        config = ConfigParser.SafeConfigParser()
++        config = ConfigParser.ConfigParser()
+         try:
+             with open(os.path.normpath(self._default_config)) as fh:
+-                config.readfp(fh)
++                config.read_file(fh)
+             if self.conffile is not None:
+                 config.read(os.path.normpath(self.conffile))
+         except IOError:
+@@ -660,7 +668,7 @@ class Commands(object):
+         if not len(configpathclient) == 1 or not configpathclient[0] == '':
+             cpathclient.extend(configpathclient)
+ 
+-        for library in mcLibraries.values():
++        for library in [mcLibraries[k] for k in py2_dict_order(mcLibraries)]:
+             cpathclient.append(os.path.join(self.dirjars,library['filename']))
+ 
+         self.cpathclient = [os.path.normpath(p) for p in cpathclient]
+@@ -836,7 +844,7 @@ class Commands(object):
+         results = []
+         if self.osname == 'win':
+             if not results:
+-                import _winreg
++                import winreg as _winreg
+ 
+                 for flag in [_winreg.KEY_WOW64_64KEY, _winreg.KEY_WOW64_32KEY]:
+                     try:
+@@ -883,11 +891,89 @@ class Commands(object):
+                 results.extend(whereis('javac', '/usr/local/bin'))
+             if not results:
+                 results.extend(whereis('javac', '/opt'))
+-        if not results:
+-            self.logger.error('Java JDK is not installed ! Please install java JDK from http://java.oracle.com')
++        # The build needs JDK 7 or 8: MCP compiles with -source 1.6, which JDK 9 and newer
++        # cannot do, and the Vivecraft sources use Java 7 APIs, which JDK 6 lacks. Official
++        # builds were made with JDK 8. Check every JDK that can be found, including the one
++        # found above, and use 1.8 if there is one, else 1.7.
++        best = None
++        seen = set()
++        for bindir in self.findjdks() + results:
++            key = os.path.normcase(os.path.normpath(bindir)) if bindir else ''
++            if key in seen:
++                continue
++            seen.add(key)
++            version = self.javacversion(bindir)
++            for rank, prefix in enumerate(('1.8', '1.7')):
++                if version.startswith(prefix) and (best is None or rank < best[0]):
++                    best = (rank, bindir, version)
++        if best is None:
++            if seen:
++                self.logger.error('Only unsupported Java JDKs were found. Please install JDK 8 (JDK 7 also works; JDK 6 and JDK 9 or newer do not)')
++            else:
++                self.logger.error('Java JDK is not installed ! Please install java JDK 8')
+             sys.exit(1)
+-        self.cmdjavac = '"%s"' % os.path.join(results[0], 'javac')
+-        self.cmdjava = '"%s"' % os.path.join(results[0], 'java')
++        _, bindir, version = best
++        self.javaversion = version
++        self.cmdjavac = '"%s"' % os.path.join(bindir, 'javac')
++        self.cmdjava = '"%s"' % os.path.join(bindir, 'java')
++        self.logger.info('> Using JDK %s: %s', version, self.cmdjavac)
++        if not version.startswith('1.8'):
++            self.logger.warning('!! Official builds were made with JDK 8; JDK %s works, but the output will not be'
++                                ' byte-identical to them. Use JDK 8 when asking for debugging help. !!', version)
++
++    def javacversion(self, bindir):
++        """Return the version javac in bindir reports ('' if it cannot be run)."""
++        try:
++            out = self.runcmd('"%s" -version' % os.path.join(bindir, 'javac'), quiet=True)
++        except (CalledProcessError, OSError):
++            return ''
++        match = re.search(r'javac (\S+)', out)
++        return match.group(1) if match else ''
++
++    def findjdks(self):
++        """Return the bin directories of the JDKs in the usual places."""
++        exe = 'javac.exe' if self.osname == 'win' else 'javac'
++        candidates = []
++        if os.getenv('JAVA_HOME'):
++            candidates.append(os.path.join(os.getenv('JAVA_HOME'), 'bin'))
++        candidates.extend(os.getenv('PATH', '').split(os.pathsep))
++        if self.osname == 'win':
++            import winreg as _winreg
++            for flag in [_winreg.KEY_WOW64_64KEY, _winreg.KEY_WOW64_32KEY]:
++                try:
++                    root = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, r'Software\JavaSoft\Java Development Kit', 0,
++                                           _winreg.KEY_READ | flag)
++                except OSError:
++                    continue
++                i = 0
++                while True:
++                    try:
++                        name = _winreg.EnumKey(root, i)
++                    except OSError:
++                        break
++                    i += 1
++                    try:
++                        k = _winreg.OpenKey(root, name)
++                        path, _ = _winreg.QueryValueEx(k, 'JavaHome')
++                        k.Close()
++                        candidates.append(os.path.join(str(path), 'bin'))
++                    except OSError:
++                        pass
++                root.Close()
++            parents = []
++            for env in ['ProgramW6432', 'ProgramFiles', 'ProgramFiles(x86)']:
++                if env in os.environ:
++                    for vendor in ['Java', 'Eclipse Adoptium', 'Eclipse Foundation', 'AdoptOpenJDK', 'Zulu',
++                                   'Amazon Corretto', 'Microsoft', 'BellSoft']:
++                        parents.append(os.path.join(os.environ[env], vendor))
++        else:
++            parents = ['/usr/lib/jvm', '/Library/Java/JavaVirtualMachines']
++        for parent in parents:
++            if os.path.isdir(parent):
++                for name in sorted(os.listdir(parent)):
++                    candidates.append(os.path.join(parent, name, 'bin'))
++                    candidates.append(os.path.join(parent, name, 'Contents', 'Home', 'bin'))
++        return [bindir for bindir in candidates if bindir and os.path.isfile(os.path.join(bindir, exe))]
+ 
+     def checkscala(self):
+         cmd = None
+@@ -1007,10 +1093,10 @@ class Commands(object):
+             md5lcldict[cur_file] = (md5_file, os.stat(cur_file).st_mtime)
+         try:
+             update_url = self.updateurl + 'mcp.md5'
+-            listfh = urllib.urlopen(update_url)
++            listfh = urllib.request.urlopen(update_url)
+             if listfh.getcode() != 200:
+                 return []
+-            md5srvlist = listfh.readlines()
++            md5srvlist = [l.decode() for l in listfh.readlines()]
+             md5srvdict = {}
+         except IOError:
+             return []
+@@ -1257,16 +1343,17 @@ class Commands(object):
+         
+         # build map of access function changes
+         def filter_matched(key, value):
+-            if not k in meta['old']['access']:
++            if not key in meta['old']['access']:
+                 return False
+-            return meta['old']['access'][k]['ops'] == value['ops']
+-        access = [v for k,v in meta['new']['access'].items() if not filter_matched(k,v)]
++            return meta['old']['access'][key]['ops'] == value['ops']
++        access = [meta['new']['access'][k] for k in py2_dict_order(meta['new']['access']) if not filter_matched(k, meta['new']['access'][k])]
+         
+         mapped = {}
+         unmapped = []
+         for acc in access:
+             matched = False
+-            for k,v in meta['old']['access'].items():
++            for k in py2_dict_order(meta['old']['access']):
++                v = meta['old']['access'][k]
+                 if not v['owner'] == acc['owner'] or not v['desc'] == acc['desc'] or not v['ops'] == acc['ops']:
+                     continue
+                 matched = True
+@@ -1609,7 +1696,7 @@ class Commands(object):
+         if not quiet:
+             self.logger.debug("runcmd: '%s'", truncate(forkcmd, 500))
+             self.logger.debug("shlex: %s", truncate(str(forklist), 500))
+-        process = subprocess.Popen(forklist, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=-1)
++        process = subprocess.Popen(forklist, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=-1, universal_newlines=True)
+         output, _ = process.communicate()
+         if log_file is not None:
+             with open(log_file, 'w') as log:
+@@ -1630,7 +1717,7 @@ class Commands(object):
+             self.logger.debug("runmc: '%s'", truncate(forkcmd, 500))
+             self.logger.debug("shlex: %s", truncate(str(forklist), 500))
+         output = ''
+-        process = subprocess.Popen(forklist, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
++        process = subprocess.Popen(forklist, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1, universal_newlines=True)
+         while process.poll() is None:
+             line = process.stdout.readline()
+             if line:
+@@ -1721,20 +1808,20 @@ class Commands(object):
+ 
+         # HINT: We read the relevant CSVs
+         names = {'methods': {}, 'fields': {}, 'params': {}}
+-        with open(self.csvmethods, 'rb') as fh:
++        with open(self.csvmethods, 'r', newline='') as fh:
+             methodsreader = csv.DictReader(fh)
+             for row in methodsreader:
+                 if int(row['side']) == side or int(row['side']) == 2:
+                     if row['name'] != row['searge']:
+                         names['methods'][row['searge']] = row['name']
+-        with open(self.csvfields, 'rb') as fh:
++        with open(self.csvfields, 'r', newline='') as fh:
+             fieldsreader = csv.DictReader(fh)
+             for row in fieldsreader:
+                 if int(row['side']) == side or int(row['side']) == 2:
+                     if row['name'] != row['searge']:
+                         names['fields'][row['searge']] = row['name']
+         if self.has_param_csv:
+-            with open(self.csvparams, 'rb') as fh:
++            with open(self.csvparams, 'r', newline='') as fh:
+                 paramsreader = csv.DictReader(fh)
+                 for row in paramsreader:
+                     if int(row['side']) == side or int(row['side']) == 2:
+@@ -1789,7 +1876,7 @@ class Commands(object):
+ 
+         # HINT: We read the relevant CSVs
+         mapping = {'methods': {}, 'fields': {}, 'params': {}}
+-        with open(self.csvnewids, 'rb') as fh:
++        with open(self.csvnewids, 'r', newline='') as fh:
+             in_csv = csv.DictReader(fh)
+             for line in in_csv:
+                 in_id = None
+@@ -2146,24 +2233,24 @@ class Commands(object):
+                 self.logger.info('File tagged for deletion : %s', entry[0])
+ 
+         if 'CHANGELOG' in [i[0] for i in newfiles]:
+-            print ''
++            print('')
+             self.logger.info('== CHANGELOG ==')
+             changelog_url = self.updateurl + 'mcp/CHANGELOG'
+-            changelog = urllib.urlopen(changelog_url).readlines()
++            changelog = [l.decode() for l in urllib.request.urlopen(changelog_url).readlines()]
+             for line in changelog:
+                 self.logger.info(line.strip())
+                 if not line.strip():
+                     break
+-            print ''
+-            print ''
++            print('')
++            print('')
+ 
+         if not force:
+-            print 'WARNING:'
+-            print 'You are going to update MCP'
+-            print 'Are you sure you want to continue ?'
+-            answer = raw_input('If you really want to update, enter "Yes" ')
++            print('WARNING:')
++            print('You are going to update MCP')
++            print('Are you sure you want to continue ?')
++            answer = input('If you really want to update, enter "Yes" ')
+             if answer.lower() not in ['yes', 'y']:
+-                print 'You have not entered "Yes", aborting the update process'
++                print('You have not entered "Yes", aborting the update process')
+                 sys.exit(1)
+ 
+         for entry in newfiles:
+@@ -2177,7 +2264,7 @@ class Commands(object):
+                     except OSError:
+                         pass
+                 file_url = self.updateurl + 'mcp/' + entry[0]
+-                urllib.urlretrieve(file_url, cur_file)
++                urllib.request.urlretrieve(file_url, cur_file)
+             elif entry[3] == 'D':
+                 self.logger.info('Removing file from local install : %s', entry[0])
+                 # Remove file here
+@@ -2268,7 +2355,7 @@ class Commands(object):
+             if os.path.isfile(targsrg[side]):
+                 os.remove(targsrg[side])
+             
+-            with open(targsrg[side], 'wb') as fh:
++            with open(targsrg[side], 'w', newline='') as fh:
+                 for type in ['PK:', 'CL:', 'FD:', 'MD:']:
+                     for k in sorted(out[type], key=out[type].get):
+                         fh.write('%s %s %s\n' % (type, k, out[type][k]))
+diff --git a/runtime/filehandling/srgsexport.py b/runtime/filehandling/srgsexport.py
+index f380ac1..16b7609 100644
+--- a/runtime/filehandling/srgsexport.py
++++ b/runtime/filehandling/srgsexport.py
+@@ -8,7 +8,7 @@ Created on Fri Apr  8 13:44:42 2011
+ 
+ import csv
+ 
+-import srgshandler
++from . import srgshandler
+ 
+ 
+ CLIENT = 0
+@@ -39,7 +39,7 @@ def writesrgsfromcsvs(csvclass, csvmethods, csvfields, outsrgs, side, ignore_cla
+         raise Exception("Side not recognized : %d" % side)
+ 
+     # HINT: We append the class elements. We also handle the special case of Minecraft, MinecraftApplet, MinecraftServer
+-    with open(csvclass, 'rb') as fh:
++    with open(csvclass, 'r', newline='') as fh:
+         csvreader = csv.DictReader(fh)
+         for row in csvreader:
+             if int(row['side']) == side:
+@@ -58,7 +58,7 @@ def writesrgsfromcsvs(csvclass, csvmethods, csvfields, outsrgs, side, ignore_cla
+                 classes.append([row['notch'], '%s/%s' % (row['package'], row['name'])])
+ 
+     # HINT: We append the method elements
+-    with open(csvmethods, 'rb') as fh:
++    with open(csvmethods, 'r', newline='') as fh:
+         csvreader = csv.DictReader(fh)
+         for row in csvreader:
+             if int(row['side']) == side:
+@@ -74,7 +74,7 @@ def writesrgsfromcsvs(csvclass, csvmethods, csvfields, outsrgs, side, ignore_cla
+                                 '%s/%s/%s %s' % (row['package'], row['classname'], row['searge'], row['sig'])])
+ 
+     # HINT: We append the field elements
+-    with open(csvfields, 'rb') as fh:
++    with open(csvfields, 'r', newline='') as fh:
+         csvreader = csv.DictReader(fh)
+         for row in csvreader:
+             if int(row['side']) == side:
+diff --git a/runtime/pylibs/annotate_gl_constants.py b/runtime/pylibs/annotate_gl_constants.py
+index 3c1afa6..4945ffe 100644
+--- a/runtime/pylibs/annotate_gl_constants.py
++++ b/runtime/pylibs/annotate_gl_constants.py
+@@ -9,6 +9,10 @@ Created on Fri Apr  8 16:36:26 2011
+ 
+ import sys
+ import re
++try:
++    from pylibs.py2order import py2_dict_order
++except ImportError:
++    from py2order import py2_dict_order
+ import shutil
+ import os
+ import fnmatch
+@@ -1283,7 +1287,8 @@ def annotate_constants(code):
+             constant = int(full_match)
+             for group in _CONSTANTS:
+                 if package in group[0] and method in group[0][package]:
+-                    for constpkg, const in group[1].items():
++                    for constpkg in py2_dict_order(group[1]):
++                        const = group[1][constpkg]
+                         if constant in const:
+                             return '%s.%s' % (constpkg, const[constant])
+             return full_match
+@@ -1326,7 +1331,7 @@ def main():
+     parser = OptionParser(version=version, usage=usage)
+     options, args = parser.parse_args()
+     if len(args) != 1:
+-        print >> sys.stderr, 'src_dir required'
++        print('src_dir required', file=sys.stderr)
+         sys.exit(1)
+     annotate_dir(args[0])
+ 
+diff --git a/runtime/pylibs/cleanup_src.py b/runtime/pylibs/cleanup_src.py
+index 37c8f71..70ce207 100644
+--- a/runtime/pylibs/cleanup_src.py
++++ b/runtime/pylibs/cleanup_src.py
+@@ -285,7 +285,7 @@ def main():
+                       help='round long float and double constants', default=False)
+     options, args = parser.parse_args()
+     if len(args) != 1:
+-        print >> sys.stderr, 'src_dir required'
++        print('src_dir required', file=sys.stderr)
+         sys.exit(1)
+     cleanup_src(args[0], clean_comments=options.clean_comments, clean_src=options.clean_src,
+                 fix_imports=options.fix_imports, fix_unicode=options.fix_unicode, fix_charval=options.fix_charval,
+diff --git a/runtime/pylibs/fffix.py b/runtime/pylibs/fffix.py
+index 50a0d93..16f201d 100644
+--- a/runtime/pylibs/fffix.py
++++ b/runtime/pylibs/fffix.py
+@@ -210,7 +210,7 @@ def main():
+     parser = OptionParser(version=version, usage=usage)
+     options, args = parser.parse_args()
+     if len(args) != 1:
+-        print >> sys.stderr, 'src_dir required'
++        print('src_dir required', file=sys.stderr)
+         sys.exit(1)
+     fffix(args[0])
+ 
+diff --git a/runtime/pylibs/jadfix.py b/runtime/pylibs/jadfix.py
+index c0533e3..8d16d7e 100644
+--- a/runtime/pylibs/jadfix.py
++++ b/runtime/pylibs/jadfix.py
+@@ -390,7 +390,7 @@ def main():
+     parser = OptionParser(version=version, usage=usage)
+     options, args = parser.parse_args()
+     if len(args) != 1:
+-        print >> sys.stderr, 'src_dir required'
++        print('src_dir required', file=sys.stderr)
+         sys.exit(1)
+     jadfix(args[0])
+ 
+diff --git a/runtime/pylibs/jdfix.py b/runtime/pylibs/jdfix.py
+index 453a1df..e583b37 100644
+--- a/runtime/pylibs/jdfix.py
++++ b/runtime/pylibs/jdfix.py
+@@ -60,7 +60,7 @@ def main():
+     parser = OptionParser(version=version, usage=usage)
+     options, args = parser.parse_args()
+     if len(args) != 1:
+-        print >> sys.stderr, 'src_dir required'
++        print('src_dir required', file=sys.stderr)
+         sys.exit(1)
+     jdfix(args[0])
+ 
+diff --git a/runtime/pylibs/normlines.py b/runtime/pylibs/normlines.py
+index 4111f4c..4325cb1 100644
+--- a/runtime/pylibs/normlines.py
++++ b/runtime/pylibs/normlines.py
+@@ -17,14 +17,14 @@ def normaliselines(in_filename, out_filename=None):
+         if dir_name:
+             if not os.path.exists(dir_name):
+                 os.makedirs(dir_name)
+-    regex_ending = re.compile(r'\r?\n')
++    regex_ending = re.compile(rb'\r?\n')
+     with open(in_filename, 'rb') as in_file:
+         with open(tmp_filename, 'wb') as out_file:
+             buf = in_file.read()
+             if os.linesep == '\r\n':
+-                buf = regex_ending.sub(r'\r\n', buf)
++                buf = regex_ending.sub(rb'\r\n', buf)
+             else:
+-                buf = buf.replace('\r\n', '\n')
++                buf = buf.replace(b'\r\n', b'\n')
+             out_file.write(buf)
+     if out_filename is None:
+         shutil.move(tmp_filename, in_filename)
+@@ -57,10 +57,10 @@ def main():
+         in_name = args[0]
+         out_name = args[1]
+     else:
+-        print >> sys.stderr, 'src_file or src_dir required'
++        print('src_file or src_dir required', file=sys.stderr)
+         sys.exit(1)
+     if not os.path.exists(in_name):
+-        print >> sys.stderr, 'src_file or src_dir not found'
++        print('src_file or src_dir not found', file=sys.stderr)
+         sys.exit(1)
+     if os.path.isfile(in_name):
+         normaliselines(in_name, out_name)
+diff --git a/runtime/pylibs/normpatch.py b/runtime/pylibs/normpatch.py
+index 1522862..b57f26b 100644
+--- a/runtime/pylibs/normpatch.py
++++ b/runtime/pylibs/normpatch.py
+@@ -18,11 +18,11 @@ def normalisepatch(in_filename, out_filename=None):
+     with open(in_filename, 'rb') as inpatch:
+         with open(tmp_filename, 'wb') as outpatch:
+             for line in inpatch:
+-                line = line.rstrip('\r\n')
+-                if line[:3] in ['+++', '---', 'Onl', 'dif']:
+-                    outpatch.write(line.replace('\\', os.sep).replace('/', os.sep) + os.linesep)
++                line = line.rstrip(b'\r\n')
++                if line[:3] in [b'+++', b'---', b'Onl', b'dif']:
++                    outpatch.write(line.replace(b'\\', os.sep.encode()).replace(b'/', os.sep.encode()) + os.linesep.encode())
+                 else:
+-                    outpatch.write(line + os.linesep)
++                    outpatch.write(line + os.linesep.encode())
+     if out_filename is None:
+         shutil.move(tmp_filename, in_filename)
+ 
+@@ -39,7 +39,7 @@ def main():
+         in_file = args[0]
+         out_file = args[1]
+     else:
+-        print >> sys.stderr, 'src_file required'
++        print('src_file required', file=sys.stderr)
+         sys.exit(1)
+     normalisepatch(in_file, out_file)
+ 
+diff --git a/runtime/updateids.py b/runtime/updateids.py
+index 73694c2..2eea93c 100644
+--- a/runtime/updateids.py
++++ b/runtime/updateids.py
+@@ -37,14 +37,14 @@ def updateids(conffile, force, only_client, only_server):
+             process_client = False
+ 
+         if not force:
+-            print 'WARNING:'
+-            print 'The updateids script is unsupported, not recommended, and can break your'
+-            print 'code in hard to detect ways.'
+-            print 'Only use this script if you absolutely know what you are doing, or when a'
+-            print 'MCP team member asks you to do so.'
+-            answer = raw_input('If you really want to update all classes, enter "Yes" ')
++            print('WARNING:')
++            print('The updateids script is unsupported, not recommended, and can break your')
++            print('code in hard to detect ways.')
++            print('Only use this script if you absolutely know what you are doing, or when a')
++            print('MCP team member asks you to do so.')
++            answer = input('If you really want to update all classes, enter "Yes" ')
+             if answer.lower() not in ['yes']:
+-                print 'You have not entered "Yes", aborting the update process'
++                print('You have not entered "Yes", aborting the update process')
+                 sys.exit(1)
+ 
+         if process_client:
+diff --git a/runtime/updatemd5.py b/runtime/updatemd5.py
+index 7c3c4db..543b147 100644
+--- a/runtime/updatemd5.py
++++ b/runtime/updatemd5.py
+@@ -38,17 +38,17 @@ def updatemd5(conffile, force, only_client, only_server):
+ 
+         if ((process_client and commands.checkmd5s(CLIENT) or process_server and commands.checkmd5s(SERVER))
+                 and not force):
+-            print 'WARNING:'
+-            print 'The updatemd5 script is unsupported and should only be run in special'
+-            print 'cases, such as if there were compile errors in the last decompile which'
+-            print 'have now been corrected. It will reset the changed status of all classes'
+-            print 'for reobfuscation, and only classes modified afterwards will end up in'
+-            print 'the reobf directory.'
+-            print 'Only use this script if you absolutely know what you are doing, or when a'
+-            print 'MCP team member asks you to do so.'
+-            answer = raw_input('If you really want to update all classes, enter "Yes" ')
++            print('WARNING:')
++            print('The updatemd5 script is unsupported and should only be run in special')
++            print('cases, such as if there were compile errors in the last decompile which')
++            print('have now been corrected. It will reset the changed status of all classes')
++            print('for reobfuscation, and only classes modified afterwards will end up in')
++            print('the reobf directory.')
++            print('Only use this script if you absolutely know what you are doing, or when a')
++            print('MCP team member asks you to do so.')
++            answer = input('If you really want to update all classes, enter "Yes" ')
+             if answer.lower() not in ['yes']:
+-                print 'You have not entered "Yes", aborting the update process'
++                print('You have not entered "Yes", aborting the update process')
+                 sys.exit(1)
+ 
+         if process_client:
+diff --git a/runtime/updatenames.py b/runtime/updatenames.py
+index 26ae675..517095b 100644
+--- a/runtime/updatenames.py
++++ b/runtime/updatenames.py
+@@ -37,14 +37,14 @@ def updatenames(conffile, force, only_client, only_server):
+             process_client = False
+ 
+         if not force:
+-            print 'WARNING:'
+-            print 'The updatenames script is unsupported, not recommended, and can break your'
+-            print 'code in hard to detect ways.'
+-            print 'Only use this script if you absolutely know what you are doing, or when a'
+-            print 'MCP team member asks you to do so.'
+-            answer = raw_input('If you really want to update all classes, enter "Yes" ')
++            print('WARNING:')
++            print('The updatenames script is unsupported, not recommended, and can break your')
++            print('code in hard to detect ways.')
++            print('Only use this script if you absolutely know what you are doing, or when a')
++            print('MCP team member asks you to do so.')
++            answer = input('If you really want to update all classes, enter "Yes" ')
+             if answer.lower() not in ['yes']:
+-                print 'You have not entered "Yes", aborting the update process'
++                print('You have not entered "Yes", aborting the update process')
+                 sys.exit(1)
+ 
+         if process_client:
+diff --git a/startclient.bat b/startclient.bat
+index 99d1bec..b608f47 100644
+--- a/startclient.bat
++++ b/startclient.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\startclient.py %*
++py -3 runtime\startclient.py %*
+ pause
+diff --git a/startclient.sh b/startclient.sh
+index 1d1f330..699a7b5 100644
+--- a/startclient.sh
++++ b/startclient.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/startclient.py "$@"
++python3 runtime/startclient.py "$@"
+diff --git a/startserver.bat b/startserver.bat
+index 64884d1..21f48b7 100644
+--- a/startserver.bat
++++ b/startserver.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\startserver.py %*
++py -3 runtime\startserver.py %*
+ pause
+diff --git a/startserver.sh b/startserver.sh
+index b59ceec..c3a6026 100644
+--- a/startserver.sh
++++ b/startserver.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/startserver.py "$@"
++python3 runtime/startserver.py "$@"
+diff --git a/updateids.bat b/updateids.bat
+index 903c467..137fa7a 100644
+--- a/updateids.bat
++++ b/updateids.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\updateids.py %*
++py -3 runtime\updateids.py %*
+ pause
+diff --git a/updateids.sh b/updateids.sh
+index 9e4b8ae..cfc5b2c 100644
+--- a/updateids.sh
++++ b/updateids.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/updateids.py "$@"
++python3 runtime/updateids.py "$@"
+diff --git a/updatemcp.bat b/updatemcp.bat
+index aad44d1..df712cc 100644
+--- a/updatemcp.bat
++++ b/updatemcp.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\updatemcp.py %*
++py -3 runtime\updatemcp.py %*
+ pause
+diff --git a/updatemcp.sh b/updatemcp.sh
+index 31e3e17..1e709d4 100644
+--- a/updatemcp.sh
++++ b/updatemcp.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/updatemcp.py "$@"
++python3 runtime/updatemcp.py "$@"
+diff --git a/updatemd5.bat b/updatemd5.bat
+index ba04dff..1635be7 100644
+--- a/updatemd5.bat
++++ b/updatemd5.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\updatemd5.py %*
++py -3 runtime\updatemd5.py %*
+ pause
+diff --git a/updatemd5.sh b/updatemd5.sh
+index 9bfcb02..7aaa2a4 100644
+--- a/updatemd5.sh
++++ b/updatemd5.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/updatemd5.py "$@"
++python3 runtime/updatemd5.py "$@"
+diff --git a/updatenames.bat b/updatenames.bat
+index 603587f..b1b5089 100644
+--- a/updatenames.bat
++++ b/updatenames.bat
+@@ -1,3 +1,3 @@
+ @echo off
+-runtime\bin\python\python_mcp runtime\updatenames.py %*
++py -3 runtime\updatenames.py %*
+ pause
+diff --git a/updatenames.sh b/updatenames.sh
+index c33e98e..5432a52 100644
+--- a/updatenames.sh
++++ b/updatenames.sh
+@@ -1,2 +1,2 @@
+ #!/bin/bash
+-python runtime/updatenames.py "$@"
++python3 runtime/updatenames.py "$@"
+diff --git a/runtime/pylibs/py2order.py b/runtime/pylibs/py2order.py
+new file mode 100644
+index 0000000..629ce69
+--- /dev/null
++++ b/runtime/pylibs/py2order.py
+@@ -0,0 +1,50 @@
++# Python 3 port helper: reproduce the order in which Python 2.7 iterated a dict
++# or set of strings.
++#
++# Python 2.7 dicts and sets iterate in hash-table order; Python 3 dicts iterate
++# in insertion order and Python 3 randomizes string hashes. MCP picks "the
++# first match" while iterating several dicts, so the order decides what ends up
++# in the decompiled and reobfuscated output. MCP 9.08 ships a 32-bit Python 2.7
++# (runtime/bin/python/python_mcp.exe), so this uses its 32-bit C long hash.
++# Python 2.7 dicts and sets use the same probing and resize rules.
++
++
++def _py2_str_hash(key):
++    b = key.encode('utf-8') if isinstance(key, str) else bytes(key)
++    if not b:
++        return 0
++    x = (b[0] << 7) & 0xFFFFFFFF
++    for c in b:
++        x = ((1000003 * x) ^ c) & 0xFFFFFFFF
++    x ^= len(b) & 0xFFFFFFFF
++    if x == 0xFFFFFFFF:  # -1 is reserved for errors
++        x = 0xFFFFFFFE
++    return x
++
++
++def py2_dict_order(keys):
++    """Return keys (given in first-insertion order) in Python 2.7 iteration order."""
++    table, used = [None] * 8, 0
++
++    def insert(tbl, key, h):
++        mask = len(tbl) - 1
++        i = h & mask
++        perturb = h
++        while tbl[i & mask] is not None:
++            i = ((i << 2) + i + perturb + 1) & 0xFFFFFFFF
++            perturb >>= 5
++        tbl[i & mask] = (key, h)
++
++    for key in keys:
++        insert(table, key, _py2_str_hash(key))
++        used += 1
++        if used * 3 >= len(table) * 2:
++            minused = used * 2 if used > 50000 else used * 4
++            size = 8
++            while size <= minused:
++                size <<= 1
++            old, table = table, [None] * size
++            for entry in old:
++                if entry is not None:
++                    insert(table, entry[0], entry[1])
++    return [entry[0] for entry in table if entry is not None]

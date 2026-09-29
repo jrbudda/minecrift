@@ -1,0 +1,62 @@
+--- a/net/minecraft/client/renderer/ThreadDownloadImageData.java
++++ b/net/minecraft/client/renderer/ThreadDownloadImageData.java
+@@ -209,35 +209,36 @@
+             HttpRequest var6 = HttpPipeline.makeRequest(this.imageUrl, Minecraft.getMinecraft().getProxy());
+             HttpResponse resp = HttpPipeline.executeRequest(var6);
+ 
+-            if (resp.getStatus() / 100 == 2)
+-            {
+-                byte[] body = resp.getBody();
+-                ByteArrayInputStream bais = new ByteArrayInputStream(body);
+-                BufferedImage var2;
+-
+-                if (this.field_152434_e != null)
+-                {
+-                    FileUtils.copyInputStreamToFile(bais, this.field_152434_e);
+-                    var2 = ImageIO.read(this.field_152434_e);
+-                }
+-                else
+-                {
+-                    var2 = TextureUtils.readBufferedImage(bais);
+-                }
+-
+-                if (this.imageBuffer != null)
+-                {
+-                    var2 = this.imageBuffer.parseUserSkin(var2);
+-                }
+-
+-                this.setBufferedImage(var2);
++            if (resp.getStatus() / 100 != 2)
++            {
+                 return;
+             }
++
++            byte[] body = resp.getBody();
++            ByteArrayInputStream bais = new ByteArrayInputStream(body);
++            BufferedImage var2;
++
++            if (this.field_152434_e != null)
++            {
++                FileUtils.copyInputStreamToFile(bais, this.field_152434_e);
++                var2 = ImageIO.read(this.field_152434_e);
++            }
++            else
++            {
++                var2 = TextureUtils.readBufferedImage(bais);
++            }
++
++            if (this.imageBuffer != null)
++            {
++                var2 = this.imageBuffer.parseUserSkin(var2);
++            }
++
++            this.setBufferedImage(var2);
++            return;
+         }
+         catch (Exception var9)
+         {
+             logger.error("Couldn\'t download http texture: " + var9.getClass().getName() + ": " + var9.getMessage());
+-            return;
+         }
+         finally
+         {

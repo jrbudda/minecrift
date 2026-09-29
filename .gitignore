@@ -26,3 +26,6 @@ jars/
 *.ex_
 mcppatches - Copy/
 hs_err_pid*.log
+
+# Python 3 bytecode caches
+__pycache__/

@@ -1,0 +1,57 @@
+# The official 40r12 installer was built on jrbudda's machine on 2021-11-11 from a working
+# tree that still held stale files, with Python 2.7 and classic zlib. build.py reads this
+# file (through legacy40r12.py) to reproduce that installer byte for byte. The next version
+# drops both files and builds with its own reproducible metadata.
+#   installer <id>                    only builds with this installer id use this file
+#   sha256 <hex>                      the official installer exe, checked after the build
+#   pestamp <hex>                     the launch4j link time in the exe header
+#   class <entry> <sha1> <base64>     stale classes the official installer shipped
+#   time <entry> <date>               zip timestamp of an installer entry
+#   legend <letter>=<date> ...        the timestamps of version.jar entries...
+#   inner <letters>                   ...one letter per entry, in order
+installer vivecraft-1.7.10-jrbudda-40r12-installer
+sha256 f4fbd25e1d761914de098dc0db5e435862406302756bd94f22056afd2d1ffb5b
+pestamp 618da107
+class Installer$updateAction.class 0377837064a6c5dadfb230f0b076666d3931107b yv66vgAAADIAJgoABQAaCQAFABsKAAYAHAoAHQAeBwAfBwAhAQAQc2VyaWFsVmVyc2lvblVJRAEAAUoBAA1Db25zdGFudFZhbHVlBQpSkCcbIRmFAQAGdGhpcyQwAQALTEluc3RhbGxlcjsBAAY8aW5pdD4BAA4oTEluc3RhbGxlcjspVgEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBAA9hY3Rpb25QZXJmb3JtZWQBAB8oTGphdmEvYXd0L2V2ZW50L0FjdGlvbkV2ZW50OylWBwAiAQAAAQAMSW5uZXJDbGFzc2VzAQAbKExJbnN0YWxsZXI7TEluc3RhbGxlciQxOylWAQAKU291cmNlRmlsZQEADkluc3RhbGxlci5qYXZhDAAOAA8MAAwADQwADgAjBwAkDAAlAA8BABZJbnN0YWxsZXIkdXBkYXRlQWN0aW9uAQAMdXBkYXRlQWN0aW9uAQAaamF2YXgvc3dpbmcvQWJzdHJhY3RBY3Rpb24BAAtJbnN0YWxsZXIkMQEAAygpVgEACUluc3RhbGxlcgEAC2FjY2VzcyQyNDAwACAABQAGAAAAAgAaAAcACAABAAkAAAACAAoQEAAMAA0AAAADAAIADgAPAAEAEAAAACIAAgACAAAACiortQACKrcAA7EAAAABABEAAAAGAAEAAASpAAEAEgATAAEAEAAAACQAAQACAAAACCq0AAK4AASxAAAAAQARAAAACgACAAAEsAAHBLEQAAAOABcAAQAQAAAAHgACAAMAAAAGKiu3AAGxAAAAAQARAAAABgABAAAEqQACABgAAAACABkAFgAAABIAAgAUAAAAAAAIAAUAHQAgAAI=
+class launch4j/demo/ExitCodeApp/target/classes/net/sf/launch4j/example/ExitCodeApp.class fc6188f78600651ac5fd72d5b5aca056398b2d03 yv66vgAAADIAQAoADQAeCgAfACAJACEAIgcAIwoABAAeCAAkCgAEACUKACYAJwoABAAoCgApACoKACEAKwcALAcALQEABjxpbml0PgEAAygpVgEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBABJMb2NhbFZhcmlhYmxlVGFibGUBAAR0aGlzAQAlTG5ldC9zZi9sYXVuY2g0ai9leGFtcGxlL0V4aXRDb2RlQXBwOwEABG1haW4BABYoW0xqYXZhL2xhbmcvU3RyaW5nOylWAQAEYXJncwEAE1tMamF2YS9sYW5nL1N0cmluZzsBAAhleGl0Q29kZQEAAUkBAA1TdGFja01hcFRhYmxlAQAKU291cmNlRmlsZQEAEEV4aXRDb2RlQXBwLmphdmEMAA4ADwcALgwALwAwBwAxDAAyADMBABdqYXZhL2xhbmcvU3RyaW5nQnVpbGRlcgEAC0V4aXQgY29kZTogDAA0ADUHADYMADcAOAwAOQA6BwA7DAA8AD0MAD4APwEAI25ldC9zZi9sYXVuY2g0ai9leGFtcGxlL0V4aXRDb2RlQXBwAQAQamF2YS9sYW5nL09iamVjdAEAEWphdmEvbGFuZy9JbnRlZ2VyAQAIcGFyc2VJbnQBABUoTGphdmEvbGFuZy9TdHJpbmc7KUkBABBqYXZhL2xhbmcvU3lzdGVtAQADb3V0AQAVTGphdmEvaW8vUHJpbnRTdHJlYW07AQAGYXBwZW5kAQAtKExqYXZhL2xhbmcvU3RyaW5nOylMamF2YS9sYW5nL1N0cmluZ0J1aWxkZXI7AQAQamF2YS9sYW5nL1N0cmluZwEAB3ZhbHVlT2YBABUoSSlMamF2YS9sYW5nL1N0cmluZzsBAAh0b1N0cmluZwEAFCgpTGphdmEvbGFuZy9TdHJpbmc7AQATamF2YS9pby9QcmludFN0cmVhbQEAB3ByaW50bG4BABUoTGphdmEvbGFuZy9TdHJpbmc7KVYBAARleGl0AQAEKEkpVgAhAAwADQAAAAAAAgABAA4ADwABABAAAAAvAAEAAQAAAAUqtwABsQAAAAIAEQAAAAYAAQAAACQAEgAAAAwAAQAAAAUAEwAUAAAACQAVABYAAQAQAAAAgwADAAIAAAAvAzwqvp4ACioDMrgAAjyyAAO7AARZtwAFEga2AAcbuAAItgAHtgAJtgAKG7gAC7EAAAADABEAAAAaAAYAAAAmAAIAKAAHACkADgAsACoALQAuAC4AEgAAABYAAgAAAC8AFwAYAAAAAgAtABkAGgABABsAAAAGAAH8AA4BAAEAHAAAAAIAHQ==
+time Installer$1.class 2021-11-11T18:02:24
+time Installer$2.class 2021-11-11T18:02:24
+time Installer$FileSelectAction.class 2021-11-11T18:02:24
+time Installer$GameDirSelectAction.class 2021-11-11T18:02:24
+time Installer$InstallTask$1.class 2021-11-11T18:02:22
+time Installer$InstallTask$2.class 2021-11-11T18:02:22
+time Installer$InstallTask$3.class 2021-11-11T18:02:22
+time Installer$InstallTask.class 2021-11-11T18:02:24
+time Installer$updateAction.class 2016-07-02T06:34:32
+time Installer$updateActionF.class 2021-11-11T18:02:24
+time Installer$updateActionP.class 2021-11-11T18:02:24
+time Installer$updateActionSM.class 2021-11-11T18:02:24
+time Installer$updateTxtEnabled.class 2021-11-11T18:02:24
+time Installer.class 2021-11-11T18:02:24
+time launch4j/demo/ExitCodeApp/target/classes/net/sf/launch4j/example/ExitCodeApp.class 2016-07-20T21:49:00
+time org/json/JSONArray.class 2016-05-26T03:52:06
+time org/json/JSONException.class 2016-05-26T03:52:04
+time org/json/JSONObject$1.class 2016-05-26T03:52:04
+time org/json/JSONObject$Null.class 2016-05-26T03:52:04
+time org/json/JSONObject.class 2016-05-26T03:52:04
+time org/json/JSONString.class 2016-05-26T03:52:06
+time org/json/JSONTokener.class 2016-05-26T03:52:04
+time version.json 2021-11-11T18:02:24
+time version-forge.json 2021-11-11T18:02:24
+time version-shadersmod.json 2021-11-11T18:02:24
+time version-forge-shadersmod.json 2021-11-11T18:02:24
+time version-multimc.json 2021-11-11T18:02:24
+time version-multimc-forge.json 2021-11-11T18:02:24
+time release_notes.txt 2016-06-16T22:55:04
+time version.jar 2021-11-11T18:02:24
+time version 2021-11-11T18:02:24
+legend a=2021-11-11T18:02:16 b=2021-11-11T18:02:14 c=2021-11-11T18:02:12 d=2021-11-11T18:02:10 e=2021-11-11T18:00:56
+inner aaaaaaaaaaaaaaaaaaaaaaaabbbbbaaaaaaaaababaaaaaaaaacccccabbaaaaaaaacaaaaabaacaaaaaaaaaaaaaaaaaaaa
+inner aaaaaacabccaaaaabcaaaabacaabaaaaaaaaaaccaaaabbbaaaaaaaaaaabaaaaaaaabacbabaaaacaaaaaaaaaacaabbbab
+inner abbbbaaabaaaaaacccbaaaaaaaaaaaaacccaaacccbbbccccccaaaaaaaaacccaaabbbaaacccaaaaaaaaaaaaccccccaccc
+inner cccccccccccccccccccccccccccccccccccccccccccccccccccacccabbbbbbbbbaaaccccccccccccbbbcccbbbcccbbba
+inner aabbbcccaaabbbaaabbbcccdddbbbcccaaaaaacccaaabbbaaacccbbbaaaaaabbbaaacccccccccccccccccccccccccccc
+inner cccccccccccccccccccccccccccccccccccccccdcdddddddddddcccddddddcdccdddddcddccccdddddbbbbbbcccccddd
+inner dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddccccccccccccccccccccc
+inner bbbbbbbbbbbbbbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbbbbcbbbbbbbbbbaae
+inner eeee

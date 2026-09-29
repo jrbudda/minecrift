@@ -1,5 +1,6 @@
 mc_version = "1.7.10"
 mc_file_md5 = "e6b7a531b95d0c172acb704d1f54d1b3"
+mc_file_url = "https://launcher.mojang.com/v1/objects/e80d9b3bf5085002218d4be59e668bac718abbc6/client.jar"
 of_file_name = "1.7.10_HD_U_D1"
 of_json_name = "1.7.10_HD_U_D1"
 of_file_md5 = "57c724fe8335c82aef8d54c101043e60"

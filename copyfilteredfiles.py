@@ -8,10 +8,10 @@ def create_relative_file_list(dir_path):
     for root, _, files in os.walk(dir_path):
         for file in files:
             relative_file_path = os.path.join(os.path.relpath(root, dir_path), file).replace('.patch', '')
-            print '  ' + relative_file_path
+            print('  ' + relative_file_path)
             file_list.append(relative_file_path)
 
-    print '%d File(s)' % len(file_list)
+    print('%d File(s)' % len(file_list))
     return file_list
 
 
@@ -19,16 +19,16 @@ def copy_filtered_files(filter_dir, sourceDir, destDir, cleanDest):
 
     if cleanDest:
         # clean dest dir
-        print 'Cleaning dest: %s' % destDir
+        print('Cleaning dest: %s' % destDir)
         shutil.rmtree(destDir, ignore_errors=True)
 
     # create filter list
-    print 'Filter list:'
+    print('Filter list:')
     relative_filter = create_relative_file_list(filter_dir)
     
 
     # walk the (relative path) file filter list, copy files
-    print 'Copy files:'
+    print('Copy files:')
     for file in relative_filter:
 
         # create absolute paths
@@ -40,7 +40,7 @@ def copy_filtered_files(filter_dir, sourceDir, destDir, cleanDest):
             dest_dir = os.path.dirname(dest_file)
             if not os.path.exists(dest_dir):
                 os.makedirs(dest_dir)
-            print '  %s -> %s' % (src_file, dest_file)
+            print('  %s -> %s' % (src_file, dest_file))
             shutil.copyfile(src_file, dest_file)
 
 

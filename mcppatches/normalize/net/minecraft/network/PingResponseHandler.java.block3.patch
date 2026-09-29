@@ -1,0 +1,19 @@
+--- a/net/minecraft/network/PingResponseHandler.java
++++ b/net/minecraft/network/PingResponseHandler.java
+@@ -87,12 +92,11 @@
+ 
+                 var3.release();
+                 var4 = false;
+-                return;
+             }
+-        }
+-        catch (RuntimeException var21)
+-        {
+-            return;
++            catch (RuntimeException var21)
++            {
++                ;
++            }
+         }
+         finally
+         {

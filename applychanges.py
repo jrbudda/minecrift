@@ -12,12 +12,12 @@ def cmdsplit(args):
         args = args.replace('\\', '\\\\')
     return shlex.split(args)
 
-crlf = re.compile(r"\n(?<!\r)")
+crlf = re.compile(rb"\n(?<!\r)")
 def apply_patch( mcp_dir, patch_file, target_dir ):
     if os.name == 'nt':
         with tempfile.NamedTemporaryFile(delete=False) as temp_file:
             with open(patch_file,'rb') as patch:
-                temp_file.write( crlf.sub("\r\n", patch.read() ))
+                temp_file.write( crlf.sub(b"\r\n", patch.read() ))
             patch_file = temp_file.name
         applydiff = os.path.abspath(os.path.join(mcp_dir, 'runtime', 'bin', 'applydiff.exe'))
         cmd = cmdsplit('"%s" -N -uf -p1 -i "%s"' % (applydiff, patch_file ))
